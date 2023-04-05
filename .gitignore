@@ -1,0 +1,21 @@
+.idea
+# Folders
+.vs/
+bin/
+bins/
+build/
+userdata/
+out/
+deps/
+deps/desktop.ini
+imgui.ini
+
+CMakeFiles/
+CMakeCache.txt
+
+binaries
+binaries/
+intermediate
+intermediate/
+
+data/log.txt
