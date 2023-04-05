@@ -1,3 +1,9 @@
 #include "engine/engine.h"
 
-Engine* g_engine = nullptr;
+void Engine::init() {
+
+}
+
+void Engine::shutdown() {
+
+}

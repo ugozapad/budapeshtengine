@@ -6,5 +6,3 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ENGINE_SRC_FILES})
 
 add_library(engine STATIC ${ENGINE_SRC_FILES})
 target_include_directories(engine PRIVATE "${CMAKE_SOURCE_DIR}/src")
-
-set_target_properties(engine PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/")

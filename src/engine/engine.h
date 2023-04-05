@@ -1,12 +1,10 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-class Engine
-{
-
+class Engine {
+public:
+	void init();
+	void shutdown();
 };
-
-Engine* createEngine(const char* commandline, bool isCustomWindow, void* windowPtr);
-
 
 #endif
