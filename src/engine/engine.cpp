@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "engine/engine.h"
+#include "engine/filesystem.h"
 
 Engine::Engine() :
     m_render_window(nullptr)
@@ -13,6 +14,9 @@ void Engine::init() {
     if (SDL_Init(SDL_INIT_EVERYTHING ^ SDL_INIT_SENSOR) != 0) {
         printf("Failed to initialize SDL2. Error core: %s\n", SDL_GetError());
     }
+
+    // create filesystem
+    g_file_system = IFileSystem::create();
 
     // Initialize OpenGL context
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
@@ -32,6 +36,11 @@ void Engine::shutdown() {
     if (m_render_window) {
         SDL_DestroyWindow(m_render_window);
         m_render_window = nullptr;
+    }
+
+    if (g_file_system) {
+        delete g_file_system;
+        g_file_system = nullptr;
     }
 
     SDL_Quit();
