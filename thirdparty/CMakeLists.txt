@@ -1,0 +1,1 @@
+add_subdirectory(SDL2-2.26.5)

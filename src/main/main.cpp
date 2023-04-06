@@ -15,6 +15,8 @@ public:
 	int init(int argc, char* argv[]);
 	void shutdown();
 
+	void update();
+
 private:
 	Engine* m_engine;
 	IRender* m_render;
@@ -46,7 +48,7 @@ int Main::init(int argc, char* argv[]) {
 	m_engine->init();
 
 	m_render = createRender();
-	m_render->init();
+	m_render->init(m_engine->getRenderWindow());
 
 	return 0;
 }
@@ -59,11 +61,29 @@ void Main::shutdown() {
 	delete m_engine;
 }
 
+void Main::update()
+{
+	m_render->renderFrame();
+}
+
 int main(int argc, char* argv[]) {
 
 	int retval = s_main.init(argc, argv);
-	if (!retval)
-		return retval;
+
+	bool run = true;
+	while (run) {
+		SDL_Event event;
+		while (SDL_PollEvent(&event)) {
+			if (event.type == SDL_QUIT) {
+				run = false;
+			}
+			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
+				run = false;
+			}
+		}
+
+		s_main.update();
+	}
 
 	s_main.shutdown();
 
