@@ -12,7 +12,7 @@ Engine::Engine() :
 Engine::~Engine() {
 }
 
-void Engine::init() {
+void Engine::init(int width, int height, bool fullscreen) {
     if (SDL_Init(SDL_INIT_EVERYTHING ^ SDL_INIT_SENSOR) != 0) {
         printf("Failed to initialize SDL2. Error core: %s\n", SDL_GetError());
     }
@@ -27,8 +27,12 @@ void Engine::init() {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
+    Uint32 window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+    if (fullscreen)
+        window_flags |= SDL_WINDOW_FULLSCREEN;
+
     // Create window
-    m_render_window = SDL_CreateWindow("Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1024, 768, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    m_render_window = SDL_CreateWindow("Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!m_render_window) {
         printf("Failed to create render window. Error core: %s\n", SDL_GetError());
     }
@@ -40,6 +44,7 @@ void Engine::shutdown() {
         m_render_window = nullptr;
     }
 
+    IFileSystem::destroy(g_file_system);
 
     SDL_Quit();
 }

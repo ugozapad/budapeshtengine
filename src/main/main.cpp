@@ -29,10 +29,13 @@ static HANDLE s_locker_mutex;
 int Main::init(int argc, char* argv[]) {
 
 	bool createLockerMutex = true;
+	bool fullscreen = false;
 
 	for (int i = 0; i < argc; i++) {
 		if (strcmp("-multinstance", argv[i]) == 0)
 			createLockerMutex = false;
+		if (strcmp("-fullscreen", argv[0]) == 0)
+			fullscreen = true;
 	}
 
 	if (createLockerMutex) {
@@ -47,8 +50,8 @@ int Main::init(int argc, char* argv[]) {
 
 	g_default_allocator = createDefaultAllocator();
 
-	m_engine = NEW(*g_default_allocator, Engine);
-	m_engine->init();
+	m_engine = MEM_NEW(*g_default_allocator, Engine);
+	m_engine->init(1024, 768, fullscreen);
 
 	m_render = createRender();
 	m_render->init(m_engine->getRenderWindow());
@@ -58,10 +61,10 @@ int Main::init(int argc, char* argv[]) {
 
 void Main::shutdown() {
 	m_render->shutdown();
-	DELETE(*g_default_allocator, IRender, m_render);
+	MEM_DELETE(*g_default_allocator, IRender, m_render);
 
 	m_engine->shutdown();
-	DELETE(*g_default_allocator, Engine, m_engine);
+	MEM_DELETE(*g_default_allocator, Engine, m_engine);
 }
 
 void Main::update()

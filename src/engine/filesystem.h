@@ -29,7 +29,7 @@ public:
 class IFileSystem {
 public:
 	static IFileSystem* create();
-	static void destroy();
+	static void destroy(IFileSystem*& fs_ptr);
 
 public:
 	virtual ~IFileSystem() {}

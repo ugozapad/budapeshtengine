@@ -9,7 +9,7 @@ public:
 	Engine();
 	~Engine();
 
-	void init();
+	void init(int width, int height, bool fullscreen);
 	void shutdown();
 
 	SDL_Window* getRenderWindow();

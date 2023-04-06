@@ -23,11 +23,17 @@ public:
 
 	void renderFrame() override;
 
+	void updateBuffer(uint32_t buffer_index, void* data, size_t size) override;
+
 private:
 	SDL_Window* m_render_window;
 	SDL_GLContext m_gl_context;
 	sg_pass_action m_default_clear_pass;
 };
+
+IRender* createRender() {
+	return MEM_NEW(*g_default_allocator, Render);
+}
 
 void Render::init(SDL_Window* render_window) {
 	m_render_window = render_window;
@@ -56,7 +62,10 @@ void Render::shutdown() {
 }
 
 void Render::renderFrame() {
-	sg_begin_default_pass(&m_default_clear_pass, 1024, 768);
+	int w = 0, h = 0;
+	SDL_GetWindowSize(m_render_window, &w, &h);
+
+	sg_begin_default_pass(&m_default_clear_pass, w, h);
 	sg_end_pass();
 	sg_commit();
 
@@ -64,7 +73,13 @@ void Render::renderFrame() {
 	SDL_GL_SwapWindow(m_render_window);
 }
 
-IRender* createRender()
-{
-	return NEW(*g_default_allocator, Render);
+sg_buffer getBufferFromIndex(uint32_t index) {
+	return sg_buffer{};
+}
+
+void Render::updateBuffer(uint32_t buffer_index, void* data, size_t size) {
+	sg_range data_range = {};
+	data_range.ptr = data;
+	data_range.size = size;
+	sg_update_buffer(getBufferFromIndex(buffer_index), data_range);
 }

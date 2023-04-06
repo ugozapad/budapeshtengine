@@ -94,26 +94,26 @@ public:
 };
 
 IFileSystem* IFileSystem::create() {
-	return NEW(*g_default_allocator, FileSystem);
+	return MEM_NEW(*g_default_allocator, FileSystem);
 }
 
-void IFileSystem::destroy() {
-	DELETE(*g_default_allocator, IFileSystem, g_file_system);
-	g_file_system = nullptr;
+void IFileSystem::destroy(IFileSystem*& fs_ptr) {
+	MEM_DELETE(*g_default_allocator, IFileSystem, fs_ptr);
+	fs_ptr = nullptr;
 }
 
 IReader* FileSystem::openRead(const char* filename) {
-	return NEW(*g_default_allocator, FileReader, filename);
+	return MEM_NEW(*g_default_allocator, FileReader, filename);
 }
 
 IWriter* FileSystem::openWrite(const char* filename) {
-	return NEW(*g_default_allocator, FileWriter, filename);
+	return MEM_NEW(*g_default_allocator, FileWriter, filename);
 }
 
 void FileSystem::deleteReader(IReader*& reader) {
-	DELETE(*g_default_allocator, IReader, reader);
+	MEM_DELETE(*g_default_allocator, IReader, reader);
 }
 
 void FileSystem::deleteWriter(IWriter*& writer) {
-	DELETE(*g_default_allocator, IWriter, writer);
+	MEM_DELETE(*g_default_allocator, IWriter, writer);
 }

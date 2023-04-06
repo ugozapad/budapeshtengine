@@ -15,7 +15,7 @@ extern IAllocator* g_default_allocator;
 
 IAllocator* createDefaultAllocator();
 
-#define NEW(a, T, ...) (new ((a).allocate(sizeof(T), alignof(T))) T(__VA_ARGS__))
-#define DELETE(a, T, p)	if (p) {(p)->~T(); (a).deallocate(p);}
+#define MEM_NEW(a, T, ...) (new ((a).allocate(sizeof(T), alignof(T))) T(__VA_ARGS__))
+#define MEM_DELETE(a, T, p)	if (p) {(p)->~T(); (a).deallocate(p);}
 
 #endif // !ALLOCATOR_H
