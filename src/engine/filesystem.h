@@ -29,12 +29,16 @@ public:
 class IFileSystem {
 public:
 	static IFileSystem* create();
+	static void destroy();
 
 public:
 	virtual ~IFileSystem() {}
 
 	virtual IReader* openRead(const char* filename) = 0;
 	virtual IWriter* openWrite(const char* filename) = 0;
+
+	virtual void deleteReader(IReader*& reader) = 0;
+	virtual void deleteWriter(IWriter*& writer) = 0;
 };
 
 extern IFileSystem* g_file_system;

@@ -1,3 +1,4 @@
+#include "engine/allocator.h"
 #include "render/render.h"
 
 #define SOKOL_GFX_IMPL
@@ -65,5 +66,5 @@ void Render::renderFrame() {
 
 IRender* createRender()
 {
-	return new Render();
+	return NEW(*g_default_allocator, Render);
 }

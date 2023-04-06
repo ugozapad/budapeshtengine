@@ -1,6 +1,8 @@
-#include <stdio.h>
-#include "engine/engine.h"
+#include "engine/allocator.h"
 #include "engine/filesystem.h"
+#include "engine/engine.h"
+
+#include <stdio.h>
 
 Engine::Engine() :
     m_render_window(nullptr)
@@ -38,10 +40,6 @@ void Engine::shutdown() {
         m_render_window = nullptr;
     }
 
-    if (g_file_system) {
-        delete g_file_system;
-        g_file_system = nullptr;
-    }
 
     SDL_Quit();
 }

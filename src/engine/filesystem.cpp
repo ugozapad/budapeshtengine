@@ -1,3 +1,4 @@
+#include "engine/allocator.h"
 #include "engine/filesystem.h"
 
 #include <stdio.h>
@@ -87,16 +88,32 @@ public:
 
 	IReader* openRead(const char* filename) override;
 	IWriter* openWrite(const char* filename) override;
+
+	void deleteReader(IReader*& reader) override;
+	void deleteWriter(IWriter*& writer) override;
 };
 
 IFileSystem* IFileSystem::create() {
-	return new FileSystem();
+	return NEW(*g_default_allocator, FileSystem);
+}
+
+void IFileSystem::destroy() {
+	DELETE(*g_default_allocator, IFileSystem, g_file_system);
+	g_file_system = nullptr;
 }
 
 IReader* FileSystem::openRead(const char* filename) {
-	return new FileReader(filename);
+	return NEW(*g_default_allocator, FileReader, filename);
 }
 
 IWriter* FileSystem::openWrite(const char* filename) {
-	return new FileWriter(filename);
+	return NEW(*g_default_allocator, FileWriter, filename);
+}
+
+void FileSystem::deleteReader(IReader*& reader) {
+	DELETE(*g_default_allocator, IReader, reader);
+}
+
+void FileSystem::deleteWriter(IWriter*& writer) {
+	DELETE(*g_default_allocator, IWriter, writer);
 }

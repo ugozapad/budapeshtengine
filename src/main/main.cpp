@@ -1,6 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#include "engine/allocator.h"
 #include "engine/engine.h"
 #include "render/render.h"
 
@@ -44,7 +45,9 @@ int Main::init(int argc, char* argv[]) {
 		}
 	}
 
-	m_engine = new Engine();
+	g_default_allocator = createDefaultAllocator();
+
+	m_engine = NEW(*g_default_allocator, Engine);
 	m_engine->init();
 
 	m_render = createRender();
@@ -55,10 +58,10 @@ int Main::init(int argc, char* argv[]) {
 
 void Main::shutdown() {
 	m_render->shutdown();
-	delete m_render;
+	DELETE(*g_default_allocator, IRender, m_render);
 
 	m_engine->shutdown();
-	delete m_engine;
+	DELETE(*g_default_allocator, Engine, m_engine);
 }
 
 void Main::update()
