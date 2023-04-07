@@ -25,6 +25,33 @@ enum uniformConstants_t
 	CONSTANT_MAX
 };
 
+enum bufferType_t {
+	BUFFERTYPE_VERTEX,
+	BUFFERTYPE_INDEX,
+	BUFFERTYPE_UNIFORM,
+	
+	BUFFERTYPE_MAX
+};
+
+enum bufferAccess_t {
+	BUFFERACCESS_STATIC,
+	BUFFERACCESS_DYNAMIC,
+
+	BUFFERACCESS_MAX
+};
+
+struct bufferDesc_t {
+	bufferType_t type;
+	bufferAccess_t access;
+	void* data;
+	size_t size;
+};
+
+// Render types
+typedef uint32_t bufferIndex_t;
+
+#define INVALID_BUFFER_INDEX -1
+
 //! Interface to renderer
 class IRender {
 public:
@@ -35,7 +62,11 @@ public:
 
 	virtual void renderFrame() = 0;
 
-	virtual void updateBuffer(uint32_t buffer_index, void* data, size_t size) = 0;
+	// Buffer API
+
+	virtual bufferIndex_t createBuffer(const bufferDesc_t& bufferDesc) = 0;
+	virtual void deleteBuffer(bufferIndex_t buffer_index) = 0;
+	virtual void updateBuffer(bufferIndex_t buffer_index, void* data, size_t size) = 0;
 };
 
 IRender* createRender();

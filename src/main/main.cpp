@@ -25,6 +25,7 @@ private:
 
 static Main s_main;
 static HANDLE s_locker_mutex;
+static bufferIndex_t s_buffer;
 
 int Main::init(int argc, char* argv[]) {
 
@@ -56,10 +57,28 @@ int Main::init(int argc, char* argv[]) {
 	m_render = createRender();
 	m_render->init(m_engine->getRenderWindow());
 
+	float vertices[] = {
+		// positions            // colors
+		 0.0f,  0.5f, 0.5f,     1.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, 0.5f,     0.0f, 1.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f,     0.0f, 0.0f, 1.0f, 1.0f
+	};
+
+	bufferDesc_t buffer_desc = {};
+	buffer_desc.type = BUFFERTYPE_VERTEX;
+	buffer_desc.access = BUFFERACCESS_STATIC;
+	buffer_desc.data = vertices;
+	buffer_desc.size = sizeof(vertices);
+	s_buffer = m_render->createBuffer(buffer_desc);
+	if (s_buffer == INVALID_BUFFER_INDEX)
+		__debugbreak();
+
 	return 0;
 }
 
 void Main::shutdown() {
+	m_render->deleteBuffer(s_buffer);
+
 	m_render->shutdown();
 	MEM_DELETE(*g_default_allocator, IRender, m_render);
 
