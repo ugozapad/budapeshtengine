@@ -1,6 +1,8 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include "engine/object.h"
+
 // Forward declaration
 class Player;
 class Weapon;
@@ -15,8 +17,10 @@ public:
 };
 
 //! Base entity class.
-class Entity : public IPhysicsObject {
+class Entity : public ITypedObject, public IPhysicsObject {
 public:
+	OBJECT_IMPLEMENT(Entity, ITypedObject);
+
 	Entity();
 	virtual ~Entity();
 
