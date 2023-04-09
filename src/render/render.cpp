@@ -21,8 +21,13 @@ public:
 	,	m_default_clear_color_depth_pass{0}
 	,	m_bindings{0}
 	,	m_gl_context(nullptr)
-	{}
-	~Render() {}
+	{
+		g_render = this;
+	}
+
+	~Render() {
+		g_render = nullptr;
+	}
 
 	void init(SDL_Window* render_window) override;
 	void shutdown() override;
@@ -40,6 +45,9 @@ public:
 	pipelineIndex_t createPipeline(const pipelineDesc_t& pipeline_desc) override;
 	void deletePipeline(pipelineIndex_t pipeline) override;
 
+	textureIndex_t createTexture(const textureDesc_t& texture_desc) override;
+	void deleteTexture(textureIndex_t texture) override;
+
 	void setVertexBuffer(bufferIndex_t buffer_index) override;
 	void setPipeline(pipelineIndex_t pipeline) override;
 
@@ -55,6 +63,8 @@ private:
 	sg_pass_action m_default_clear_color_depth_pass;
 	sg_bindings m_bindings;
 };
+
+IRender* g_render = nullptr;
 
 IRender* createRender() {
 	return MEM_NEW(*g_default_allocator, Render);
@@ -336,6 +346,17 @@ static const char* s_shader_semantic_gl_names[SHADERSEMANTIC_MAX] = {
 	"bitangent"
 };
 
+static const char* s_shader_semantic_d3d11_names[SHADERSEMANTIC_MAX] = {
+	"POSITION",
+	"COLOR",
+	"TEXCOORD",
+	"TEXCOORD0",
+	"TEXCOORD1",
+	"NORMAL",
+	"TANGENT",
+	"BITANGENT"
+};
+
 static sg_vertex_format s_vertex_formats_gl[VERTEXATTR_MAX] = {
 	SG_VERTEXFORMAT_FLOAT2,
 	SG_VERTEXFORMAT_FLOAT3,
@@ -383,6 +404,96 @@ void Render::deletePipeline(pipelineIndex_t pipeline) {
 	popPipeline(pipeline);
 }
 
+#define MAX_TEXTURE 128
+
+struct imageResource_t {
+	textureIndex_t index;
+	sg_image backend_img;
+};
+
+static imageResource_t s_image_resources[MAX_TEXTURE];
+static int s_image_resources_count = 0;
+
+textureIndex_t pushImage(sg_image image_backend) {
+	textureIndex_t image_index = s_image_resources_count;
+	s_image_resources[s_image_resources_count++] = { image_index, image_backend };
+	return image_index;
+}
+
+void popImage(textureIndex_t index) {
+	for (int i = 0; i < s_image_resources_count; i++) {
+		imageResource_t& image = s_image_resources[i];
+		if (image.index == index) {
+			image.index = INVALID_TEXTURE_INDEX;
+		}
+	}
+}
+
+sg_image getImageFromIndex(textureIndex_t index) {
+	for (int i = 0; i < s_image_resources_count; i++) {
+		imageResource_t& image = s_image_resources[i];
+		if (image.index == index) {
+			return image.backend_img;
+		}
+	}
+
+	return sg_image{ 0 };
+}
+
+static sg_pixel_format s_sg_pixel_formats[TEXTUREFORMAT_MAX] = {
+	SG_PIXELFORMAT_RGBA8,
+	SG_PIXELFORMAT_RGBA8
+};
+
+textureIndex_t Render::createTexture(const textureDesc_t& texture_desc) {
+	if (texture_desc.format >= TEXTUREFORMAT_MAX) {
+		printf("Render::createTexture: ERROR: unknowed texture format!\n");
+		__debugbreak();
+	}
+
+	if (texture_desc.type == TEXTURETYPE_1D) {
+		printf("Render::createTexture: ERROR: TEXTURETYPE_1D is unsupported!\n");
+		__debugbreak();
+	}
+
+	sg_image_desc image_backend_desc = {};
+	image_backend_desc.pixel_format = s_sg_pixel_formats[texture_desc.format];
+	image_backend_desc.width = texture_desc.width;
+	image_backend_desc.height = texture_desc.height;
+	image_backend_desc.type = (texture_desc.type == TEXTURETYPE_2D) ? SG_IMAGETYPE_2D : SG_IMAGETYPE_3D;
+	image_backend_desc.usage = SG_USAGE_IMMUTABLE; 	// for now all textures is immutable
+	image_backend_desc.min_filter = SG_FILTER_LINEAR;
+	image_backend_desc.mag_filter = SG_FILTER_LINEAR;
+	image_backend_desc.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
+	image_backend_desc.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
+
+	// fill data
+	image_backend_desc.data.subimage[0][0].ptr = texture_desc.data;
+	image_backend_desc.data.subimage[0][0].size = texture_desc.size;
+
+	sg_image image_backend = sg_make_image(image_backend_desc);
+
+	if (sg_query_image_state(image_backend) != SG_RESOURCESTATE_VALID) {
+		// Error: Failed to create image
+		return INVALID_TEXTURE_INDEX;
+	}
+
+	return pushImage(image_backend);
+}
+
+void Render::deleteTexture(textureIndex_t texture) {
+	sg_image image_backend = getImageFromIndex(texture);
+	if (sg_query_image_state(image_backend) != SG_RESOURCESTATE_VALID) {
+		// ERROR: woops... we try to delete already destroyed image.
+		__debugbreak(); // temp way
+	}
+
+	sg_destroy_image(image_backend);
+
+	// remove from manager
+	popImage(texture);
+}
+
 void Render::setVertexBuffer(bufferIndex_t buffer_index) {
 	sg_buffer buffer_backend = getBufferFromIndex(buffer_index);
 	if (sg_query_buffer_state(buffer_backend) != SG_RESOURCESTATE_VALID) {
@@ -405,7 +516,18 @@ void Render::setPipeline(pipelineIndex_t pipeline) {
 }
 
 void Render::beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) {
-	sg_begin_default_pass(&m_default_clear_color_pass, viewport.width, viewport.height);
+	sg_pass_action pass_action = {};
+
+	if (pass_clear_flags & PASSCLEAR_COLOR) {
+		pass_action.colors[0].action = SG_ACTION_CLEAR;
+		pass_action.colors[0].value = { 0.5f, 0.5f, 0.5f, 1.0f };
+	}
+	if (pass_clear_flags & PASSCLEAR_DEPTH) {
+		pass_action.depth.action = SG_ACTION_CLEAR;
+		pass_action.depth.value = 1.0f;
+	}
+
+	sg_begin_default_pass(&pass_action, viewport.width, viewport.height);
 }
 
 void Render::endPass() {

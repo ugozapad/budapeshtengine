@@ -2,8 +2,10 @@
 #include <Windows.h>
 
 #include "engine/allocator.h"
+#include "engine/filesystem.h"
 #include "engine/engine.h"
 #include "render/render.h"
+#include "render/texture.h"
 
 class Main {
 public:
@@ -109,6 +111,15 @@ int Main::init(int argc, char* argv[]) {
 	s_pipeline = m_render->createPipeline(pipeline_desc);
 	if (s_pipeline == INVALID_PIPELINE_INDEX)
 		__debugbreak();
+
+	// test stuff
+	Texture* texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *m_render);
+
+	IReader* texture_reader = g_file_system->openRead("data/textures/test_image.bmp");
+	texture->load(texture_reader);
+	g_file_system->deleteReader(texture_reader);
+
+	MEM_DELETE(*g_default_allocator, Texture, texture);
 
 	return 0;
 }

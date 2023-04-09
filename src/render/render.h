@@ -9,10 +9,12 @@ struct SDL_Window;
 typedef uint32_t bufferIndex_t;
 typedef uint32_t shaderIndex_t;
 typedef uint32_t pipelineIndex_t;
+typedef uint32_t textureIndex_t;
 
 const int INVALID_BUFFER_INDEX = -1;
 const int INVALID_SHADER_INDEX = -1;
 const int INVALID_PIPELINE_INDEX = -1;
+const int INVALID_TEXTURE_INDEX = -1;
 
 //! Shader uniform size of (in bytes)
 const int VECTOR3_SIZE = 12;
@@ -87,6 +89,26 @@ enum passClearFlags_t {
 	PASSCLEAR_STENCIL = 1 << 2
 };
 
+enum textureType_t {
+	TEXTURETYPE_1D,
+	TEXTURETYPE_2D,
+	TEXTURETYPE_3D,
+
+	TEXTURETYPE_MAX
+};
+
+enum textureFormat_t {
+	TEXTUREFORMAT_RGB8,
+	TEXTUREFORMAT_RGBA8,
+
+	//TEXTUREFORMAT_RGB16F,
+	//TEXTUREFORMAT_RGBA16F,
+	//TEXTUREFORMAT_RGB32F,
+	//TEXTUREFORMAT_RGBA32F,
+
+	TEXTUREFORMAT_MAX
+};
+
 struct bufferDesc_t {
 	bufferType_t type;
 	bufferAccess_t access;
@@ -110,6 +132,16 @@ struct pipelineDesc_t {
 	inputLayoutDesc_t layouts[INPUT_LAYOUT_MAX];
 	size_t layout_count;
 	shaderIndex_t shader;
+};
+
+struct textureDesc_t {
+	textureType_t type;
+	textureFormat_t format;
+	void* data;
+	size_t size;
+	int width;
+	int height;
+	int mipmaps_count;
 };
 
 struct viewport_t {
@@ -146,6 +178,11 @@ public:
 	virtual pipelineIndex_t createPipeline(const pipelineDesc_t& pipeline_desc) = 0;
 	virtual void deletePipeline(pipelineIndex_t pipeline) = 0;
 
+	// Texture API
+
+	virtual textureIndex_t createTexture(const textureDesc_t& texture_desc) = 0;
+	virtual void deleteTexture(textureIndex_t texture) = 0;
+
 	// Binding API
 
 	virtual void setVertexBuffer(bufferIndex_t buffer_index) = 0;
@@ -161,6 +198,8 @@ public:
 
 	virtual void present(bool vsync) = 0;
 };
+
+extern IRender* g_render;
 
 IRender* createRender();
 
