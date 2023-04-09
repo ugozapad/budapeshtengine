@@ -29,6 +29,7 @@ public:
 class IFileSystem {
 public:
 	static IFileSystem* create();
+	static IFileSystem* createPhysFS();
 	static void destroy(IFileSystem*& fs_ptr);
 
 public:
