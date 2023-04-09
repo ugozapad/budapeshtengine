@@ -187,7 +187,8 @@ public:
 
 	virtual void setVertexBuffer(bufferIndex_t buffer_index) = 0;
 	virtual void setPipeline(pipelineIndex_t pipeline) = 0;
-	
+	virtual void setTexture(textureIndex_t texture) = 0;
+
 	// Pass API
 	virtual void beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) = 0;
 	virtual void endPass() = 0;

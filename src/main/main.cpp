@@ -30,6 +30,7 @@ static HANDLE s_locker_mutex;
 static bufferIndex_t s_buffer;
 static shaderIndex_t s_shader;
 static pipelineIndex_t s_pipeline;
+static Texture* s_texture;
 
 int Main::init(int argc, char* argv[]) {
 
@@ -113,18 +114,18 @@ int Main::init(int argc, char* argv[]) {
 		__debugbreak();
 
 	// test stuff
-	Texture* texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *m_render);
+	s_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *m_render);
 
 	IReader* texture_reader = g_file_system->openRead("data/textures/test_image.bmp");
-	texture->load(texture_reader);
+	s_texture->load(texture_reader);
 	g_file_system->deleteReader(texture_reader);
-
-	MEM_DELETE(*g_default_allocator, Texture, texture);
 
 	return 0;
 }
 
 void Main::shutdown() {
+	MEM_DELETE(*g_default_allocator, Texture, s_texture);
+
 	m_render->deleteBuffer(s_buffer);
 
 	m_render->shutdown();
@@ -141,6 +142,7 @@ void Main::update()
 
 	m_render->setPipeline(s_pipeline);
 	m_render->setVertexBuffer(s_buffer);
+	//m_render->setTexture(s_texture->getTextureIndex());
 
 	m_render->draw(0, 3, 1);
 

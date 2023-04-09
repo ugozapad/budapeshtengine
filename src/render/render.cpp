@@ -50,6 +50,7 @@ public:
 
 	void setVertexBuffer(bufferIndex_t buffer_index) override;
 	void setPipeline(pipelineIndex_t pipeline) override;
+	void setTexture(textureIndex_t texture) override;
 
 	void beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) override;
 	void endPass() override;
@@ -513,6 +514,12 @@ void Render::setPipeline(pipelineIndex_t pipeline) {
 	}
 
 	sg_apply_pipeline(pipeline_backend);
+}
+
+void Render::setTexture(textureIndex_t texture) {
+	sg_image image_backend = getImageFromIndex(texture);
+	m_bindings.fs_images[0] = image_backend;
+	sg_apply_bindings(&m_bindings);
 }
 
 void Render::beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) {
