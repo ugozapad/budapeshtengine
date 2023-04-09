@@ -26,6 +26,8 @@ private:
 static Main s_main;
 static HANDLE s_locker_mutex;
 static bufferIndex_t s_buffer;
+static shaderIndex_t s_shader;
+static pipelineIndex_t s_pipeline;
 
 int Main::init(int argc, char* argv[]) {
 
@@ -73,6 +75,41 @@ int Main::init(int argc, char* argv[]) {
 	if (s_buffer == INVALID_BUFFER_INDEX)
 		__debugbreak();
 
+	shaderDesc_t shader_desc = {};
+	shader_desc.vertex_shader_data = "#version 330\n"
+		"layout(location=0) in vec4 position;\n"
+		"layout(location=1) in vec4 color0;\n"
+		"out vec4 color;\n"
+		"void main() {\n"
+		"  gl_Position = position;\n"
+		"  color = color0;\n"
+		"}\n";
+
+	shader_desc.vertex_shader_size = strlen(shader_desc.vertex_shader_data) + 1;
+
+	shader_desc.fragment_shader_data = "#version 330\n"
+		"in vec4 color;\n"
+		"out vec4 frag_color;\n"
+		"void main() {\n"
+		"  frag_color = color;\n"
+		"}\n";
+
+	shader_desc.fragment_shader_size = strlen(shader_desc.fragment_shader_data) + 1;
+
+	s_shader = m_render->createShader(shader_desc);
+	if (s_shader == INVALID_SHADER_INDEX)
+		__debugbreak();
+
+	pipelineDesc_t pipeline_desc = {};
+	pipeline_desc.layouts[0] = { VERTEXATTR_VEC3, SHADERSEMANTIC_POSITION };
+	pipeline_desc.layouts[1] = { VERTEXATTR_VEC4, SHADERSEMANTIC_COLOR };
+	pipeline_desc.layout_count = 2;
+	pipeline_desc.shader = s_shader;
+
+	s_pipeline = m_render->createPipeline(pipeline_desc);
+	if (s_pipeline == INVALID_PIPELINE_INDEX)
+		__debugbreak();
+
 	return 0;
 }
 
@@ -88,7 +125,17 @@ void Main::shutdown() {
 
 void Main::update()
 {
-	m_render->renderFrame();
+	viewport_t viewport = { 0,0,1024,768 };
+	m_render->beginPass(viewport, PASSCLEAR_COLOR);
+
+	m_render->setPipeline(s_pipeline);
+	m_render->setVertexBuffer(s_buffer);
+
+	m_render->draw(0, 3, 1);
+
+	m_render->endPass();
+	m_render->commit();
+	m_render->present(false);
 }
 
 int main(int argc, char* argv[]) {
