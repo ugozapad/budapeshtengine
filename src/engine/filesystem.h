@@ -35,6 +35,8 @@ public:
 public:
 	virtual ~IFileSystem() {}
 
+	virtual bool fileExist(const char* filename) = 0;
+
 	virtual IReader* openRead(const char* filename) = 0;
 	virtual IWriter* openWrite(const char* filename) = 0;
 

@@ -117,21 +117,27 @@ size_t FileWriterPhysFS::write(const void* data, size_t size) {
 // File system
 class FileSystemPhysFS : public IFileSystem {
 public:
-	FileSystemPhysFS();
+	FileSystemPhysFS(IAllocator& allocator);
 	~FileSystemPhysFS();
+
+	bool fileExist(const char* filename) override;
 
 	IReader* openRead(const char* filename) override;
 	IWriter* openWrite(const char* filename) override;
 
 	void deleteReader(IReader*& reader) override;
 	void deleteWriter(IWriter*& writer) override;
+
+private:
+	IAllocator& m_allocator;
 };
 
 IFileSystem* IFileSystem::createPhysFS() {
-	return MEM_NEW(*g_default_allocator, FileSystemPhysFS);
+	return MEM_NEW(*g_default_allocator, FileSystemPhysFS, *g_default_allocator);
 }
 
-FileSystemPhysFS::FileSystemPhysFS() {
+FileSystemPhysFS::FileSystemPhysFS(IAllocator& allocator) :
+	m_allocator(allocator) {
 	PHYSFS_init(NULL);
 
 #ifdef WIN32
@@ -147,18 +153,22 @@ FileSystemPhysFS::~FileSystemPhysFS() {
 	PHYSFS_deinit();
 }
 
+bool FileSystemPhysFS::fileExist(const char* filename) {
+	return PHYSFS_exists(filename);
+}
+
 IReader* FileSystemPhysFS::openRead(const char* filename) {
-	return MEM_NEW(*g_default_allocator, FileReaderPhysFS, filename);
+	return MEM_NEW(m_allocator, FileReaderPhysFS, filename);
 }
 
 IWriter* FileSystemPhysFS::openWrite(const char* filename) {
-	return MEM_NEW(*g_default_allocator, FileWriterPhysFS, filename);
+	return MEM_NEW(m_allocator, FileWriterPhysFS, filename);
 }
 
 void FileSystemPhysFS::deleteReader(IReader*& reader) {
-	MEM_DELETE(*g_default_allocator, IReader, reader);
+	MEM_DELETE(m_allocator, IReader, reader);
 }
 
 void FileSystemPhysFS::deleteWriter(IWriter*& writer) {
-	MEM_DELETE(*g_default_allocator, IWriter, writer);
+	MEM_DELETE(m_allocator, IWriter, writer);
 }

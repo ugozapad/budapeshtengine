@@ -86,6 +86,8 @@ public:
 	FileSystem() {}
 	~FileSystem() {}
 
+	bool fileExist(const char* filename) override;
+
 	IReader* openRead(const char* filename) override;
 	IWriter* openWrite(const char* filename) override;
 
@@ -100,6 +102,10 @@ IFileSystem* IFileSystem::create() {
 void IFileSystem::destroy(IFileSystem*& fs_ptr) {
 	MEM_DELETE(*g_default_allocator, IFileSystem, fs_ptr);
 	fs_ptr = nullptr;
+}
+
+bool FileSystem::fileExist(const char * filename) {
+	return false;
 }
 
 IReader* FileSystem::openRead(const char* filename) {
