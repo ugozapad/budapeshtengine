@@ -129,7 +129,7 @@ public:
 	void deleteWriter(IWriter*& writer) override;
 
 private:
-	IAllocator& m_allocator;
+	IAllocator* m_allocator;
 };
 
 IFileSystem* IFileSystem::createPhysFS() {
@@ -137,7 +137,7 @@ IFileSystem* IFileSystem::createPhysFS() {
 }
 
 FileSystemPhysFS::FileSystemPhysFS(IAllocator& allocator) :
-	m_allocator(allocator) {
+	m_allocator(&allocator) {
 	PHYSFS_init(NULL);
 
 #ifdef WIN32
@@ -158,17 +158,17 @@ bool FileSystemPhysFS::fileExist(const char* filename) {
 }
 
 IReader* FileSystemPhysFS::openRead(const char* filename) {
-	return MEM_NEW(m_allocator, FileReaderPhysFS, filename);
+	return MEM_NEW(*m_allocator, FileReaderPhysFS, filename);
 }
 
 IWriter* FileSystemPhysFS::openWrite(const char* filename) {
-	return MEM_NEW(m_allocator, FileWriterPhysFS, filename);
+	return MEM_NEW(*m_allocator, FileWriterPhysFS, filename);
 }
 
 void FileSystemPhysFS::deleteReader(IReader*& reader) {
-	MEM_DELETE(m_allocator, IReader, reader);
+	MEM_DELETE(*m_allocator, IReader, reader);
 }
 
 void FileSystemPhysFS::deleteWriter(IWriter*& writer) {
-	MEM_DELETE(m_allocator, IWriter, writer);
+	MEM_DELETE(*m_allocator, IWriter, writer);
 }
