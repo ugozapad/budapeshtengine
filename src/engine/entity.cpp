@@ -13,3 +13,9 @@ Player* Entity::castPlayer() {
 Weapon* Entity::castWeapon() {
     return nullptr;
 }
+
+Player::Player() {
+}
+
+Player::~Player() {
+}

@@ -1,6 +1,8 @@
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
 #include "engine/engine.h"
+#include "engine/objectfactory.h"
+#include "engine/entity.h"
 
 #include <stdio.h>
 
@@ -36,9 +38,20 @@ void Engine::init(int width, int height, bool fullscreen) {
     if (!m_render_window) {
         printf("Failed to create render window. Error core: %s\n", SDL_GetError());
     }
+
+	// initialize object factory
+	g_object_factory = MEM_NEW(*g_default_allocator, ObjectFactory, *g_default_allocator);
+
+	// register engine objects
+	g_object_factory->registerObject<Player>();
 }
 
 void Engine::shutdown() {
+	if (g_object_factory) {
+		MEM_DELETE(*g_default_allocator, ObjectFactory, g_object_factory);
+		g_object_factory = nullptr;
+	}
+
     if (m_render_window) {
         SDL_DestroyWindow(m_render_window);
         m_render_window = nullptr;
