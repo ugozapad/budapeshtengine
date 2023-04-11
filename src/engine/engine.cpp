@@ -1,6 +1,7 @@
 #include "engine/allocator.h"
-#include "engine/filesystem.h"
 #include "engine/engine.h"
+#include "engine/filesystem.h"
+#include "engine/input_system.h"
 #include "engine/objectfactory.h"
 #include "engine/entity.h"
 
@@ -34,10 +35,14 @@ void Engine::init(int width, int height, bool fullscreen) {
         window_flags |= SDL_WINDOW_FULLSCREEN;
 
     // Create window
-    m_render_window = SDL_CreateWindow("Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    m_render_window = SDL_CreateWindow("Buadeps ver. 0.01", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!m_render_window) {
         printf("Failed to create render window. Error core: %s\n", SDL_GetError());
     }
+
+	// initialize input system
+	g_input_system = IInputSystem::create(g_default_allocator);
+	g_input_system->init();
 
 	// initialize object factory
 	g_object_factory = MEM_NEW(*g_default_allocator, ObjectFactory, *g_default_allocator);
@@ -50,6 +55,12 @@ void Engine::shutdown() {
 	if (g_object_factory) {
 		MEM_DELETE(*g_default_allocator, ObjectFactory, g_object_factory);
 		g_object_factory = nullptr;
+	}
+
+	if (g_input_system) {
+		g_input_system->shutdown();
+		MEM_DELETE(*g_default_allocator, IInputSystem, g_input_system);
+		g_input_system = nullptr;
 	}
 
     if (m_render_window) {
