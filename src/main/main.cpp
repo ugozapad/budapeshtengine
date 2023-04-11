@@ -7,6 +7,10 @@
 #include "render/render.h"
 #include "render/texture.h"
 
+extern "C" {
+#include "render/microui_render.h"
+}
+
 class Main {
 public:
 	Main() :
@@ -82,9 +86,10 @@ int Main::init(int argc, char* argv[]) {
 	shader_desc.vertex_shader_data = "#version 330\n"
 		"layout(location=0) in vec4 position;\n"
 		"layout(location=1) in vec4 color0;\n"
+		"uniform mat4 u_test_matrix;\n"
 		"out vec4 color;\n"
 		"void main() {\n"
-		"  gl_Position = position;\n"
+		"  gl_Position = u_test_matrix * position;\n"
 		"  color = color0;\n"
 		"}\n";
 
@@ -148,6 +153,13 @@ void Main::update()
 
 	m_render->endPass();
 	m_render->commit();
+
+	mu_begin(MicroUIRender_getContext());
+	MicroUIRender_style_window(MicroUIRender_getContext());
+	mu_end(MicroUIRender_getContext());
+
+	m_render->uiFrame();
+
 	m_render->present(false);
 }
 

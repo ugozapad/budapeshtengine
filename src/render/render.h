@@ -156,6 +156,7 @@ public:
 	virtual void init(SDL_Window* render_window) = 0;
 	virtual void shutdown() = 0;
 
+	virtual void uiFrame() = 0;
 	virtual void renderFrame() = 0;
 
 	// Draw API

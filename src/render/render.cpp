@@ -1,6 +1,10 @@
 #include "engine/allocator.h"
 #include "render/render.h"
 
+extern "C" {
+#include "render/microui_render.h"
+}
+
 #ifdef NDEBUG
 #undef NDEBUG
 #endif // NDEBUG
@@ -32,6 +36,7 @@ public:
 	void init(SDL_Window* render_window) override;
 	void shutdown() override;
 
+	void uiFrame() override;
 	void renderFrame() override;
 	void draw(int base_element, int num_elements, int num_instances) override;
 
@@ -91,9 +96,15 @@ void Render::init(SDL_Window* render_window) {
 	m_default_clear_color_depth_pass.colors[0].value = { 0.5f, 0.5f, 0.5f, 1.0f };
 	m_default_clear_color_depth_pass.depth.action = SG_ACTION_CLEAR;
 	m_default_clear_color_depth_pass.depth.value = 1.0f;
+
+	// initialize microui
+	MicroUIRender_init();
 }
 
 void Render::shutdown() {
+	// shutdown microui
+	MicroUIRender_shutdown();
+
 	// terminate sokol gfx
 	sg_shutdown();
 
@@ -102,9 +113,15 @@ void Render::shutdown() {
 	SDL_GL_DeleteContext(m_gl_context);
 }
 
+void Render::uiFrame() {
+	int w = 0, h = 0;
+	SDL_GetWindowSize(m_render_window, &w, &h);
+
+	MicroUIRender_draw(w, h);
+}
+
 void Render::renderFrame() {
-	//int w = 0, h = 0;
-	//SDL_GetWindowSize(m_render_window, &w, &h);
+
 
 //	sg_begin_default_pass(&m_default_clear_pass, w, h);
 
@@ -276,6 +293,13 @@ sg_shader getShaderFromIndex(shaderIndex_t index) {
 shaderIndex_t Render::createShader(const shaderDesc_t& shader_desc) {
 	sg_shader_desc shader_backend_desc = {0};
 	shader_backend_desc.vs.source = shader_desc.vertex_shader_data;
+
+	sg_shader_uniform_block_desc& uniform_block = shader_backend_desc.vs.uniform_blocks[0];
+	uniform_block.size = sizeof(float[4][4]);
+	uniform_block.uniforms[0].name = "u_test_matrix";
+	uniform_block.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+
+
 	shader_backend_desc.fs.source = shader_desc.fragment_shader_data;
 
 	sg_shader shader_backend = sg_make_shader(shader_backend_desc);
@@ -506,6 +530,17 @@ void Render::setVertexBuffer(bufferIndex_t buffer_index) {
 	sg_apply_bindings(&m_bindings);
 }
 
+typedef struct {
+	float mvp[4][4];
+} vs_params_t;
+
+vs_params_t s_vs_param = {
+	1.0f, 0.0f, 0.0f, 0.0f,
+	0.0f, 1.0f, 0.0f, 0.0f,
+	0.0f, 0.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f
+};
+
 void Render::setPipeline(pipelineIndex_t pipeline) {
 	sg_pipeline pipeline_backend = getPipelineFromIndex(pipeline);
 	if (sg_query_pipeline_state(pipeline_backend) != SG_RESOURCESTATE_VALID) {
@@ -514,6 +549,11 @@ void Render::setPipeline(pipelineIndex_t pipeline) {
 	}
 
 	sg_apply_pipeline(pipeline_backend);
+
+	sg_range vs_params_range = {};
+	vs_params_range.ptr = &s_vs_param;
+	vs_params_range.size = sizeof(s_vs_param);
+	sg_apply_uniforms(SG_SHADERSTAGE_VS, 0, vs_params_range);
 }
 
 void Render::setTexture(textureIndex_t texture) {
