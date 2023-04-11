@@ -7,6 +7,13 @@
 
 #include <stdio.h>
 
+#ifndef NDEBUG
+#define DBG_STR " Dbg"
+#else
+#define DBG_STR
+#endif // !NDEBUG
+
+
 Engine::Engine() :
     m_render_window(nullptr)
 {
@@ -35,7 +42,7 @@ void Engine::init(int width, int height, bool fullscreen) {
         window_flags |= SDL_WINDOW_FULLSCREEN;
 
     // Create window
-    m_render_window = SDL_CreateWindow("Buadeps ver. 0.01", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    m_render_window = SDL_CreateWindow("Budapesht ver. 0.01" DBG_STR, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     if (!m_render_window) {
         printf("Failed to create render window. Error core: %s\n", SDL_GetError());
     }

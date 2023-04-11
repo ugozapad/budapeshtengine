@@ -175,6 +175,8 @@ void MicroUIRender_draw(int width, int height) {
 	sg_pass_action pass_action;
 	memset(&pass_action, 0, sizeof(pass_action));
 
+	pass_action.colors[0].action = SG_ACTION_LOAD;
+
 	// clear code ???
 
 	/* render the sokol-gfx default pass */
