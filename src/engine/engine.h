@@ -4,6 +4,8 @@
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
 
+class IInputSystem;
+
 class Engine {
 public:
 	Engine();
@@ -13,6 +15,8 @@ public:
 	void shutdown();
 
 	SDL_Window* getRenderWindow();
+
+	IInputSystem* getInputSystem();
 
 private:
 	SDL_Window* m_render_window;

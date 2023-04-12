@@ -3,6 +3,7 @@
 
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
+#include "engine/input_system.h"
 #include "engine/engine.h"
 #include "render/render.h"
 #include "render/texture.h"
@@ -83,6 +84,7 @@ int Main::init(int argc, char* argv[]) {
 		__debugbreak();
 
 	shaderDesc_t shader_desc = {};
+	shader_desc.constant_present = CONSTANT_PRESENT_TEST;
 	shader_desc.vertex_shader_data = "#version 330\n"
 		"layout(location=0) in vec4 position;\n"
 		"layout(location=1) in vec4 color0;\n"
@@ -142,6 +144,10 @@ void Main::shutdown() {
 
 void Main::update()
 {
+	if (m_engine->getInputSystem()->isKeyPressed('W')) {
+
+	}
+
 	viewport_t viewport = { 0,0,1024,768 };
 	m_render->beginPass(viewport, PASSCLEAR_COLOR);
 

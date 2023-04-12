@@ -11,6 +11,8 @@ public:
 	void init() override;
 	void shutdown() override;
 
+	bool isKeyPressed(int key) override;
+
 private:
 	IAllocator* m_allocator;
 
@@ -31,4 +33,8 @@ void SDLInputSystem::init() {
 }
 
 void SDLInputSystem::shutdown() {
+}
+
+bool SDLInputSystem::isKeyPressed(int key) {
+	return false;
 }
