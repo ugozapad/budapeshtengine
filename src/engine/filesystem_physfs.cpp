@@ -1,3 +1,5 @@
+#if 0
+
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
@@ -172,3 +174,4 @@ void FileSystemPhysFS::deleteReader(IReader*& reader) {
 void FileSystemPhysFS::deleteWriter(IWriter*& writer) {
 	MEM_DELETE(*m_allocator, IWriter, writer);
 }
+#endif

@@ -1,3 +1,5 @@
+#include <stdint.h>
+
 #include "engine/allocator.h"
 #include "engine/input_system.h"
 
@@ -10,6 +12,8 @@ public:
 
 	void init() override;
 	void shutdown() override;
+
+	void pushEvent(const inputEvent_t& event) override;
 
 	bool isKeyPressed(int key) override;
 
@@ -33,6 +37,9 @@ void SDLInputSystem::init() {
 }
 
 void SDLInputSystem::shutdown() {
+}
+
+void SDLInputSystem::pushEvent(const inputEvent_t& event) {
 }
 
 bool SDLInputSystem::isKeyPressed(int key) {

@@ -28,7 +28,7 @@ void Engine::init(int width, int height, bool fullscreen) {
     }
 
     // create filesystem
-    g_file_system = IFileSystem::createPhysFS();
+    g_file_system = IFileSystem::create();
 
     // Initialize OpenGL context
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);

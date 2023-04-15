@@ -1,6 +1,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#include <stdint.h>
+
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
 #include "engine/input_system.h"
@@ -24,6 +26,8 @@ public:
 	void shutdown();
 
 	void update();
+
+	Engine* getEngine() { return m_engine; }
 
 private:
 	Engine* m_engine;
@@ -84,7 +88,7 @@ int Main::init(int argc, char* argv[]) {
 		__debugbreak();
 
 	shaderDesc_t shader_desc = {};
-	shader_desc.constant_present = CONSTANT_PRESENT_TEST;
+	//shader_desc.constant_present = CONSTANT_PRESENT_TEST;
 	shader_desc.vertex_shader_data = "#version 330\n"
 		"layout(location=0) in vec4 position;\n"
 		"layout(location=1) in vec4 color0;\n"
@@ -144,10 +148,6 @@ void Main::shutdown() {
 
 void Main::update()
 {
-	if (m_engine->getInputSystem()->isKeyPressed('W')) {
-
-	}
-
 	viewport_t viewport = { 0,0,1024,768 };
 	m_render->beginPass(viewport, PASSCLEAR_COLOR);
 
@@ -160,11 +160,11 @@ void Main::update()
 	m_render->endPass();
 	m_render->commit();
 
-	mu_begin(MicroUIRender_getContext());
-	MicroUIRender_style_window(MicroUIRender_getContext());
-	mu_end(MicroUIRender_getContext());
+	//mu_begin(MicroUIRender_getContext());
+	//MicroUIRender_style_window(MicroUIRender_getContext());
+	//mu_end(MicroUIRender_getContext());
 
-	m_render->uiFrame();
+	//m_render->uiFrame();
 
 	m_render->present(false);
 }
@@ -182,6 +182,30 @@ int main(int argc, char* argv[]) {
 			}
 			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
 				run = false;
+			}
+
+			if (event.type == SDL_KEYDOWN) {
+				inputEvent_t input_event = {};
+				input_event.type = INPUT_EVENT_KEY_DOWN;
+				input_event.scancode = event.key.keysym.scancode;
+				g_input_system->pushEvent(input_event);
+			} else if (event.type == SDL_KEYUP) {
+				inputEvent_t input_event = {};
+				input_event.type = INPUT_EVENT_KEY_UP;
+				input_event.scancode = event.key.keysym.scancode;
+				g_input_system->pushEvent(input_event);
+			}
+
+			if (event.type == SDL_MOUSEBUTTONDOWN) {
+				inputEvent_t input_event = {};
+				input_event.type = INPUT_EVENT_MOUSE_BUTTON_DOWN;
+				input_event.mousebutton = event.button.button;
+				g_input_system->pushEvent(input_event);
+			} else if (event.type == SDL_MOUSEBUTTONUP) {
+				inputEvent_t input_event = {};
+				input_event.type = INPUT_EVENT_MOUSE_BUTTON_UP;
+				input_event.mousebutton = event.button.button;
+				g_input_system->pushEvent(input_event);
 			}
 		}
 

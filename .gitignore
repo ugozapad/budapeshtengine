@@ -1,6 +1,7 @@
 .idea
 # Folders
 .vs/
+src/.vs/
 bin/
 bins/
 build/

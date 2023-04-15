@@ -32,6 +32,13 @@ T* dynamicCast(ITypedObject* object) {
 	return nullptr;
 }
 
+//! Get type id from ITypedObject
+template <typename T>
+typeId_t get_type_id() {
+	return ITypedObject::getTypeId<T>();
+}
+
+
 //! Define for subclass of ITypedObject
 #define OBJECT_IMPLEMENT(CLASS, BASECLASS) \
 	virtual const char* getClassName() { return #CLASS; } \

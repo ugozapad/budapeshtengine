@@ -41,14 +41,14 @@ inline void ObjectFactory::registerObject() {
 	pfnCreateObject_t create_object_pfn = (pfnCreateObject_t)createObjectTemplated<T>;
 	objectCreationInfo_t object_creation_info = {};
 	object_creation_info.create_proc = create_object_pfn;
-	object_creation_info.id = T::getTypeId<T>();
+	object_creation_info.id = get_type_id<T>();
 	m_objectCreationInfos.push_back(object_creation_info);
 }
 
 template<typename T>
 inline T* ObjectFactory::createObject(IAllocator& allocator) {
 	for (auto it : m_objectCreationInfos) {
-		if (it.id == T::getTypeId<T>()) {
+		if (it.id == get_type_id<T>()) {
 			return (T*)it.create_proc(allocator);
 		}
 	}
