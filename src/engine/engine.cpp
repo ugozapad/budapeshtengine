@@ -4,6 +4,7 @@
 #include "engine/input_system.h"
 #include "engine/objectfactory.h"
 #include "engine/entity.h"
+#include "engine/level.h"
 
 #include <stdio.h>
 
@@ -15,7 +16,8 @@
 
 
 Engine::Engine() :
-    m_render_window(nullptr)
+    m_render_window(nullptr),
+	m_level(nullptr)
 {
 }
 
@@ -56,9 +58,17 @@ void Engine::init(int width, int height, bool fullscreen) {
 
 	// register engine objects
 	g_object_factory->registerObject<Player>();
+
+	// create level
+	//m_level = MEM_NEW(*g_default_allocator, Level, *g_default_allocator);
 }
 
 void Engine::shutdown() {
+	if (m_level) {
+		MEM_DELETE(*g_default_allocator, Level, m_level);
+		m_level = nullptr;
+	}
+
 	if (g_object_factory) {
 		MEM_DELETE(*g_default_allocator, ObjectFactory, g_object_factory);
 		g_object_factory = nullptr;
@@ -86,4 +96,9 @@ SDL_Window* Engine::getRenderWindow() {
 
 IInputSystem* Engine::getInputSystem() {
 	return g_input_system;
+}
+
+Level* Engine::getLevel()
+{
+	return m_level;
 }

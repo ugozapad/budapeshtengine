@@ -7,17 +7,8 @@
 class Player;
 class Weapon;
 
-//! Physics object interface
-class IPhysicsObject {
-public:
-	virtual ~IPhysicsObject() {}
-
-	//virtual void onCollisionEnter(IPhysicsObject* a, IPhysicsObject* b) = 0;
-	//virtual void onCollisionExit(IPhysicsObject* a, IPhysicsObject* b) = 0;
-};
-
 //! Base entity class.
-class Entity : public ITypedObject, public IPhysicsObject {
+class Entity : public ITypedObject {
 public:
 	OBJECT_IMPLEMENT(Entity, ITypedObject);
 

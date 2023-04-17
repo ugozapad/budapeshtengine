@@ -11,6 +11,8 @@ public:
 	Array(IAllocator& allocator);
 	~Array();
 
+	const size_t size() { return m_size; }
+
 	void set_capacity(size_t capacity);
 
 	void push_back(T& t);

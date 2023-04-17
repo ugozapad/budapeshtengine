@@ -5,6 +5,7 @@
 #include "SDL.h"
 
 class IInputSystem;
+class Level;
 
 class Engine {
 public:
@@ -18,8 +19,11 @@ public:
 
 	IInputSystem* getInputSystem();
 
+	Level* getLevel();
+
 private:
 	SDL_Window* m_render_window;
+	Level* m_level;
 };
 
 #endif
