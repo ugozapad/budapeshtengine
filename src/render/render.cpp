@@ -25,6 +25,7 @@ public:
 	,	m_default_clear_color_depth_pass{0}
 	,	m_bindings{0}
 	,	m_gl_context(nullptr)
+	,	m_bindings_begin(false)
 	{
 		g_render = this;
 	}
@@ -53,9 +54,11 @@ public:
 	textureIndex_t createTexture(const textureDesc_t& texture_desc) override;
 	void deleteTexture(textureIndex_t texture) override;
 
+	void beginBinding() override;
 	void setVertexBuffer(bufferIndex_t buffer_index) override;
 	void setPipeline(pipelineIndex_t pipeline) override;
 	void setTexture(textureIndex_t texture) override;
+	void endBinding() override;
 
 	void beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) override;
 	void endPass() override;
@@ -68,6 +71,8 @@ private:
 	sg_pass_action m_default_clear_color_pass;
 	sg_pass_action m_default_clear_color_depth_pass;
 	sg_bindings m_bindings;
+
+	bool m_bindings_begin;
 };
 
 IRender* g_render = nullptr;
@@ -290,15 +295,40 @@ sg_shader getShaderFromIndex(shaderIndex_t index) {
 	return sg_shader{ 0 };
 }
 
+void fillVSParams(sg_shader_desc& shader_desc) {
+	sg_shader_uniform_block_desc& uniform_block1 = shader_desc.vs.uniform_blocks[0];
+	uniform_block1.size = sizeof(float[4][4]);
+	uniform_block1.uniforms[0].name = "u_model_matrix";
+	uniform_block1.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+
+	sg_shader_uniform_block_desc& uniform_block2 = shader_desc.vs.uniform_blocks[1];
+	uniform_block2.size = sizeof(float[4][4]);
+	uniform_block2.uniforms[0].name = "u_view_matrix";
+	uniform_block2.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+
+	sg_shader_uniform_block_desc& uniform_block3 = shader_desc.vs.uniform_blocks[2];
+	uniform_block3.size = sizeof(float[4][4]);
+	uniform_block3.uniforms[0].name = "u_proj_matrix";
+	uniform_block3.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+
+	sg_shader_uniform_block_desc& uniform_block4 = shader_desc.vs.uniform_blocks[3];
+	uniform_block4.size = sizeof(float[4][4]);
+	uniform_block4.uniforms[0].name = "u_model_view_projection";
+	uniform_block4.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+}
+
+void fillFSParams(sg_shader_desc& shader_desc) {
+	sg_shader_image_desc& image1 = shader_desc.fs.images[0];
+	image1.image_type = SG_IMAGETYPE_2D;
+	image1.name = "u_texture";
+}
+
 shaderIndex_t Render::createShader(const shaderDesc_t& shader_desc) {
 	sg_shader_desc shader_backend_desc = {0};
 	shader_backend_desc.vs.source = shader_desc.vertex_shader_data;
 
-	sg_shader_uniform_block_desc& uniform_block = shader_backend_desc.vs.uniform_blocks[0];
-	uniform_block.size = sizeof(float[4][4]);
-	uniform_block.uniforms[0].name = "u_test_matrix";
-	uniform_block.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
-
+	fillVSParams(shader_backend_desc);
+	fillFSParams(shader_backend_desc);
 
 	shader_backend_desc.fs.source = shader_desc.fragment_shader_data;
 
@@ -519,6 +549,17 @@ void Render::deleteTexture(textureIndex_t texture) {
 	popImage(texture);
 }
 
+void Render::beginBinding() {
+	if (m_bindings_begin) {
+		printf("Render::beginBinding: calling beginBinding without end previous bindings\n");
+		__debugbreak();
+	}
+
+	m_bindings_begin = true;
+
+	m_bindings = {};
+}
+
 void Render::setVertexBuffer(bufferIndex_t buffer_index) {
 	sg_buffer buffer_backend = getBufferFromIndex(buffer_index);
 	if (sg_query_buffer_state(buffer_backend) != SG_RESOURCESTATE_VALID) {
@@ -527,7 +568,6 @@ void Render::setVertexBuffer(bufferIndex_t buffer_index) {
 	}
 
 	m_bindings.vertex_buffers[0] = buffer_backend;
-	sg_apply_bindings(&m_bindings);
 }
 
 typedef struct {
@@ -559,7 +599,15 @@ void Render::setPipeline(pipelineIndex_t pipeline) {
 void Render::setTexture(textureIndex_t texture) {
 	sg_image image_backend = getImageFromIndex(texture);
 	m_bindings.fs_images[0] = image_backend;
+}
+
+void Render::endBinding() {
+	if (!m_bindings_begin) {
+		printf("Render::endBinding: calling endBinding without beginBindings\n");
+		__debugbreak();
+	}
 	sg_apply_bindings(&m_bindings);
+	m_bindings_begin = false;
 }
 
 void Render::beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) {

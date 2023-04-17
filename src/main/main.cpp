@@ -92,10 +92,13 @@ int Main::init(int argc, char* argv[]) {
 	shader_desc.vertex_shader_data = "#version 330\n"
 		"layout(location=0) in vec4 position;\n"
 		"layout(location=1) in vec4 color0;\n"
-		"uniform mat4 u_test_matrix;\n"
+		"uniform mat4 u_model_matrix;\n"
+		"uniform mat4 u_view_matrix;\n"
+		"uniform mat4 u_proj_matrix;\n"
+		"uniform mat4 u_model_view_projection;\n"
 		"out vec4 color;\n"
 		"void main() {\n"
-		"  gl_Position = u_test_matrix * position;\n"
+		"  gl_Position = u_model_matrix * position;\n"
 		"  color = color0;\n"
 		"}\n";
 
@@ -104,6 +107,7 @@ int Main::init(int argc, char* argv[]) {
 	shader_desc.fragment_shader_data = "#version 330\n"
 		"in vec4 color;\n"
 		"out vec4 frag_color;\n"
+		"uniform sampler2D u_texture;\n"
 		"void main() {\n"
 		"  frag_color = color;\n"
 		"}\n";
@@ -151,9 +155,11 @@ void Main::update()
 	viewport_t viewport = { 0,0,1024,768 };
 	m_render->beginPass(viewport, PASSCLEAR_COLOR);
 
-	m_render->setPipeline(s_pipeline);
-	m_render->setVertexBuffer(s_buffer);
-	//m_render->setTexture(s_texture->getTextureIndex());
+	m_render->beginBinding();
+		m_render->setPipeline(s_pipeline);
+		m_render->setTexture(s_texture->getTextureIndex());
+		m_render->setVertexBuffer(s_buffer);
+	m_render->endBinding();
 
 	m_render->draw(0, 3, 1);
 
