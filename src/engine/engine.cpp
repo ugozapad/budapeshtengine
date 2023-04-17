@@ -5,6 +5,7 @@
 #include "engine/objectfactory.h"
 #include "engine/entity.h"
 #include "engine/level.h"
+#include "engine/player.h"
 
 #include <stdio.h>
 

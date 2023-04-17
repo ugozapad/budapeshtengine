@@ -10,6 +10,7 @@
     <ClInclude Include="object.h" />
     <ClInclude Include="objectfactory.h" />
     <ClInclude Include="level.h" />
+    <ClInclude Include="player.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -20,5 +21,6 @@
     <ClCompile Include="input_system.cpp" />
     <ClCompile Include="objectfactory.cpp" />
     <ClCompile Include="level.cpp" />
+    <ClCompile Include="player.cpp" />
   </ItemGroup>
 </Project>

@@ -20,14 +20,4 @@ public:
 	virtual Weapon* castWeapon();
 };
 
-class Player : public Entity {
-public:
-	OBJECT_IMPLEMENT(Player, Entity);
-
-	Player();
-	~Player();
-
-	Player* castPlayer() override { return this; }
-};
-
 #endif
