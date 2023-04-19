@@ -5,6 +5,38 @@
 
 #include "engine/allocator.h"
 
+#define STD_ARRAY
+
+#ifdef STD_ARRAY
+#include <vector>
+
+template <typename T>
+struct StlAllocator {
+	typedef T value_type;
+
+	StlAllocator() = default;
+
+	template <class U>
+	constexpr StlAllocator(const StlAllocator<U>&) noexcept {}
+
+	T* allocate(std::size_t n) {
+		return (T*)g_default_allocator->allocate(n * sizeof(T), alignof(T));
+	}
+
+	void deallocate(T* p, std::size_t n) noexcept {
+		g_default_allocator->deallocate(p);
+	}
+};
+
+template <typename T>
+class Array : public std::vector<T, StlAllocator<T>> {
+public:
+	Array(IAllocator& allocator) : m_allocator(&allocator) {}
+
+private:
+	IAllocator* m_allocator;
+};
+#else
 template <typename T>
 class Array {
 public:
@@ -22,7 +54,7 @@ public:
 	T* end() { return m_memory + m_size; }
 
 	T& operator[](size_t i);
-//	const T& operator[](size_t i);
+	//	const T& operator[](size_t i);
 
 	void growMemory();
 	void freeMemory();
@@ -37,9 +69,9 @@ private:
 template <typename T>
 inline Array<T>::Array(IAllocator& allocator) :
 	m_allocator(&allocator)
-,	m_memory(nullptr)
-,	m_size(0)
-,	m_capacity(0)
+	, m_memory(nullptr)
+	, m_size(0)
+	, m_capacity(0)
 {
 }
 
@@ -57,7 +89,8 @@ inline void Array<T>::growMemory() {
 		}
 		m_allocator->deallocate(m_memory);
 		m_memory = new_memory;
-	} else {
+	}
+	else {
 		m_memory = (T*)m_allocator->allocate(sizeof(T) * m_capacity, alignof(T));
 	}
 }
@@ -104,5 +137,7 @@ inline T& Array<T>::operator[](size_t i) {
 //	return m_memory[i];
 //}
 
+
+#endif // STD_ARRAY
 
 #endif // !ARRAY_H
