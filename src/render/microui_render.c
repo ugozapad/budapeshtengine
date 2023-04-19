@@ -160,7 +160,7 @@ static void r_set_clip_rect(mu_Rect rect) {
 void MicroUIRender_draw(int width, int height) {
 
 	/* micro-ui rendering */
-	r_begin(width, width);
+	r_begin(width, height);
 	mu_Command* cmd = 0;
 	while (mu_next_command(&mu_ctx, &cmd)) {
 		switch (cmd->type) {
