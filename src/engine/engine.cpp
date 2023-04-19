@@ -61,7 +61,7 @@ void Engine::init(int width, int height, bool fullscreen) {
 	g_object_factory->registerObject<Player>();
 
 	// create level
-	//m_level = MEM_NEW(*g_default_allocator, Level, *g_default_allocator);
+	m_level = MEM_NEW(*g_default_allocator, Level, *g_default_allocator);
 }
 
 void Engine::shutdown() {

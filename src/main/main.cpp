@@ -7,6 +7,7 @@
 #include "engine/filesystem.h"
 #include "engine/input_system.h"
 #include "engine/engine.h"
+#include "engine/level.h"
 #include "render/render.h"
 #include "render/texture.h"
 
@@ -70,6 +71,8 @@ int Main::init(int argc, char* argv[]) {
 
 	m_render = createRender();
 	m_render->init(m_engine->getRenderWindow());
+
+	//m_engine->getLevel()->load("data/levels/test_baking/test_baking.lmf");
 
 	float vertices[] = {
 		// positions            // colors
