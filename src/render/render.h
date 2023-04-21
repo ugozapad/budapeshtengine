@@ -174,6 +174,8 @@ public:
 	virtual shaderIndex_t createShader(const shaderDesc_t& shader_desc) = 0;
 	virtual void deleteShader(shaderIndex_t shader) = 0;
 
+	virtual void setVSConstant(int ub_index, const void* data, size_t size) = 0;
+
 	// Pipeline API
 
 	virtual pipelineIndex_t createPipeline(const pipelineDesc_t& pipeline_desc) = 0;

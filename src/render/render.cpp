@@ -47,6 +47,7 @@ public:
 
 	shaderIndex_t createShader(const shaderDesc_t& shader_desc) override;
 	void deleteShader(shaderIndex_t shader) override;
+	void setVSConstant(int ub_index, const void* data, size_t size) override;
 
 	pipelineIndex_t createPipeline(const pipelineDesc_t& pipeline_desc) override;
 	void deletePipeline(pipelineIndex_t pipeline) override;
@@ -354,6 +355,14 @@ void Render::deleteShader(shaderIndex_t shader) {
 	popShader(shader);
 }
 
+void Render::setVSConstant(int ub_index, const void* data, size_t size)
+{
+	sg_range vs_param_range = {};
+	vs_param_range.ptr = data;
+	vs_param_range.size = size;
+	sg_apply_uniforms(SG_SHADERSTAGE_VS, ub_index, vs_param_range);
+}
+
 #define MAX_PIPELINE 128
 
 struct pipelineResource_t {
@@ -570,17 +579,6 @@ void Render::setVertexBuffer(bufferIndex_t buffer_index) {
 	m_bindings.vertex_buffers[0] = buffer_backend;
 }
 
-typedef struct {
-	float mvp[4][4];
-} vs_params_t;
-
-vs_params_t s_vs_param = {
-	1.0f, 0.0f, 0.0f, 0.0f,
-	0.0f, 1.0f, 0.0f, 0.0f,
-	0.0f, 0.0f, 1.0f, 0.0f,
-	0.0f, 0.0f, 0.0f, 1.0f
-};
-
 void Render::setPipeline(pipelineIndex_t pipeline) {
 	sg_pipeline pipeline_backend = getPipelineFromIndex(pipeline);
 	if (sg_query_pipeline_state(pipeline_backend) != SG_RESOURCESTATE_VALID) {
@@ -589,11 +587,6 @@ void Render::setPipeline(pipelineIndex_t pipeline) {
 	}
 
 	sg_apply_pipeline(pipeline_backend);
-
-	sg_range vs_params_range = {};
-	vs_params_range.ptr = &s_vs_param;
-	vs_params_range.size = sizeof(s_vs_param);
-	sg_apply_uniforms(SG_SHADERSTAGE_VS, 0, vs_params_range);
 }
 
 void Render::setTexture(textureIndex_t texture) {

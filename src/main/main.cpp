@@ -11,6 +11,9 @@
 #include "render/render.h"
 #include "render/texture.h"
 
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
+
 extern "C" {
 #include "render/microui_render.h"
 }
@@ -153,13 +156,17 @@ void Main::shutdown() {
 	MEM_DELETE(*g_default_allocator, Engine, m_engine);
 }
 
+static glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
+
 void Main::update()
 {
 	viewport_t viewport = { 0,0,1024,768 };
 	m_render->beginPass(viewport, PASSCLEAR_COLOR);
 
+	m_render->setPipeline(s_pipeline);
+	m_render->setVSConstant(0, &s_mat4_idenitity[0], MATRIX4_SIZE);
+
 	m_render->beginBinding();
-		m_render->setPipeline(s_pipeline);
 		m_render->setTexture(s_texture->getTextureIndex());
 		m_render->setVertexBuffer(s_buffer);
 	m_render->endBinding();
