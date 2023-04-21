@@ -12,7 +12,8 @@
 #include "render/texture.h"
 
 #include <glm/glm.hpp>
-#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 extern "C" {
 #include "render/microui_render.h"
@@ -104,7 +105,7 @@ int Main::init(int argc, char* argv[]) {
 		"uniform mat4 u_model_view_projection;\n"
 		"out vec4 color;\n"
 		"void main() {\n"
-		"  gl_Position = u_model_matrix * position;\n"
+		"  gl_Position = u_proj_matrix * u_view_matrix * u_model_matrix * position;\n"
 		"  color = color0;\n"
 		"}\n";
 
@@ -115,7 +116,7 @@ int Main::init(int argc, char* argv[]) {
 		"out vec4 frag_color;\n"
 		"uniform sampler2D u_texture;\n"
 		"void main() {\n"
-		"  frag_color = color;\n"
+		"  frag_color = texture2D(u_texture, color.xy);\n"
 		"}\n";
 
 	shader_desc.fragment_shader_size = strlen(shader_desc.fragment_shader_data) + 1;
@@ -158,14 +159,30 @@ void Main::shutdown() {
 
 static glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
 
-void Main::update()
-{
+void Main::update() {
+	static float rotate_accumulate = 0.0f;
+	
+	rotate_accumulate += 2.0f * (float)SDL_GetTicks();
+
+	glm::mat4 model_matrix = s_mat4_idenitity;
+	model_matrix = glm::rotate(model_matrix, (float)SDL_GetTicks() * 0.001f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+	int w = 1024, h = 768;
+	SDL_GetWindowSize(m_engine->getRenderWindow(), &w, &h);
+
+	float aspect_ratio = (float)w / (float)h;
+
+	glm::mat4 proj_matrix = s_mat4_idenitity;
+	proj_matrix = glm::perspective(glm::radians(75.0f), aspect_ratio, 0.01f, 100.0f);
+
 	viewport_t viewport = { 0,0,1024,768 };
 	m_render->beginPass(viewport, PASSCLEAR_COLOR);
 
 	m_render->setPipeline(s_pipeline);
-	m_render->setVSConstant(0, &s_mat4_idenitity[0], MATRIX4_SIZE);
-
+	m_render->setVSConstant(0, &model_matrix[0], MATRIX4_SIZE); // model
+	m_render->setVSConstant(1, &s_mat4_idenitity[0], MATRIX4_SIZE); // view
+	m_render->setVSConstant(2, &s_mat4_idenitity[0], MATRIX4_SIZE); // projection
+	
 	m_render->beginBinding();
 		m_render->setTexture(s_texture->getTextureIndex());
 		m_render->setVertexBuffer(s_buffer);
@@ -175,12 +192,6 @@ void Main::update()
 
 	m_render->endPass();
 	m_render->commit();
-
-	//mu_begin(MicroUIRender_getContext());
-	//MicroUIRender_style_window(MicroUIRender_getContext());
-	//mu_end(MicroUIRender_getContext());
-
-	//m_render->uiFrame();
 
 	m_render->present(false);
 }
