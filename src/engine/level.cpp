@@ -110,7 +110,7 @@ void LevelMesh::load(IReader* reader) {
 
 	Array<LevelMeshVertex_LM> vertices(*g_default_allocator);
 
-		LevelMeshVertex_LM vertex;
+	LevelMeshVertex_LM vertex;
 	for (uint32_t i = 0; i < vertices_count; i++) {
 		reader->read(&vertex, sizeof(vertex));
 		vertices.push_back(vertex);
