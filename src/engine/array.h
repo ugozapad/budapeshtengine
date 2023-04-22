@@ -4,6 +4,7 @@
 #include <memory.h>
 #include <stdexcept>
 
+#include "engine/debug.h"
 #include "engine/allocator.h"
 
 //#define STD_ARRAY
@@ -155,9 +156,9 @@ private:
 template <typename T>
 inline Array<T>::Array(IAllocator& allocator) :
 	m_allocator(&allocator)
-	, m_memory(nullptr)
-	, m_size(0)
-	, m_capacity(0)
+,	m_memory(nullptr)
+,	m_size(0)
+,	m_capacity(0)
 {
 }
 
@@ -171,12 +172,10 @@ inline Array<T>::~Array() {
 
 template<typename T>
 void Array<T>::realloc_buffer(size_type size) {
-	if (m_memory)
-	{
+	if (m_memory) {
 		m_memory = (value_type*)m_allocator->reallocate(m_memory, sizeof(value_type) * size, alignof(value_type));
 	}
-	else
-	{
+	else {
 		m_memory = (value_type*)m_allocator->allocate(sizeof(value_type) * size, alignof(value_type));
 	}
 
