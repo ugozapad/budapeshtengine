@@ -1,3 +1,28 @@
+Texture2D 		g_diffuseTexture : register(t0);
+SamplerState	g_diffuseSampler : register(s0);
+
+Texture2D 		g_lightmapTexture : register(t1);
+SamplerState	g_lightmapSampler : register(s1);
+
+#ifdef LIGHTS_COUNT
+Texture1D 		g_linearAttenuation : register(t2);
+SamplerState 	g_linearAttSampler	: register(s2);
+
+// Light constant buffer
+
+struct Light
+{
+	float3 position;
+	float  angle;
+	float4 color;
+};
+
+cbuffer LightData : register(b0)
+{
+	Light g_lights[LIGHTS_COUNT];
+}
+#endif
+
 struct VS_OUTPUT
 {
 	float4 position : SV_POSITION;
@@ -7,5 +32,6 @@ struct VS_OUTPUT
 
 float4 main(VS_OUTPUT input) : SV_Target
 {
-	return input.position;
+	// sample texture
+	return g_diffuseTexture.Sample(g_diffuseSampler, input.texcoord0);
 }
