@@ -8,9 +8,9 @@ class Player;
 class Weapon;
 
 //! Base entity class.
-class Entity : public ITypedObject {
+class Entity : public TypedObject {
 public:
-	OBJECT_IMPLEMENT(Entity, ITypedObject);
+	OBJECT_IMPLEMENT(Entity, TypedObject);
 
 	Entity();
 	virtual ~Entity();

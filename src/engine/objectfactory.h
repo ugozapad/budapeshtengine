@@ -4,8 +4,8 @@
 #include "engine/array.h"
 #include "engine/object.h"
 
-class ITypedObject;
-typedef ITypedObject* (*pfnCreateObject_t)(IAllocator& allocator);
+class TypedObject;
+typedef TypedObject* (*pfnCreateObject_t)(IAllocator& allocator);
 
 template <typename T>
 T* createObjectTemplated(IAllocator& allocator) {
