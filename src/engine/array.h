@@ -2,10 +2,11 @@
 #define ARRAY_H
 
 #include <memory.h>
+#include <stdexcept>
 
 #include "engine/allocator.h"
 
-#define STD_ARRAY
+//#define STD_ARRAY
 
 #ifdef STD_ARRAY
 #include <vector>
@@ -40,30 +41,115 @@ private:
 template <typename T>
 class Array {
 public:
+	typedef size_t				size_type;
+	typedef T					value_type;
+	typedef value_type&			reference;
+	typedef value_type const&	const_reference;
+	typedef value_type*			iterator;
+	typedef value_type const*	const_iterator;
+
+public:
 	Array(IAllocator& allocator);
 	~Array();
 
-	const size_t size() { return m_size; }
+	iterator insert(const_iterator pos, const_reference value)
+	{
+		if (pos < begin() || pos > end())
+			throw std::out_of_range("pos < begin() || pos > end()");
+		// calculate index
+		size_type idx = size_type(end() - pos);
+		// check the capacity
+		size_type const new_size = m_size + 1;
+		if (new_size > m_capacity)
+			reserve(m_capacity + 1);
+		// shift elements
+		for (size_type i = m_size; i > idx; --i)
+			m_memory[i] = m_memory[i - 1];
+		// assign value
+		m_memory[idx] = value;
+		m_size = new_size;
+		return (m_memory + idx);
+	}
 
-	void set_capacity(size_t capacity);
+	inline size_type size		() const { return m_size; }
+	inline bool empty		() const { return !m_size; }
+	inline size_type capacity	() const { return m_capacity; }
 
-	void push_back(T& t);
-	void pop_back();
+	inline void reserve(size_type capacity)
+	{
+		if (m_capacity < capacity)
+			realloc_buffer(capacity);
+	}
+	inline void resize(size_type size)
+	{
+		if (size > m_capacity)
+			reserve(size - m_capacity);
+		m_size = size;
+	}
+	void resize(size_type size, const_reference value)
+	{
+		if (size > m_capacity)
+		{
+			reserve(size - m_capacity);
+			for (size_type i = m_size; i < m_capacity; ++i)
+				m_memory[i] = value;
+		}
+		m_size = size;
+	}
+	inline void clear	() { m_size = 0; }
+	inline void erase	(const_iterator pos)
+	{
+		if (pos < begin() || pos > end())
+			throw std::out_of_range("pos < begin() || pos > end()");
+		size_type i = size_type(end() - pos);
+		for (size_type j = i; j < (m_size - 1); ++j)
+			m_memory[j] = m_memory[j + 1];
+		m_size--;
+	}
+	inline void shrink_to_fit()
+	{
+		if (m_capacity > m_size)
+			realloc_buffer(m_size);
+	}
 
-	T* begin() { return m_memory; }
-	T* end() { return m_memory + m_size; }
+	inline reference at(size_type i)
+	{
+		if (i > size()) throw std::out_of_range("i > size()");
+		return m_memory[i];
+	}
+	inline const_reference at(size_type i) const
+	{
+		if (i > size()) throw std::out_of_range("i > size()");
+		return m_memory[i];
+	}
 
-	T& operator[](size_t i);
-	//	const T& operator[](size_t i);
+	inline void push_back	(const_reference value) { insert(end(), value); }
+	inline void pop_back	() { if (m_size > 0) m_size--; }
 
-	void growMemory();
-	void freeMemory();
+	inline reference		back	()			{ return m_memory[0]; }
+	inline const_reference	back	() const	{ return m_memory[0]; }
+	inline reference		front	()			{ return m_memory[m_size - 1]; }
+	inline const_reference	front	() const	{ return m_memory[m_size - 1]; }
+
+	inline value_type*		data	()			{ return m_memory; }
+	inline value_type const*data	() const	{ return m_memory; }
+
+	inline iterator			begin	()			{ return m_memory; }
+	inline const_iterator	begin	() const	{ return m_memory; }
+	inline iterator			end		()			{ return m_memory + m_size; }
+	inline const_iterator	end		() const	{ return m_memory + m_size; }
+
+	inline reference		operator[](size_type i)		{ return m_memory[i]; }
+	inline const_reference	operator[](size_type i) const	{ return m_memory[i]; }
+
+private:
+	void realloc_buffer(size_type);
 
 private:
 	IAllocator* m_allocator;
-	T* m_memory;
-	size_t m_size;
-	size_t m_capacity;
+	value_type* m_memory;
+	size_type m_size;
+	size_type m_capacity;
 };
 
 template <typename T>
@@ -77,26 +163,6 @@ inline Array<T>::Array(IAllocator& allocator) :
 
 template <typename T>
 inline Array<T>::~Array() {
-	freeMemory();
-}
-
-template<typename T>
-inline void Array<T>::growMemory() {
-	if (m_memory) {
-		T* new_memory = (T*)m_allocator->allocate(sizeof(T) * m_capacity, alignof(T));
-		// DMan: there is _aligned_realloc for this type of operations
-		for (size_t i = 0; i < m_size; ++i)
-			new_memory[i] = m_memory[i];
-		m_allocator->deallocate(m_memory);
-		m_memory = new_memory;
-	}
-	else {
-		m_memory = (T*)m_allocator->allocate(sizeof(T) * m_capacity, alignof(T));
-	}
-}
-
-template<typename T>
-inline void Array<T>::freeMemory() {
 	if (m_memory) {
 		m_allocator->deallocate(m_memory);
 		m_memory = nullptr;
@@ -104,38 +170,29 @@ inline void Array<T>::freeMemory() {
 }
 
 template<typename T>
-inline void Array<T>::set_capacity(size_t capacity) {
-	if (m_capacity < capacity) {
-		m_capacity = capacity;
-		Array<T>::growMemory();
+void Array<T>::realloc_buffer(size_type size) {
+	if (m_memory)
+	{
+		value_type* new_memory = (T*)m_allocator->allocate(sizeof(value_type) * size, alignof(value_type));
+		// DMan: there is _aligned_realloc for this type of operations
+		size_type e = m_size;
+		if (size < m_size) e = size;
+
+		for (size_type i = 0; i < e; ++i)
+			new_memory[i] = m_memory[i];
+
+		m_allocator->deallocate(m_memory);
+		m_memory = new_memory;
 	}
-}
-
-template<typename T>
-inline void Array<T>::push_back(T& t) {
-	size_t new_size = m_size + 1;
-	if (new_size > m_capacity) {
-		Array<T>::set_capacity(m_capacity + 1);
+	else
+	{
+		m_memory = (value_type*)m_allocator->allocate(sizeof(value_type) * size, alignof(value_type));
 	}
-	m_memory[m_size] = t;
-	m_size = new_size;
-}
 
-template<typename T>
-inline void Array<T>::pop_back() {
-	if (m_size > 0)
-		m_size--;
+	m_capacity = size;
+	if (m_capacity < m_size)
+		m_size = m_capacity;
 }
-
-template<typename T>
-inline T& Array<T>::operator[](size_t i) {
-	return m_memory[i];
-}
-
-//template<typename T>
-//inline const T& Array<T>::operator[](size_t i) {
-//	return m_memory[i];
-//}
 
 
 #endif // STD_ARRAY
