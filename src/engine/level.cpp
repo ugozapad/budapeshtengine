@@ -51,8 +51,8 @@ void Level::addEntity(Entity* entity) {
 		DebugBreak();
 	}
 
-	int entity_count = m_entities.size();
-	for (int i = 0; i < entity_count; i++) {
+	size_t entity_count = m_entities.size();
+	for (size_t i = 0; i < entity_count; i++) {
 		if (m_entities[i] == entity) {
 			printf("Level::addEntity: entity (classname=%s ptr=0x%p) already exists\n", entity->getClassName(), entity);
 			DebugBreak();
@@ -110,8 +110,8 @@ void LevelMesh::load(IReader* reader) {
 
 	Array<LevelMeshVertex_LM> vertices(*g_default_allocator);
 
-	for (int i = 0; i < vertices_count; i++) {
 		LevelMeshVertex_LM vertex;
+	for (uint32_t i = 0; i < vertices_count; i++) {
 		reader->read(&vertex, sizeof(vertex));
 		vertices.push_back(vertex);
 	}
