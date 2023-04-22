@@ -1,0 +1,14 @@
+Texture2D 		g_testTexture : register(t0);
+SamplerState	g_testSampler : register(s0);
+
+struct VS_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float2 texcoord0 : TEXCOORD0;
+};
+
+float4 main(VS_OUTPUT input) : SV_Target
+{
+	// sample texture
+	return g_testTexture.Sample(g_testSampler, input.texcoord0);
+}
