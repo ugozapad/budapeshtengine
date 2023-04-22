@@ -116,7 +116,7 @@ int Main::init(int argc, char* argv[]) {
 		"out vec4 frag_color;\n"
 		"uniform sampler2D u_texture;\n"
 		"void main() {\n"
-		"  frag_color = texture2D(u_texture, color.xy);\n"
+		"  frag_color = texture(u_texture, color.xy);\n"
 		"}\n";
 
 	shader_desc.fragment_shader_size = strlen(shader_desc.fragment_shader_data) + 1;

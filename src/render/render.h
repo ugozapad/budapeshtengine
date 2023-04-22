@@ -11,10 +11,10 @@ typedef uint32_t shaderIndex_t;
 typedef uint32_t pipelineIndex_t;
 typedef uint32_t textureIndex_t;
 
-const int INVALID_BUFFER_INDEX = -1;
-const int INVALID_SHADER_INDEX = -1;
-const int INVALID_PIPELINE_INDEX = -1;
-const int INVALID_TEXTURE_INDEX = -1;
+const bufferIndex_t		INVALID_BUFFER_INDEX = -1;
+const shaderIndex_t		INVALID_SHADER_INDEX = -1;
+const pipelineIndex_t	INVALID_PIPELINE_INDEX = -1;
+const textureIndex_t	INVALID_TEXTURE_INDEX = -1;
 
 //! Shader uniform size of (in bytes)
 const int VECTOR3_SIZE = 12;
