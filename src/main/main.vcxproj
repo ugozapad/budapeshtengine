@@ -98,6 +98,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\microui\src;..\..\thirdparty\stb;..\..\thirdparty\sokol\util;..\..\thirdparty\sokol;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,6 +115,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\microui\src;..\..\thirdparty\stb;..\..\thirdparty\sokol\util;..\..\thirdparty\sokol;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -132,6 +134,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\microui\src;..\..\thirdparty\stb;..\..\thirdparty\sokol\util;..\..\thirdparty\sokol;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,6 +155,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\microui\src;..\..\thirdparty\stb;..\..\thirdparty\sokol\util;..\..\thirdparty\sokol;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
