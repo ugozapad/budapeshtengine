@@ -2,7 +2,6 @@
 #define ARRAY_H
 
 #include <memory.h>
-#include <stdexcept>
 
 #include "engine/debug.h"
 #include "engine/allocator.h"
@@ -55,8 +54,7 @@ public:
 
 	iterator insert(const_iterator pos, const_reference value)
 	{
-		if (pos < begin() || pos > end())
-			throw std::out_of_range("pos < begin() || pos > end()");
+		ASSERT(pos >= begin() || pos <= end());
 		// calculate index
 		size_type idx = size_type(end() - pos);
 		// check the capacity
@@ -73,7 +71,7 @@ public:
 	}
 
 	inline size_type size		() const { return m_size; }
-	inline bool empty		() const { return !m_size; }
+	inline bool empty			() const { return !m_size; }
 	inline size_type capacity	() const { return m_capacity; }
 
 	inline void reserve(size_type capacity)
@@ -100,8 +98,7 @@ public:
 	inline void clear	() { m_size = 0; }
 	inline void erase	(const_iterator pos)
 	{
-		if (pos < begin() || pos > end())
-			throw std::out_of_range("pos < begin() || pos > end()");
+		ASSERT(pos >= begin() || pos <= end());
 		size_type i = size_type(end() - pos);
 		for (size_type j = i; j < (m_size - 1); ++j)
 			m_memory[j] = m_memory[j + 1];
@@ -115,12 +112,12 @@ public:
 
 	inline reference at(size_type i)
 	{
-		if (i > size()) throw std::out_of_range("i > size()");
+		ASSERT(i < size());
 		return m_memory[i];
 	}
 	inline const_reference at(size_type i) const
 	{
-		if (i > size()) throw std::out_of_range("i > size()");
+		ASSERT(i < size());
 		return m_memory[i];
 	}
 
