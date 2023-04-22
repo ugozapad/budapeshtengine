@@ -80,14 +80,14 @@ void LevelMesh::load(IReader* reader) {
 	// Load LevelMeshMaterial
 	uint32_t diffuse_texture_len = 0;
 	reader->read(&diffuse_texture_len, sizeof(diffuse_texture_len));
-	char* diffuse_texture_path = (char*)g_default_allocator->allocate(diffuse_texture_len + 1, 1);
+	char* diffuse_texture_path = (char*)g_default_allocator->allocate(size_t(diffuse_texture_len) + 1, 1);
 	reader->read(diffuse_texture_path, diffuse_texture_len);
 
 	diffuse_texture_path[diffuse_texture_len] = '\0';
 
 	uint32_t lightmap_texture_len = 0;
 	reader->read(&lightmap_texture_len, sizeof(lightmap_texture_len));
-	char* lightmap_texture_path = (char*)g_default_allocator->allocate(lightmap_texture_len + 1, 1);
+	char* lightmap_texture_path = (char*)g_default_allocator->allocate(size_t(lightmap_texture_len) + 1, 1);
 	reader->read(lightmap_texture_path, lightmap_texture_len);
 
 	lightmap_texture_path[lightmap_texture_len] = '\0';
@@ -98,7 +98,7 @@ void LevelMesh::load(IReader* reader) {
 	// Load LevelMesh
 	uint32_t mesh_name_len = 0;
 	reader->read(&mesh_name_len, sizeof(mesh_name_len));
-	char* mesh_name = (char*)g_default_allocator->allocate(mesh_name_len + 1, 1);
+	char* mesh_name = (char*)g_default_allocator->allocate(size_t(mesh_name_len) + 1, 1);
 	reader->read(mesh_name, mesh_name_len);
 
 	mesh_name[mesh_name_len] = '\0';

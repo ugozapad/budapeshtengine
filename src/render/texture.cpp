@@ -39,7 +39,7 @@ void Texture::load(IReader* reader) {
 
 	// stb image
 	int width, height, channels;
-	uint8_t* image_data = stbi_load_from_memory(image_buffer, length, &width, &height, &channels, STBI_rgb_alpha);
+	uint8_t* image_data = stbi_load_from_memory(image_buffer, int(length), &width, &height, &channels, STBI_rgb_alpha);
 
 	// create gpu texture
 	textureDesc_t texture_desc = {};
@@ -48,7 +48,7 @@ void Texture::load(IReader* reader) {
 	texture_desc.data = image_data;
 	texture_desc.width = width;
 	texture_desc.height = height;
-	texture_desc.size = width * height * 4;
+	texture_desc.size = size_t(width) * size_t(height) * 4;
 	texture_desc.mipmaps_count = 0;
 	m_textureIndex = m_render.createTexture(texture_desc);
 
