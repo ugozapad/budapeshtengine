@@ -122,7 +122,7 @@ void LevelMesh::load(IReader* reader) {
 	Array<LevelMeshVertex_LM> vertices(*g_default_allocator);
 	vertices.resize(vertices_count);
 
-	reader->read(&vertices[0], sizeof(LevelMeshVertex_LM) *vertices_count);
+	reader->read(vertices.data(), sizeof(LevelMeshVertex_LM) * vertices_count);
 
 	//for (int i = 0; i < vertices_count; i++) {
 	//	LevelMeshVertex_LM vertex;
