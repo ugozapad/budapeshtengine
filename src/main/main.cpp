@@ -8,7 +8,7 @@
 #include "engine/input_system.h"
 #include "engine/engine.h"
 #include "engine/level.h"
-#include "render/render.h"
+#include "render/irenderdevice.h"
 #include "render/texture.h"
 
 #include <glm/glm.hpp>
@@ -23,7 +23,7 @@ class Main {
 public:
 	Main() :
 		m_engine(nullptr)
-	,	m_render(nullptr)
+	,	m_render_device(nullptr)
 	{
 	}
 
@@ -36,7 +36,7 @@ public:
 
 private:
 	Engine* m_engine;
-	IRender* m_render;
+	IRenderDevice* m_render_device;
 };
 
 static Main s_main;
@@ -73,8 +73,8 @@ int Main::init(int argc, char* argv[]) {
 	m_engine = MEM_NEW(*g_default_allocator, Engine);
 	m_engine->init(1024, 768, fullscreen);
 
-	m_render = createRender();
-	m_render->init(m_engine->getRenderWindow());
+	m_render_device = createRenderDevice();
+	m_render_device->init(m_engine->getRenderWindow());
 
 	//m_engine->getLevel()->load("data/levels/test_baking/test_baking.lmf");
 
@@ -90,7 +90,7 @@ int Main::init(int argc, char* argv[]) {
 	buffer_desc.access = BUFFERACCESS_STATIC;
 	buffer_desc.data = vertices;
 	buffer_desc.size = sizeof(vertices);
-	s_buffer = m_render->createBuffer(buffer_desc);
+	s_buffer = m_render_device->createBuffer(buffer_desc);
 	if (s_buffer == INVALID_BUFFER_INDEX)
 		__debugbreak();
 
@@ -121,7 +121,7 @@ int Main::init(int argc, char* argv[]) {
 
 	shader_desc.fragment_shader_size = strlen(shader_desc.fragment_shader_data) + 1;
 
-	s_shader = m_render->createShader(shader_desc);
+	s_shader = m_render_device->createShader(shader_desc);
 	if (s_shader == INVALID_SHADER_INDEX)
 		__debugbreak();
 
@@ -131,12 +131,12 @@ int Main::init(int argc, char* argv[]) {
 	pipeline_desc.layout_count = 2;
 	pipeline_desc.shader = s_shader;
 
-	s_pipeline = m_render->createPipeline(pipeline_desc);
+	s_pipeline = m_render_device->createPipeline(pipeline_desc);
 	if (s_pipeline == INVALID_PIPELINE_INDEX)
 		__debugbreak();
 
 	// test stuff
-	s_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *m_render);
+	s_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *m_render_device);
 
 	IReader* texture_reader = g_file_system->openRead("data/textures/test_image.bmp");
 	s_texture->load(texture_reader);
@@ -148,10 +148,10 @@ int Main::init(int argc, char* argv[]) {
 void Main::shutdown() {
 	MEM_DELETE(*g_default_allocator, Texture, s_texture);
 
-	m_render->deleteBuffer(s_buffer);
+	m_render_device->deleteBuffer(s_buffer);
 
-	m_render->shutdown();
-	MEM_DELETE(*g_default_allocator, IRender, m_render);
+	m_render_device->shutdown();
+	MEM_DELETE(*g_default_allocator, IRenderDevice, m_render_device);
 
 	m_engine->shutdown();
 	MEM_DELETE(*g_default_allocator, Engine, m_engine);
@@ -176,24 +176,24 @@ void Main::update() {
 	proj_matrix = glm::perspective(glm::radians(75.0f), aspect_ratio, 0.01f, 100.0f);
 
 	viewport_t viewport = { 0,0,1024,768 };
-	m_render->beginPass(viewport, PASSCLEAR_COLOR);
+	m_render_device->beginPass(viewport, PASSCLEAR_COLOR);
 
-	m_render->setPipeline(s_pipeline);
-	m_render->setVSConstant(0, &model_matrix[0], MATRIX4_SIZE); // model
-	m_render->setVSConstant(1, &s_mat4_idenitity[0], MATRIX4_SIZE); // view
-	m_render->setVSConstant(2, &s_mat4_idenitity[0], MATRIX4_SIZE); // projection
+	m_render_device->setPipeline(s_pipeline);
+	m_render_device->setVSConstant(0, &model_matrix[0], MATRIX4_SIZE); // model
+	m_render_device->setVSConstant(1, &s_mat4_idenitity[0], MATRIX4_SIZE); // view
+	m_render_device->setVSConstant(2, &s_mat4_idenitity[0], MATRIX4_SIZE); // projection
 	
-	m_render->beginBinding();
-		m_render->setTexture(s_texture->getTextureIndex());
-		m_render->setVertexBuffer(s_buffer);
-	m_render->endBinding();
+	m_render_device->beginBinding();
+		m_render_device->setTexture(s_texture->getTextureIndex());
+		m_render_device->setVertexBuffer(s_buffer);
+	m_render_device->endBinding();
 
-	m_render->draw(0, 3, 1);
+	m_render_device->draw(0, 3, 1);
 
-	m_render->endPass();
-	m_render->commit();
+	m_render_device->endPass();
+	m_render_device->commit();
 
-	m_render->present(false);
+	m_render_device->present(false);
 }
 
 int main(int argc, char* argv[]) {

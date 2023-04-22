@@ -4,8 +4,7 @@
 
 #include "atlas.inl"
 
-#define SOKOL_GLCORE33
-#include "sokol_gfx.h"
+#include "render/sokol_shared.h"
 #include "sokol_log.h"
 
 #define SOKOL_GL_IMPL

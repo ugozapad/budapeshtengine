@@ -103,3 +103,8 @@ Level* Engine::getLevel()
 {
 	return m_level;
 }
+
+IRenderDevice* Engine::getRenderDevice()
+{
+	return m_render_device;
+}

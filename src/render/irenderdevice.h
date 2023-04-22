@@ -5,7 +5,7 @@
 
 struct SDL_Window;
 
-// Render types
+// SokolRenderDevice types
 typedef uint32_t bufferIndex_t;
 typedef uint32_t shaderIndex_t;
 typedef uint32_t pipelineIndex_t;
@@ -148,10 +148,10 @@ struct viewport_t {
 	int x, y, width, height;
 };
 
-//! Interface to renderer
-class IRender {
+//! Interface to render device
+class IRenderDevice {
 public:
-	virtual ~IRender() {}
+	virtual ~IRenderDevice() {}
 
 	virtual void init(SDL_Window* render_window) = 0;
 	virtual void shutdown() = 0;
@@ -207,8 +207,8 @@ public:
 	virtual void present(bool vsync) = 0;
 };
 
-extern IRender* g_render;
+extern IRenderDevice* g_render_device;
 
-IRender* createRender();
+IRenderDevice* createRenderDevice();
 
 #endif

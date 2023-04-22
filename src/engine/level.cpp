@@ -166,7 +166,7 @@ void bindLightmapShader() {
 		shader_desc.fragment_shader_data = fragment_shader;
 		shader_desc.fragment_shader_size = fragment_length;
 
-		lightmapped_generic_shader = g_render->createShader(shader_desc);
+		lightmapped_generic_shader = g_render_device->createShader(shader_desc);
 		if (lightmapped_generic_shader == INVALID_SHADER_INDEX) {
 			printf("!!! lightmapped_generic_shader == INVALID_SHADER_INDEX\n");
 			DebugBreak();
@@ -183,7 +183,7 @@ void bindLightmapShader() {
 		pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD1 };
 		pipeline_desc.layout_count = sizeof(pipeline_desc.layouts) / sizeof(pipeline_desc.layouts[0]);
 
-		lightmapped_generic_pipe = g_render->createPipeline(pipeline_desc);
+		lightmapped_generic_pipe = g_render_device->createPipeline(pipeline_desc);
 		if (lightmapped_generic_pipe == INVALID_PIPELINE_INDEX) {
 			printf("!!! lightmapped_generic_pipe == INVALID_PIPELINE_INDEX\n");
 			DebugBreak();
@@ -192,17 +192,17 @@ void bindLightmapShader() {
 		is_lightmapped_shader_inited = true;
 	}
 
-	g_render->setPipeline(lightmapped_generic_pipe);
+	g_render_device->setPipeline(lightmapped_generic_pipe);
 }
 
 void LevelMesh::render() {
 	bindLightmapShader();
 
-	g_render->beginBinding();
-		g_render->setVertexBuffer(m_vertex_buffer);
-	g_render->endBinding();
+	g_render_device->beginBinding();
+		g_render_device->setVertexBuffer(m_vertex_buffer);
+	g_render_device->endBinding();
 
-	g_render->draw(m_vertices_count, 0, 0);
+	g_render_device->draw(m_vertices_count, 0, 0);
 }
 
 void LevelMesh::createGpu(Array<LevelMeshVertex_LM>& vertices) {
@@ -211,5 +211,5 @@ void LevelMesh::createGpu(Array<LevelMeshVertex_LM>& vertices) {
 	vertex_buffer_desc.access = BUFFERACCESS_STATIC;
 	vertex_buffer_desc.data = &vertices[0];
 	vertex_buffer_desc.size = vertices.size();
-	m_vertex_buffer = g_render->createBuffer(vertex_buffer_desc);
+	m_vertex_buffer = g_render_device->createBuffer(vertex_buffer_desc);
 }

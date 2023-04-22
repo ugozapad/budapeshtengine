@@ -1,16 +1,16 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
-#include "render/render.h"
+#include "render/irenderdevice.h"
 
 class IAllocator;
 class IReader;
 class IWriter;
-class IRender;
+class IRenderDevice;
 
 class Texture {
 public:
-	Texture(IAllocator& allocator, IRender& render);
+	Texture(IAllocator& allocator, IRenderDevice& render_device);
 	~Texture();
 
 	void destroy();
@@ -23,7 +23,7 @@ public:
 
 private:
 	IAllocator& m_allocator;
-	IRender& m_render;
+	IRenderDevice& m_render_device;
 	textureIndex_t m_textureIndex;
 };
 
