@@ -173,16 +173,7 @@ template<typename T>
 void Array<T>::realloc_buffer(size_type size) {
 	if (m_memory)
 	{
-		value_type* new_memory = (T*)m_allocator->allocate(sizeof(value_type) * size, alignof(value_type));
-		// DMan: there is _aligned_realloc for this type of operations
-		size_type e = m_size;
-		if (size < m_size) e = size;
-
-		for (size_type i = 0; i < e; ++i)
-			new_memory[i] = m_memory[i];
-
-		m_allocator->deallocate(m_memory);
-		m_memory = new_memory;
+		m_memory = (value_type*)m_allocator->reallocate(m_memory, sizeof(value_type) * size, alignof(value_type));
 	}
 	else
 	{

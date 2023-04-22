@@ -8,6 +8,7 @@ public:
 	virtual ~IAllocator() {}
 
 	virtual void* allocate(size_t size, size_t align) = 0;
+	virtual void* reallocate(void* ptr, size_t size, size_t align) = 0;
 	virtual void deallocate(void* ptr) = 0;
 };
 

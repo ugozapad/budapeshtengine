@@ -10,11 +10,16 @@ public:
 	~DefaultAllocator() {}
 
 	void* allocate(size_t size, size_t align) override;
+	void* reallocate(void* ptr, size_t size, size_t align) override;
 	void deallocate(void* ptr) override;
 };
 
 void* DefaultAllocator::allocate(size_t size, size_t align) {
 	return _aligned_malloc(size, align);
+}
+
+void* DefaultAllocator::reallocate(void* ptr, size_t size, size_t align) {
+	return _aligned_realloc(ptr, size, align);
 }
 
 void DefaultAllocator::deallocate(void* ptr) {
