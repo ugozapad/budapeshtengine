@@ -68,6 +68,7 @@ void Level::addEntity(Entity* entity) {
 LevelMesh::LevelMesh() :
 	m_vertex_buffer(INVALID_BUFFER_INDEX),
 	m_index_buffer(INVALID_BUFFER_INDEX),
+	m_vertices_count(0),
 	m_mesh_name(nullptr)
 {
 }
@@ -108,13 +109,18 @@ void LevelMesh::load(IReader* reader) {
 	uint32_t vertices_count = 0;
 	reader->read(&vertices_count, sizeof(vertices_count));
 
-	Array<LevelMeshVertex_LM> vertices(*g_default_allocator);
+	m_vertices_count = vertices_count;
 
-	for (int i = 0; i < vertices_count; i++) {
-		LevelMeshVertex_LM vertex;
-		reader->read(&vertex, sizeof(vertex));
-		vertices.push_back(vertex);
-	}
+	Array<LevelMeshVertex_LM> vertices(*g_default_allocator);
+	vertices.resize(vertices_count);
+
+	reader->read(&vertices[0], sizeof(LevelMeshVertex_LM) *vertices_count);
+
+	//for (int i = 0; i < vertices_count; i++) {
+	//	LevelMeshVertex_LM vertex;
+	//	reader->read(&vertex, sizeof(vertex));
+	//	vertices.push_back(vertex);
+	//}
 
 	uint32_t indices_count = 0;
 	reader->read(&indices_count, sizeof(indices_count));
@@ -122,22 +128,83 @@ void LevelMesh::load(IReader* reader) {
 	// #TODO: ???
 	//reader->seek(SeekWay::Current, indices_count);
 
+
+
 	// create gpu resource
-//	createGpu(vertices);
+	createGpu(vertices);
 }
 
 void bindLightmapShader() {
+	static bool is_lightmapped_shader_inited = false;
+	static shaderIndex_t lightmapped_generic_shader = INVALID_SHADER_INDEX;
+	static pipelineIndex_t lightmapped_generic_pipe = INVALID_PIPELINE_INDEX;
+	if (!is_lightmapped_shader_inited) {
+		IReader* reader = g_file_system->openRead("data/shaders/gl33/lightmapped_generic.vs");
+		reader->seek(End, 0);
+		size_t vertex_length = reader->tell();
+		reader->seek(Begin, 0);
 
+		char* vertex_shader = (char*)g_default_allocator->allocate(vertex_length + 1, 1);
+		reader->read(vertex_shader, vertex_length);
+		vertex_shader[vertex_length] = '\0';
+
+		g_file_system->deleteReader(reader);
+		
+		// reopen reader for fragment shader
+		reader = g_file_system->openRead("data/shaders/gl33/lightmapped_generic.fs");
+		reader->seek(End, 0);
+		size_t fragment_length = reader->tell();
+		reader->seek(Begin, 0);
+
+		char* fragment_shader = (char*)g_default_allocator->allocate(fragment_length + 1, 1);
+		reader->read(fragment_shader, fragment_length);
+		fragment_shader[fragment_length] = '\0';
+
+		g_file_system->deleteReader(reader);
+
+		shaderDesc_t shader_desc = {};
+		shader_desc.vertex_shader_data = vertex_shader;
+		shader_desc.vertex_shader_size = vertex_length;
+		shader_desc.fragment_shader_data = fragment_shader;
+		shader_desc.fragment_shader_size = fragment_length;
+
+		lightmapped_generic_shader = g_render->createShader(shader_desc);
+		if (lightmapped_generic_shader == INVALID_SHADER_INDEX) {
+			printf("!!! lightmapped_generic_shader == INVALID_SHADER_INDEX\n");
+			DebugBreak();
+		}
+
+		// free data
+		g_default_allocator->deallocate(fragment_shader);
+		g_default_allocator->deallocate(vertex_shader);
+
+		pipelineDesc_t pipeline_desc = {};
+		pipeline_desc.shader = lightmapped_generic_shader;
+		pipeline_desc.layouts[0] = { VERTEXATTR_VEC3, SHADERSEMANTIC_POSITION };
+		pipeline_desc.layouts[1] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD0 };
+		pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD1 };
+		pipeline_desc.layout_count = sizeof(pipeline_desc.layouts) / sizeof(pipeline_desc.layouts[0]);
+
+		lightmapped_generic_pipe = g_render->createPipeline(pipeline_desc);
+		if (lightmapped_generic_pipe == INVALID_PIPELINE_INDEX) {
+			printf("!!! lightmapped_generic_pipe == INVALID_PIPELINE_INDEX\n");
+			DebugBreak();
+		}
+
+		is_lightmapped_shader_inited = true;
+	}
+
+	g_render->setPipeline(lightmapped_generic_pipe);
 }
 
 void LevelMesh::render() {
 	bindLightmapShader();
 
 	g_render->beginBinding();
-		g_render->setVertexBuffer( m_vertex_buffer );
+		g_render->setVertexBuffer(m_vertex_buffer);
 	g_render->endBinding();
 
-	g_render->draw(1337, 0, 0);
+	g_render->draw(m_vertices_count, 0, 0);
 }
 
 void LevelMesh::createGpu(Array<LevelMeshVertex_LM>& vertices) {

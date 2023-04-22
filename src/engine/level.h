@@ -67,6 +67,7 @@ private:
 
 	bufferIndex_t m_vertex_buffer;
 	bufferIndex_t m_index_buffer;
+	uint32_t m_vertices_count;
 };
 
 class Level
