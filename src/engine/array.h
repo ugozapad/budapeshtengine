@@ -83,10 +83,10 @@ inline Array<T>::~Array() {
 template<typename T>
 inline void Array<T>::growMemory() {
 	if (m_memory) {
-		T* new_memory = (T*)m_allocator->allocate(sizeof(T), alignof(T));
-		if (m_size > 0) {
-			memcpy(new_memory, m_memory, sizeof(T)*m_size);
-		}
+		T* new_memory = (T*)m_allocator->allocate(sizeof(T) * m_capacity, alignof(T));
+		// DMan: there is _aligned_realloc for this type of operations
+		for (size_t i = 0; i < m_size; ++i)
+			new_memory[i] = m_memory[i];
 		m_allocator->deallocate(m_memory);
 		m_memory = new_memory;
 	}
@@ -113,12 +113,12 @@ inline void Array<T>::set_capacity(size_t capacity) {
 
 template<typename T>
 inline void Array<T>::push_back(T& t) {
-	if (m_capacity <= 0 || m_capacity < 0) {
-		size_t new_capacity = m_capacity + 1;
-		Array<T>::set_capacity(new_capacity);
+	size_t new_size = m_size + 1;
+	if (new_size > m_capacity) {
+		Array<T>::set_capacity(m_capacity + 1);
 	}
-
-	m_memory[m_size++] = t;
+	m_memory[m_size] = t;
+	m_size = new_size;
 }
 
 template<typename T>
