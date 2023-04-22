@@ -16,21 +16,29 @@ Level::~Level()
 {
 }
 
-void Level::load(const char* filepath) {
-	if (strstr(filepath, ".lmf")) {
-		return loadLMF(filepath);
-	}
+void Level::load(const char* levelname) {
+	IReader* reader;
+	char levelpath[512];
+	sprintf(levelpath, "data/levels/%s/", levelname);
+	size_t const pathend = strlen(levelpath);
+	
+	strcpy(levelpath + pathend, "level.lmf");
+	reader = g_file_system->openRead(levelpath);
+	loadLMF(reader);
+	g_file_system->deleteReader(reader);
+	
+	// strcpy(levelpath + pathend, "level.somefile");
+	// reader = g_file_system->openRead(levelpath);
+	// loadSomeFile(reader);
+	// etc.
 }
 
-void Level::loadLMF(const char* filepath) {
-	// open reader
-	IReader* reader = g_file_system->openRead(filepath);
-	
+void Level::loadLMF(IReader* reader) {
 	// read header
 	LevelMeshHeader header;
 	reader->read(&header, sizeof(header));
 
-	for (int i = 0; i < header.mesh_count; i++) {
+	for (uint16_t i = 0; i < header.mesh_count; i++) {
 		LevelMesh* level_mesh = MEM_NEW(*m_allocator, LevelMesh);
 		level_mesh->load(reader);
 

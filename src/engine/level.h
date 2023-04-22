@@ -78,8 +78,8 @@ public:
 
 	IAllocator& getAllocator() { return *m_allocator; }
 
-	void load(const char* filepath);
-	void loadLMF(const char* filepath);
+	void load(const char* levelname);
+	void loadLMF(IReader* reader);
 
 	Entity* createEntity();
 	void addEntity(Entity* entity);

@@ -76,7 +76,7 @@ int Main::init(int argc, char* argv[]) {
 	m_render = createRender();
 	m_render->init(m_engine->getRenderWindow());
 
-	//m_engine->getLevel()->load("data/levels/test_baking/test_baking.lmf");
+	m_engine->getLevel()->load("test_baking");
 
 	float vertices[] = {
 		// positions            // colors
