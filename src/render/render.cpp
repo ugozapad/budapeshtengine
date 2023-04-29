@@ -1,3 +1,4 @@
+#include "engine/debug.h"
 #include "engine/allocator.h"
 #include "render/render.h"
 
@@ -57,8 +58,9 @@ public:
 
 	void beginBinding() override;
 	void setVertexBuffer(bufferIndex_t buffer_index) override;
+	void setIndexBuffer(bufferIndex_t buffer_index) override;
 	void setPipeline(pipelineIndex_t pipeline) override;
-	void setTexture(textureIndex_t texture) override;
+	void setTexture(int index, textureIndex_t texture) override;
 	void endBinding() override;
 
 	void beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) override;
@@ -209,14 +211,14 @@ bufferIndex_t Render::createBuffer(const bufferDesc_t& buffer_desc) {
 	// #TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// if we want to create immutable buffer we should pass sg_range, 
 	// otherwise set buffer_backend_desc.size from our buffer desc!
-	/*if (buffer_desc.data) {
+	if (buffer_desc.data) {
 		buffer_backend_desc.data = buffer_data;
 	} else {
 		buffer_backend_desc.size = buffer_desc.size;
-	}*/
+	}
 	/////////////////////////////////////////////////////////////////
-	buffer_backend_desc.data = buffer_data;
-	buffer_backend_desc.size = buffer_desc.size;
+	//buffer_backend_desc.data = buffer_data;
+	//buffer_backend_desc.size = buffer_desc.size;
 
 	// create buffer
 	sg_buffer buffer_backend = sg_make_buffer(buffer_backend_desc);
@@ -321,7 +323,11 @@ void fillVSParams(sg_shader_desc& shader_desc) {
 void fillFSParams(sg_shader_desc& shader_desc) {
 	sg_shader_image_desc& image1 = shader_desc.fs.images[0];
 	image1.image_type = SG_IMAGETYPE_2D;
-	image1.name = "u_texture";
+	image1.name = "u_diffuse_texture";
+
+	sg_shader_image_desc& image2 = shader_desc.fs.images[1];
+	image2.image_type = SG_IMAGETYPE_2D;
+	image2.name = "u_lightmap_texture";
 }
 
 shaderIndex_t Render::createShader(const shaderDesc_t& shader_desc) {
@@ -430,6 +436,9 @@ static sg_vertex_format s_vertex_formats_gl[VERTEXATTR_MAX] = {
 pipelineIndex_t Render::createPipeline(const pipelineDesc_t& pipeline_desc) {
 	sg_pipeline_desc pipeline_backend_desc = {};
 	
+	// force indices to uint16
+	pipeline_backend_desc.index_type = SG_INDEXTYPE_UINT16;
+
 	// get backend shader
 	sg_shader shader_backend = getShaderFromIndex(pipeline_desc.shader);
 	pipeline_backend_desc.shader = shader_backend;
@@ -579,6 +588,16 @@ void Render::setVertexBuffer(bufferIndex_t buffer_index) {
 	m_bindings.vertex_buffers[0] = buffer_backend;
 }
 
+void Render::setIndexBuffer(bufferIndex_t buffer_index) {
+	sg_buffer buffer_backend = getBufferFromIndex(buffer_index);
+	if (sg_query_buffer_state(buffer_backend) != SG_RESOURCESTATE_VALID) {
+		// ERROR: buffer invalid for some reason
+		__debugbreak(); // temp way
+	}
+
+	m_bindings.index_buffer = buffer_backend;
+}
+
 void Render::setPipeline(pipelineIndex_t pipeline) {
 	sg_pipeline pipeline_backend = getPipelineFromIndex(pipeline);
 	if (sg_query_pipeline_state(pipeline_backend) != SG_RESOURCESTATE_VALID) {
@@ -589,9 +608,10 @@ void Render::setPipeline(pipelineIndex_t pipeline) {
 	sg_apply_pipeline(pipeline_backend);
 }
 
-void Render::setTexture(textureIndex_t texture) {
+void Render::setTexture(int index, textureIndex_t texture) {
+	ASSERT(index <= SG_MAX_SHADERSTAGE_IMAGES);
 	sg_image image_backend = getImageFromIndex(texture);
-	m_bindings.fs_images[0] = image_backend;
+	m_bindings.fs_images[index] = image_backend;
 }
 
 void Render::endBinding() {

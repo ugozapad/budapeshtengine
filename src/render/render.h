@@ -31,20 +31,20 @@ const int INPUT_LAYOUT_MAX = 8;
 enum uniformConstants_t
 {
 	CONSTANT_MODEL_MATRIX,
-	CONSTANT_VIEW_MATRIX = CONSTANT_MODEL_MATRIX + MATRIX4_SIZE,
-	CONSTANT_PROJ_MATRIX = CONSTANT_VIEW_MATRIX + MATRIX4_SIZE,
-	CONSTANT_MVP_MATRIX = CONSTANT_PROJ_MATRIX + MATRIX4_SIZE,
+	CONSTANT_VIEW_MATRIX,
+	CONSTANT_PROJ_MATRIX,
+	CONSTANT_MVP_MATRIX,
 
 	// camera specific (vector4)
-	CONSTANT_CAMERA_EYE = CONSTANT_MVP_MATRIX + VECTOR4_SIZE, 
-	CONSTANT_CAMERA_DIR = CONSTANT_CAMERA_EYE + VECTOR4_SIZE,
+	CONSTANT_CAMERA_EYE, 
+	CONSTANT_CAMERA_DIR,
 
 	// light specific
-	CONSTANT_LIGHT_POS = CONSTANT_CAMERA_DIR + VECTOR4_SIZE,
-	CONSTANT_LIGHT_COLOR = CONSTANT_LIGHT_POS + VECTOR4_SIZE,
+	CONSTANT_LIGHT_POS,
+	CONSTANT_LIGHT_COLOR,
 
 	// Skinned specific
-	CONSTANT_BONE_MATRICES = CONSTANT_LIGHT_COLOR + BONEMATRIXARRAY_SIZE
+	CONSTANT_BONE_MATRICES
 };
 
 enum bufferType_t {
@@ -191,8 +191,9 @@ public:
 	virtual void beginBinding() = 0;
 
 	virtual void setVertexBuffer(bufferIndex_t buffer_index) = 0;
+	virtual void setIndexBuffer(bufferIndex_t buffer_index) = 0;
 	virtual void setPipeline(pipelineIndex_t pipeline) = 0;
-	virtual void setTexture(textureIndex_t texture) = 0;
+	virtual void setTexture(int index, textureIndex_t texture) = 0;
 
 	virtual void endBinding() = 0;
 

@@ -13,8 +13,17 @@ void assertBackend(const char* msg, ...);
 												#EXPR, __FILE__, __LINE__, __FUNCTION__ );										\
 							}																									\
 						 } while (0)
+
+#define  ASSERT_MSG(EXPR, MSG) do {																								\
+							if (!(EXPR)) 																						\
+							{ 																									\
+								assertBackend("Assertion Failed: %s\nFile: %s\nLine: %d\nFunction: %s\n\nMessage: %s\n",		\
+												#EXPR, __FILE__, __LINE__, __FUNCTION__, MSG);									\
+							}																									\
+						 } while (0)
 #else
 #define ASSERT(EXPR) ((void)0)
+#define ASSERT_MSG(EXPR, MSG) ((void)0)
 #endif // ENABLE_ASSERTS
 
 

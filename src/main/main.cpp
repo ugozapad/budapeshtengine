@@ -114,9 +114,10 @@ int Main::init(int argc, char* argv[]) {
 	shader_desc.fragment_shader_data = "#version 330\n"
 		"in vec4 color;\n"
 		"out vec4 frag_color;\n"
-		"uniform sampler2D u_texture;\n"
+		"uniform sampler2D u_diffuse_texture;\n"
+		"uniform sampler2D u_lightmap_texture;\n"
 		"void main() {\n"
-		"  frag_color = texture(u_texture, color.xy);\n"
+		"  frag_color = texture(u_diffuse_texture, color.xy);\n"
 		"}\n";
 
 	shader_desc.fragment_shader_size = strlen(shader_desc.fragment_shader_data) + 1;
@@ -178,17 +179,19 @@ void Main::update() {
 	viewport_t viewport = { 0,0,1024,768 };
 	m_render->beginPass(viewport, PASSCLEAR_COLOR);
 
-	m_render->setPipeline(s_pipeline);
-	m_render->setVSConstant(0, &model_matrix[0], MATRIX4_SIZE); // model
-	m_render->setVSConstant(1, &s_mat4_idenitity[0], MATRIX4_SIZE); // view
-	m_render->setVSConstant(2, &s_mat4_idenitity[0], MATRIX4_SIZE); // projection
-	
-	m_render->beginBinding();
-		m_render->setTexture(s_texture->getTextureIndex());
-		m_render->setVertexBuffer(s_buffer);
-	m_render->endBinding();
+	m_engine->getLevel()->render();
 
-	m_render->draw(0, 3, 1);
+	//m_render->setPipeline(s_pipeline);
+	//m_render->setVSConstant(0, &model_matrix[0], MATRIX4_SIZE); // model
+	//m_render->setVSConstant(1, &s_mat4_idenitity[0], MATRIX4_SIZE); // view
+	//m_render->setVSConstant(2, &s_mat4_idenitity[0], MATRIX4_SIZE); // projection
+	//
+	//m_render->beginBinding();
+	//	m_render->setTexture(s_texture->getTextureIndex());
+	//	m_render->setVertexBuffer(s_buffer);
+	//m_render->endBinding();
+
+	//m_render->draw(0, 3, 1);
 
 	m_render->endPass();
 	m_render->commit();

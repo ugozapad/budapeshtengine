@@ -8,6 +8,7 @@
 #include "render/render.h"
 
 class IReader;
+class Texture;
 
 struct Vector2 {
 	float x, y;
@@ -60,14 +61,19 @@ public:
 	void render();
 
 private:
-	void createGpu(Array<LevelMeshVertex_LM>& vertices);
+	void createGpu_Vertex(Array<LevelMeshVertex_LM>& vertices);
+	void createGpu_Indices(Array<uint16_t>& indices);
 
 private:
 	char* m_mesh_name;
 
+	Texture* m_diffuse_texture;
+	Texture* m_lightmap_texture;
+
 	bufferIndex_t m_vertex_buffer;
 	bufferIndex_t m_index_buffer;
 	uint32_t m_vertices_count;
+	uint32_t m_indices_count;
 };
 
 class Level
@@ -83,6 +89,8 @@ public:
 
 	Entity* createEntity();
 	void addEntity(Entity* entity);
+
+	void render();
 
 private:
 	IAllocator* m_allocator;

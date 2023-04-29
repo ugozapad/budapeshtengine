@@ -37,6 +37,8 @@ void Texture::load(IReader* reader) {
 	// read file
 	reader->read(image_buffer, length);
 
+	stbi_set_flip_vertically_on_load(true);
+
 	// stb image
 	int width, height, channels;
 	uint8_t* image_data = stbi_load_from_memory(image_buffer, int(length), &width, &height, &channels, STBI_rgb_alpha);

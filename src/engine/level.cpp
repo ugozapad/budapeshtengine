@@ -2,6 +2,10 @@
 #include "engine/objectfactory.h"
 #include "engine/filesystem.h"
 
+#include "render/texture.h"
+
+#include <glm/glm.hpp>
+
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <stdio.h>
@@ -70,6 +74,16 @@ void Level::addEntity(Entity* entity) {
 	m_entities.push_back(entity);
 }
 
+void Level::render() {
+	for (Array<Entity*>::iterator it = m_entities.begin(); it != m_entities.end(); ++it) {
+		Entity* entity = (*it);
+		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(entity)) {
+			level_mesh->render();
+		}
+
+	}
+}
+
 ///////////////////////////////////////////////////////////////////
 // Level mesh
 
@@ -94,12 +108,35 @@ void LevelMesh::load(IReader* reader) {
 
 	diffuse_texture_path[diffuse_texture_len] = '\0';
 
+	// load texture
+	m_diffuse_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_render);
+	
+	char* path_to_texture = strstr(diffuse_texture_path, "/temp/") + strlen("/temp/");
+
+	char buffer1[MAX_PATH];
+	snprintf(buffer1, sizeof(buffer1), "data/textures/temp/%s", path_to_texture);
+	
+	IReader* texture_reader = g_file_system->openRead(buffer1);
+	m_diffuse_texture->load(texture_reader);
+
+	g_file_system->deleteReader(texture_reader);
+
 	uint32_t lightmap_texture_len = 0;
 	reader->read(&lightmap_texture_len, sizeof(lightmap_texture_len));
 	char* lightmap_texture_path = (char*)g_default_allocator->allocate(size_t(lightmap_texture_len) + 1, 1);
 	reader->read(lightmap_texture_path, lightmap_texture_len);
 
 	lightmap_texture_path[lightmap_texture_len] = '\0';
+
+	char buffer2[MAX_PATH];
+	snprintf(buffer2, sizeof(buffer2), "data/levels/%s/%s", "test_baking", lightmap_texture_path);
+
+	m_lightmap_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_render);
+
+	texture_reader = g_file_system->openRead(buffer2);
+	m_lightmap_texture->load(texture_reader);
+
+	g_file_system->deleteReader(texture_reader);
 
 	g_default_allocator->deallocate(lightmap_texture_path);
 	g_default_allocator->deallocate(diffuse_texture_path);
@@ -123,21 +160,23 @@ void LevelMesh::load(IReader* reader) {
 	vertices.resize(vertices_count);
 
 	reader->read(vertices.data(), sizeof(LevelMeshVertex_LM) * vertices_count);
-
-	//for (int i = 0; i < vertices_count; i++) {
-	//	LevelMeshVertex_LM vertex;
-	//	reader->read(&vertex, sizeof(vertex));
-	//	vertices.push_back(vertex);
-	//}
 	
 	uint32_t indices_count = 0;
 	reader->read(&indices_count, sizeof(indices_count));
+
+	m_indices_count = indices_count;
+
+	Array<uint16_t> indices(*g_default_allocator);
+	indices.resize(indices_count);
+
+	reader->read(indices.data(), indices_count * sizeof(uint16_t));
 
 	// #TODO: ???
 	//reader->seek(SeekWay::Current, indices_count);
 
 	// create gpu resource
-	createGpu(vertices);
+	createGpu_Vertex(vertices);
+	createGpu_Indices(indices);
 }
 
 void bindLightmapShader() {
@@ -189,7 +228,7 @@ void bindLightmapShader() {
 		pipeline_desc.layouts[0] = { VERTEXATTR_VEC3, SHADERSEMANTIC_POSITION };
 		pipeline_desc.layouts[1] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD0 };
 		pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD1 };
-		pipeline_desc.layout_count = sizeof(pipeline_desc.layouts) / sizeof(pipeline_desc.layouts[0]);
+		pipeline_desc.layout_count = 3;
 
 		lightmapped_generic_pipe = g_render->createPipeline(pipeline_desc);
 		if (lightmapped_generic_pipe == INVALID_PIPELINE_INDEX) {
@@ -206,18 +245,37 @@ void bindLightmapShader() {
 void LevelMesh::render() {
 	bindLightmapShader();
 
+	glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
+
+	g_render->setVSConstant(CONSTANT_MODEL_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
+	g_render->setVSConstant(CONSTANT_VIEW_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
+	g_render->setVSConstant(CONSTANT_PROJ_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
+	g_render->setVSConstant(CONSTANT_MVP_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
+
 	g_render->beginBinding();
+		g_render->setTexture(0, m_diffuse_texture->getTextureIndex());
+		g_render->setTexture(1, m_lightmap_texture->getTextureIndex());
 		g_render->setVertexBuffer(m_vertex_buffer);
+		g_render->setIndexBuffer(m_index_buffer);
 	g_render->endBinding();
 
-	g_render->draw(m_vertices_count, 0, 0);
+	g_render->draw(0, m_indices_count, 1);
 }
 
-void LevelMesh::createGpu(Array<LevelMeshVertex_LM>& vertices) {
+void LevelMesh::createGpu_Vertex(Array<LevelMeshVertex_LM>& vertices) {
 	bufferDesc_t vertex_buffer_desc = {};
 	vertex_buffer_desc.type = BUFFERTYPE_VERTEX;
 	vertex_buffer_desc.access = BUFFERACCESS_STATIC;
 	vertex_buffer_desc.data = &vertices[0];
-	vertex_buffer_desc.size = vertices.size();
+	vertex_buffer_desc.size = vertices.size() * sizeof(LevelMeshVertex_LM);
 	m_vertex_buffer = g_render->createBuffer(vertex_buffer_desc);
+}
+
+void LevelMesh::createGpu_Indices(Array<uint16_t>& indices) {
+	bufferDesc_t index_buffer_desc = {};
+	index_buffer_desc.type = BUFFERTYPE_INDEX;
+	index_buffer_desc.access = BUFFERACCESS_STATIC;
+	index_buffer_desc.data = &indices[0];
+	index_buffer_desc.size = indices.size() * sizeof(uint16_t);
+	m_index_buffer = g_render->createBuffer(index_buffer_desc);
 }
