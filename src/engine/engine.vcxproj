@@ -167,6 +167,7 @@
     <ClInclude Include="filesystem.h" />
     <ClInclude Include="input_system.h" />
     <ClInclude Include="level.h" />
+    <ClInclude Include="material_system.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="objectfactory.h" />
     <ClInclude Include="player.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="filesystem_physfs.cpp" />
     <ClCompile Include="input_system.cpp" />
     <ClCompile Include="level.cpp" />
+    <ClCompile Include="material_system.cpp" />
     <ClCompile Include="objectfactory.cpp" />
     <ClCompile Include="player.cpp" />
   </ItemGroup>

@@ -12,6 +12,7 @@
     <ClInclude Include="level.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="debug.h" />
+    <ClInclude Include="material_system.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -24,5 +25,6 @@
     <ClCompile Include="level.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="debug.cpp" />
+    <ClCompile Include="material_system.cpp" />
   </ItemGroup>
 </Project>
