@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="allocator.h" />
     <ClInclude Include="array.h" />
+    <ClInclude Include="camera.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="entity.h" />
@@ -174,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="entity.cpp" />

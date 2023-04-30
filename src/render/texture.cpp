@@ -26,7 +26,7 @@ void Texture::destroy() {
 	}
 }
 
-void Texture::load(IReader* reader) {
+void Texture::load(IReader* reader, bool repeat) {
 	reader->seek(SeekWay::End, 0);
 	size_t length = reader->tell();
 	reader->seek(SeekWay::Begin, 0);
@@ -52,6 +52,7 @@ void Texture::load(IReader* reader) {
 	texture_desc.height = height;
 	texture_desc.size = size_t(width) * size_t(height) * 4;
 	texture_desc.mipmaps_count = 0;
+	texture_desc.repeat = repeat;
 	m_textureIndex = m_render.createTexture(texture_desc);
 
 	// validate texture index

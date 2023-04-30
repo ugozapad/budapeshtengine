@@ -161,13 +161,13 @@
   <ItemGroup>
     <ClCompile Include="..\..\thirdparty\microui\src\microui.c" />
     <ClCompile Include="microui_render.c" />
-    <ClCompile Include="render.cpp" />
+    <ClCompile Include="sokol_rdev.cpp" />
     <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\thirdparty\microui\src\microui.h" />
     <ClInclude Include="microui_render.h" />
-    <ClInclude Include="render.h" />
+    <ClInclude Include="irenderdevice.h" />
     <ClInclude Include="texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

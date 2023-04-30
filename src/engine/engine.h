@@ -16,14 +16,14 @@ public:
 	void shutdown();
 
 	SDL_Window* getRenderWindow();
-
 	IInputSystem* getInputSystem();
-
 	Level* getLevel();
 
 private:
 	SDL_Window* m_render_window;
 	Level* m_level;
 };
+
+extern Engine* g_engine;
 
 #endif

@@ -84,9 +84,9 @@ enum shaderSemantic_t {
 };
 
 enum passClearFlags_t {
-	PASSCLEAR_COLOR = 1 << 0,
-	PASSCLEAR_DEPTH = 1 << 1,
-	PASSCLEAR_STENCIL = 1 << 2
+	PASSCLEAR_COLOR = 1 << 1,
+	PASSCLEAR_DEPTH = 1 << 2,
+	PASSCLEAR_STENCIL = 1 << 3
 };
 
 enum textureType_t {
@@ -142,6 +142,7 @@ struct textureDesc_t {
 	int width;
 	int height;
 	int mipmaps_count;
+	bool repeat;
 };
 
 struct viewport_t {
@@ -157,7 +158,6 @@ public:
 	virtual void shutdown() = 0;
 
 	virtual void uiFrame() = 0;
-	virtual void renderFrame() = 0;
 
 	// Draw API
 
@@ -198,7 +198,7 @@ public:
 	virtual void endBinding() = 0;
 
 	// Pass API
-	virtual void beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) = 0;
+	virtual void beginPass(const viewport_t& viewport, int pass_clear_flags) = 0;
 	virtual void endPass() = 0;
 
 	// Core API

@@ -1,6 +1,8 @@
 #include "engine/level.h"
 #include "engine/objectfactory.h"
 #include "engine/filesystem.h"
+#include "engine/engine.h"
+#include "engine/camera.h"
 
 #include "render/texture.h"
 
@@ -108,6 +110,11 @@ void LevelMesh::load(IReader* reader) {
 
 	diffuse_texture_path[diffuse_texture_len] = '\0';
 
+	for (int i = 0; i < diffuse_texture_len; i++) {
+		if (diffuse_texture_path[i] == '\\')
+			diffuse_texture_path[i] = '/';
+	}
+
 	// load texture
 	m_diffuse_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_render_device);
 	
@@ -117,7 +124,7 @@ void LevelMesh::load(IReader* reader) {
 	snprintf(buffer1, sizeof(buffer1), "data/textures/temp/%s", path_to_texture);
 	
 	IReader* texture_reader = g_file_system->openRead(buffer1);
-	m_diffuse_texture->load(texture_reader);
+	m_diffuse_texture->load(texture_reader, true);
 
 	g_file_system->deleteReader(texture_reader);
 
@@ -128,13 +135,18 @@ void LevelMesh::load(IReader* reader) {
 
 	lightmap_texture_path[lightmap_texture_len] = '\0';
 
+	for (int i = 0; i < lightmap_texture_len; i++) {
+		if (lightmap_texture_path[i] == '\\')
+			lightmap_texture_path[i] = '/';
+	}
+
 	char buffer2[MAX_PATH];
 	snprintf(buffer2, sizeof(buffer2), "data/levels/%s/%s", "test_baking", lightmap_texture_path);
 
 	m_lightmap_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_render_device);
 
 	texture_reader = g_file_system->openRead(buffer2);
-	m_lightmap_texture->load(texture_reader);
+	m_lightmap_texture->load(texture_reader, false);
 
 	g_file_system->deleteReader(texture_reader);
 
@@ -242,15 +254,36 @@ void bindLightmapShader() {
 	g_render_device->setPipeline(lightmapped_generic_pipe);
 }
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 void LevelMesh::render() {
 	bindLightmapShader();
 
 	glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
 
+	glm::vec3 cameraPos = glm::vec3(5.0f, 7.0f, 5.0f);
+	g_camera.setPosition(cameraPos);
+
+	// calculate aspect ratio
+	int width = 0, height = 0;
+	SDL_GetWindowSize(g_engine->getRenderWindow(), &width, &height);
+
+	float aspectRatio = (float)width / (float)height;
+
+	// calculate projection matrix
+	glm::mat4 proj = s_mat4_idenitity;
+	proj = glm::perspective(glm::radians(75.0f), aspectRatio, 0.1f, 1000.0f);
+
+	// calculate model view projection matrix
+	glm::mat4 mvp = s_mat4_idenitity;
+	mvp = proj * g_camera.getViewMatrix() * s_mat4_idenitity;
+
 	g_render_device->setVSConstant(CONSTANT_MODEL_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
 	g_render_device->setVSConstant(CONSTANT_VIEW_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
 	g_render_device->setVSConstant(CONSTANT_PROJ_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
-	g_render_device->setVSConstant(CONSTANT_MVP_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
+
+	g_render_device->setVSConstant(CONSTANT_MVP_MATRIX, &mvp[0], MATRIX4_SIZE);
 
 	g_render_device->beginBinding();
 		g_render_device->setTexture(0, m_diffuse_texture->getTextureIndex());

@@ -61,6 +61,7 @@ private:
 FileWriter::FileWriter(const char* filename) :
 	m_file_handle(nullptr) {
 	m_file_handle = fopen(filename, "wb");
+	ASSERT_MSG(m_file_handle, "TODO: Return null ptr instead FileReader instance when file doesn't exist on disk.");
 }
 
 FileWriter::~FileWriter() {

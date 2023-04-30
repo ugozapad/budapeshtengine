@@ -13,6 +13,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="material_system.h" />
+    <ClInclude Include="camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -26,5 +27,6 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="material_system.cpp" />
+    <ClCompile Include="camera.cpp" />
   </ItemGroup>
 </Project>

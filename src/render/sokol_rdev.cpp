@@ -1,6 +1,6 @@
 #include "engine/debug.h"
 #include "engine/allocator.h"
-#include "render/render.h"
+#include "render/irenderdevice.h"
 
 extern "C" {
 #include "render/microui_render.h"
@@ -22,9 +22,7 @@ extern "C" {
 class SokolRenderDevice : public IRenderDevice {
 public:
 	SokolRenderDevice() :
-		m_default_clear_color_pass{0}
-	,	m_default_clear_color_depth_pass{0}
-	,	m_bindings{0}
+		m_bindings{0}
 	,	m_gl_context(nullptr)
 	,	m_bindings_begin(false)
 	{
@@ -39,7 +37,6 @@ public:
 	void shutdown() override;
 
 	void uiFrame() override;
-	void renderFrame() override;
 	void draw(int base_element, int num_elements, int num_instances) override;
 
 	bufferIndex_t createBuffer(const bufferDesc_t& buffer_desc) override;
@@ -63,7 +60,7 @@ public:
 	void setTexture(int index, textureIndex_t texture) override;
 	void endBinding() override;
 
-	void beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) override;
+	void beginPass(const viewport_t& viewport, int pass_clear_flags) override;
 	void endPass() override;
 	void commit() override;
 	void present(bool vsync) override;
@@ -71,8 +68,6 @@ public:
 private:
 	SDL_Window* m_render_window;
 	SDL_GLContext m_gl_context;
-	sg_pass_action m_default_clear_color_pass;
-	sg_pass_action m_default_clear_color_depth_pass;
 	sg_bindings m_bindings;
 
 	bool m_bindings_begin;
@@ -96,14 +91,13 @@ void SokolRenderDevice::init(SDL_Window* render_window) {
 	desc.logger.func = slog_func;
 	sg_setup(desc);
 
-	// initialize passes
-	m_default_clear_color_pass.colors[0].action = SG_ACTION_CLEAR;
-	m_default_clear_color_pass.colors[0].value = { 0.5f, 0.5f, 0.5f, 1.0f };
+#ifdef SOKOL_GLCORE33
+	const char* api_name = "OpenGL 3.3 Core Profile";
+#elif SOKOL_D3D11
+	const char* api_name = "Direct3D 11";
+#endif // SOKOL_GLCORE33
 
-	m_default_clear_color_depth_pass.colors[0].action = SG_ACTION_CLEAR;
-	m_default_clear_color_depth_pass.colors[0].value = { 0.5f, 0.5f, 0.5f, 1.0f };
-	m_default_clear_color_depth_pass.depth.action = SG_ACTION_CLEAR;
-	m_default_clear_color_depth_pass.depth.value = 1.0f;
+	printf("SokolRenderDevice created, API %s\n", api_name);
 
 	// initialize microui
 	MicroUIRender_init();
@@ -126,20 +120,6 @@ void SokolRenderDevice::uiFrame() {
 	SDL_GetWindowSize(m_render_window, &w, &h);
 
 	MicroUIRender_draw(w, h);
-}
-
-void SokolRenderDevice::renderFrame() {
-
-
-//	sg_begin_default_pass(&m_default_clear_pass, w, h);
-
-		
-
-	//sg_end_pass();
-	//sg_commit();
-
-	// swap buffer
-//	SDL_GL_SwapWindow(m_render_window);
 }
 
 void SokolRenderDevice::draw(int base_element, int num_elements, int num_instances) {
@@ -439,6 +419,9 @@ pipelineIndex_t SokolRenderDevice::createPipeline(const pipelineDesc_t& pipeline
 	// force indices to uint16
 	pipeline_backend_desc.index_type = SG_INDEXTYPE_UINT16;
 
+	pipeline_backend_desc.depth.write_enabled = true;
+	pipeline_backend_desc.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;
+
 	// get backend shader
 	sg_shader shader_backend = getShaderFromIndex(pipeline_desc.shader);
 	pipeline_backend_desc.shader = shader_backend;
@@ -537,8 +520,16 @@ textureIndex_t SokolRenderDevice::createTexture(const textureDesc_t& texture_des
 	image_backend_desc.usage = SG_USAGE_IMMUTABLE; 	// for now all textures is immutable
 	image_backend_desc.min_filter = SG_FILTER_LINEAR;
 	image_backend_desc.mag_filter = SG_FILTER_LINEAR;
-	image_backend_desc.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
-	image_backend_desc.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
+
+	if (texture_desc.repeat) {
+		image_backend_desc.wrap_u = SG_WRAP_REPEAT;
+		image_backend_desc.wrap_v = SG_WRAP_REPEAT;
+		image_backend_desc.wrap_w = SG_WRAP_REPEAT;
+	} else {
+		image_backend_desc.wrap_u = SG_WRAP_CLAMP_TO_BORDER;
+		image_backend_desc.wrap_v = SG_WRAP_CLAMP_TO_BORDER;
+		image_backend_desc.wrap_w = SG_WRAP_CLAMP_TO_BORDER;
+	}
 
 	// fill data
 	image_backend_desc.data.subimage[0][0].ptr = texture_desc.data;
@@ -623,7 +614,7 @@ void SokolRenderDevice::endBinding() {
 	m_bindings_begin = false;
 }
 
-void SokolRenderDevice::beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) {
+void SokolRenderDevice::beginPass(const viewport_t& viewport, int pass_clear_flags) {
 	sg_pass_action pass_action = {};
 
 	if (pass_clear_flags & PASSCLEAR_COLOR) {
@@ -647,6 +638,8 @@ void SokolRenderDevice::commit() {
 }
 
 void SokolRenderDevice::present(bool vsync) {
+#ifdef SOKOL_GLCORE33
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 	SDL_GL_SwapWindow(m_render_window);
+#endif // SOKOL_GLCORE33
 }

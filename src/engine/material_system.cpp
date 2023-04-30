@@ -7,7 +7,7 @@
 #include "engine/filesystem.h"
 #include "engine/material_system.h"
 #include "render/texture.h"
-#include "render/render.h"
+#include "render/irenderdevice.h"
 
 enum textureFileFormats_t {
 	TEXEXT_PNG,
@@ -53,7 +53,7 @@ void MaterialSystem::Init() {
 	IReader* reader = g_file_system->openRead(buffer);
 	ASSERT(reader);
 
-	m_notex->load(reader);
+	m_notex->load(reader, false);
 
 	// close reader
 	g_file_system->deleteReader(reader);
@@ -63,4 +63,8 @@ void MaterialSystem::Shutdown() {
 	if (m_notex) {
 		MEM_DELETE(*g_default_allocator, Texture, m_notex);
 	}
+}
+
+Texture* MaterialSystem::LoadTexture(const char* filename) {
+	return nullptr;
 }

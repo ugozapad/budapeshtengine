@@ -15,14 +15,17 @@
 #define DBG_STR
 #endif // !NDEBUG
 
+Engine* g_engine = nullptr;
 
 Engine::Engine() :
     m_render_window(nullptr),
 	m_level(nullptr)
 {
+	g_engine = this;
 }
 
 Engine::~Engine() {
+	g_engine = nullptr;
 }
 
 void Engine::init(int width, int height, bool fullscreen) {

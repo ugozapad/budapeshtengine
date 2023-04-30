@@ -5,7 +5,7 @@
 #include "engine/array.h"
 #include "engine/entity.h"
 
-#include "render/render.h"
+#include "render/irenderdevice.h"
 
 class IReader;
 class Texture;
