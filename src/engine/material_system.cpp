@@ -47,7 +47,7 @@ void MaterialSystem::Init() {
 		exit(-1);
 	}
 
-	m_notex = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_render);
+	m_notex = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_render_device);
 
 	// open reader
 	IReader* reader = g_file_system->openRead(buffer);

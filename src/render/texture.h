@@ -6,11 +6,11 @@
 class IAllocator;
 class IReader;
 class IWriter;
-class IRender;
+class IRenderDevice;
 
 class Texture {
 public:
-	Texture(IAllocator& allocator, IRender& render);
+	Texture(IAllocator& allocator, IRenderDevice& render);
 	~Texture();
 
 	void destroy();
@@ -23,7 +23,7 @@ public:
 
 private:
 	IAllocator& m_allocator;
-	IRender& m_render;
+	IRenderDevice& m_render;
 	textureIndex_t m_textureIndex;
 };
 

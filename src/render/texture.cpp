@@ -8,7 +8,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-Texture::Texture(IAllocator& allocator, IRender& render) :
+Texture::Texture(IAllocator& allocator, IRenderDevice& render) :
 	m_allocator(allocator)
 ,	m_render(render)
 ,	m_textureIndex(INVALID_TEXTURE_INDEX)

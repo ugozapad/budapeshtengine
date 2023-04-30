@@ -19,20 +19,20 @@ extern "C" {
 
 #include "SDL.h"
 
-class Render : public IRender {
+class SokolRenderDevice : public IRenderDevice {
 public:
-	Render() :
+	SokolRenderDevice() :
 		m_default_clear_color_pass{0}
 	,	m_default_clear_color_depth_pass{0}
 	,	m_bindings{0}
 	,	m_gl_context(nullptr)
 	,	m_bindings_begin(false)
 	{
-		g_render = this;
+		g_render_device = this;
 	}
 
-	~Render() {
-		g_render = nullptr;
+	~SokolRenderDevice() {
+		g_render_device = nullptr;
 	}
 
 	void init(SDL_Window* render_window) override;
@@ -78,13 +78,13 @@ private:
 	bool m_bindings_begin;
 };
 
-IRender* g_render = nullptr;
+IRenderDevice* g_render_device = nullptr;
 
-IRender* createRender() {
-	return MEM_NEW(*g_default_allocator, Render);
+IRenderDevice* createRenderDevice() {
+	return MEM_NEW(*g_default_allocator, SokolRenderDevice);
 }
 
-void Render::init(SDL_Window* render_window) {
+void SokolRenderDevice::init(SDL_Window* render_window) {
 	m_render_window = render_window;
 
 	// create render context
@@ -109,7 +109,7 @@ void Render::init(SDL_Window* render_window) {
 	MicroUIRender_init();
 }
 
-void Render::shutdown() {
+void SokolRenderDevice::shutdown() {
 	// shutdown microui
 	MicroUIRender_shutdown();
 
@@ -121,14 +121,14 @@ void Render::shutdown() {
 	SDL_GL_DeleteContext(m_gl_context);
 }
 
-void Render::uiFrame() {
+void SokolRenderDevice::uiFrame() {
 	int w = 0, h = 0;
 	SDL_GetWindowSize(m_render_window, &w, &h);
 
 	MicroUIRender_draw(w, h);
 }
 
-void Render::renderFrame() {
+void SokolRenderDevice::renderFrame() {
 
 
 //	sg_begin_default_pass(&m_default_clear_pass, w, h);
@@ -142,7 +142,7 @@ void Render::renderFrame() {
 //	SDL_GL_SwapWindow(m_render_window);
 }
 
-void Render::draw(int base_element, int num_elements, int num_instances) {
+void SokolRenderDevice::draw(int base_element, int num_elements, int num_instances) {
 	sg_draw(base_element, num_elements, num_instances);
 }
 
@@ -184,7 +184,7 @@ sg_buffer getBufferFromIndex(bufferIndex_t index) {
 	return sg_buffer{0};
 }
 
-bufferIndex_t Render::createBuffer(const bufferDesc_t& buffer_desc) {
+bufferIndex_t SokolRenderDevice::createBuffer(const bufferDesc_t& buffer_desc) {
 	// fill buffer data structure
 	sg_range buffer_data = {0};
 	buffer_data.ptr = buffer_desc.data;
@@ -236,7 +236,7 @@ bufferIndex_t Render::createBuffer(const bufferDesc_t& buffer_desc) {
 	return pushBuffer(buffer_backend);
 }
 
-void Render::deleteBuffer(bufferIndex_t buffer_index) {
+void SokolRenderDevice::deleteBuffer(bufferIndex_t buffer_index) {
 	sg_buffer buffer_backend = getBufferFromIndex(buffer_index);
 	if (sg_query_buffer_state(buffer_backend) != SG_RESOURCESTATE_VALID) {
 		// ERROR: woops... we try to delete already destroyed buffer.
@@ -249,7 +249,7 @@ void Render::deleteBuffer(bufferIndex_t buffer_index) {
 	popBuffer(buffer_index);
 }
 
-void Render::updateBuffer(bufferIndex_t buffer_index, void* data, size_t size) {
+void SokolRenderDevice::updateBuffer(bufferIndex_t buffer_index, void* data, size_t size) {
 	sg_buffer buffer_backend = getBufferFromIndex(buffer_index);
 	if (sg_query_buffer_state(buffer_backend) != SG_RESOURCESTATE_VALID) {
 		// ERROR: buffer invalid for some reason
@@ -330,7 +330,7 @@ void fillFSParams(sg_shader_desc& shader_desc) {
 	image2.name = "u_lightmap_texture";
 }
 
-shaderIndex_t Render::createShader(const shaderDesc_t& shader_desc) {
+shaderIndex_t SokolRenderDevice::createShader(const shaderDesc_t& shader_desc) {
 	sg_shader_desc shader_backend_desc = {0};
 	shader_backend_desc.vs.source = shader_desc.vertex_shader_data;
 
@@ -348,7 +348,7 @@ shaderIndex_t Render::createShader(const shaderDesc_t& shader_desc) {
 	return pushShader(shader_backend);
 }
 
-void Render::deleteShader(shaderIndex_t shader) {
+void SokolRenderDevice::deleteShader(shaderIndex_t shader) {
 	sg_shader shader_backend = getShaderFromIndex(shader);
 	if (sg_query_shader_state(shader_backend) != SG_RESOURCESTATE_VALID) {
 		// ERROR: woops... we try to delete already destroyed shader.
@@ -361,7 +361,7 @@ void Render::deleteShader(shaderIndex_t shader) {
 	popShader(shader);
 }
 
-void Render::setVSConstant(int ub_index, const void* data, size_t size)
+void SokolRenderDevice::setVSConstant(int ub_index, const void* data, size_t size)
 {
 	sg_range vs_param_range = {};
 	vs_param_range.ptr = data;
@@ -433,7 +433,7 @@ static sg_vertex_format s_vertex_formats_gl[VERTEXATTR_MAX] = {
 	SG_VERTEXFORMAT_FLOAT4
 };
 
-pipelineIndex_t Render::createPipeline(const pipelineDesc_t& pipeline_desc) {
+pipelineIndex_t SokolRenderDevice::createPipeline(const pipelineDesc_t& pipeline_desc) {
 	sg_pipeline_desc pipeline_backend_desc = {};
 	
 	// force indices to uint16
@@ -444,7 +444,7 @@ pipelineIndex_t Render::createPipeline(const pipelineDesc_t& pipeline_desc) {
 	pipeline_backend_desc.shader = shader_backend;
 
 	if (pipeline_desc.layout_count == 0) {
-		printf("Render::createPipeline: ERROR: pipeline_desc.layout_count == 0\n");
+		printf("SokolRenderDevice::createPipeline: ERROR: pipeline_desc.layout_count == 0\n");
 		return INVALID_PIPELINE_INDEX;
 	}
 
@@ -464,7 +464,7 @@ pipelineIndex_t Render::createPipeline(const pipelineDesc_t& pipeline_desc) {
 	return pushPipeline(pipeline_backend);
 }
 
-void Render::deletePipeline(pipelineIndex_t pipeline) {
+void SokolRenderDevice::deletePipeline(pipelineIndex_t pipeline) {
 	sg_pipeline pipeline_backend = getPipelineFromIndex(pipeline);
 	if (sg_query_pipeline_state(pipeline_backend) != SG_RESOURCESTATE_VALID) {
 		// ERROR: woops... we try to delete already destroyed pipeline.
@@ -518,14 +518,14 @@ static sg_pixel_format s_sg_pixel_formats[TEXTUREFORMAT_MAX] = {
 	SG_PIXELFORMAT_RGBA8
 };
 
-textureIndex_t Render::createTexture(const textureDesc_t& texture_desc) {
+textureIndex_t SokolRenderDevice::createTexture(const textureDesc_t& texture_desc) {
 	if (texture_desc.format >= TEXTUREFORMAT_MAX) {
-		printf("Render::createTexture: ERROR: unknowed texture format!\n");
+		printf("SokolRenderDevice::createTexture: ERROR: unknowed texture format!\n");
 		__debugbreak();
 	}
 
 	if (texture_desc.type == TEXTURETYPE_1D) {
-		printf("Render::createTexture: ERROR: TEXTURETYPE_1D is unsupported!\n");
+		printf("SokolRenderDevice::createTexture: ERROR: TEXTURETYPE_1D is unsupported!\n");
 		__debugbreak();
 	}
 
@@ -554,7 +554,7 @@ textureIndex_t Render::createTexture(const textureDesc_t& texture_desc) {
 	return pushImage(image_backend);
 }
 
-void Render::deleteTexture(textureIndex_t texture) {
+void SokolRenderDevice::deleteTexture(textureIndex_t texture) {
 	sg_image image_backend = getImageFromIndex(texture);
 	if (sg_query_image_state(image_backend) != SG_RESOURCESTATE_VALID) {
 		// ERROR: woops... we try to delete already destroyed image.
@@ -567,9 +567,9 @@ void Render::deleteTexture(textureIndex_t texture) {
 	popImage(texture);
 }
 
-void Render::beginBinding() {
+void SokolRenderDevice::beginBinding() {
 	if (m_bindings_begin) {
-		printf("Render::beginBinding: calling beginBinding without end previous bindings\n");
+		printf("SokolRenderDevice::beginBinding: calling beginBinding without end previous bindings\n");
 		__debugbreak();
 	}
 
@@ -578,7 +578,7 @@ void Render::beginBinding() {
 	m_bindings = {};
 }
 
-void Render::setVertexBuffer(bufferIndex_t buffer_index) {
+void SokolRenderDevice::setVertexBuffer(bufferIndex_t buffer_index) {
 	sg_buffer buffer_backend = getBufferFromIndex(buffer_index);
 	if (sg_query_buffer_state(buffer_backend) != SG_RESOURCESTATE_VALID) {
 		// ERROR: buffer invalid for some reason
@@ -588,7 +588,7 @@ void Render::setVertexBuffer(bufferIndex_t buffer_index) {
 	m_bindings.vertex_buffers[0] = buffer_backend;
 }
 
-void Render::setIndexBuffer(bufferIndex_t buffer_index) {
+void SokolRenderDevice::setIndexBuffer(bufferIndex_t buffer_index) {
 	sg_buffer buffer_backend = getBufferFromIndex(buffer_index);
 	if (sg_query_buffer_state(buffer_backend) != SG_RESOURCESTATE_VALID) {
 		// ERROR: buffer invalid for some reason
@@ -598,7 +598,7 @@ void Render::setIndexBuffer(bufferIndex_t buffer_index) {
 	m_bindings.index_buffer = buffer_backend;
 }
 
-void Render::setPipeline(pipelineIndex_t pipeline) {
+void SokolRenderDevice::setPipeline(pipelineIndex_t pipeline) {
 	sg_pipeline pipeline_backend = getPipelineFromIndex(pipeline);
 	if (sg_query_pipeline_state(pipeline_backend) != SG_RESOURCESTATE_VALID) {
 		// ERROR: pipeline invalid for some reason
@@ -608,22 +608,22 @@ void Render::setPipeline(pipelineIndex_t pipeline) {
 	sg_apply_pipeline(pipeline_backend);
 }
 
-void Render::setTexture(int index, textureIndex_t texture) {
+void SokolRenderDevice::setTexture(int index, textureIndex_t texture) {
 	ASSERT(index <= SG_MAX_SHADERSTAGE_IMAGES);
 	sg_image image_backend = getImageFromIndex(texture);
 	m_bindings.fs_images[index] = image_backend;
 }
 
-void Render::endBinding() {
+void SokolRenderDevice::endBinding() {
 	if (!m_bindings_begin) {
-		printf("Render::endBinding: calling endBinding without beginBindings\n");
+		printf("SokolRenderDevice::endBinding: calling endBinding without beginBindings\n");
 		__debugbreak();
 	}
 	sg_apply_bindings(&m_bindings);
 	m_bindings_begin = false;
 }
 
-void Render::beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) {
+void SokolRenderDevice::beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) {
 	sg_pass_action pass_action = {};
 
 	if (pass_clear_flags & PASSCLEAR_COLOR) {
@@ -638,15 +638,15 @@ void Render::beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_f
 	sg_begin_default_pass(&pass_action, viewport.width, viewport.height);
 }
 
-void Render::endPass() {
+void SokolRenderDevice::endPass() {
 	sg_end_pass();
 }
 
-void Render::commit() {
+void SokolRenderDevice::commit() {
 	sg_commit();
 }
 
-void Render::present(bool vsync) {
+void SokolRenderDevice::present(bool vsync) {
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 	SDL_GL_SwapWindow(m_render_window);
 }

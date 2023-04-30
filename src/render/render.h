@@ -149,9 +149,9 @@ struct viewport_t {
 };
 
 //! Interface to renderer
-class IRender {
+class IRenderDevice {
 public:
-	virtual ~IRender() {}
+	virtual ~IRenderDevice() {}
 
 	virtual void init(SDL_Window* render_window) = 0;
 	virtual void shutdown() = 0;
@@ -208,8 +208,8 @@ public:
 	virtual void present(bool vsync) = 0;
 };
 
-extern IRender* g_render;
+extern IRenderDevice* g_render_device;
 
-IRender* createRender();
+IRenderDevice* createRenderDevice();
 
 #endif
