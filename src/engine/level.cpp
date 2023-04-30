@@ -23,7 +23,7 @@ Level::~Level()
 void Level::load(const char* levelname) {
 	IReader* reader;
 	char levelpath[512];
-	sprintf(levelpath, "data/levels/%s/", levelname);
+	snprintf(levelpath, 512, "data/levels/%s/", levelname);
 	size_t const pathend = strlen(levelpath);
 	
 	strcpy(levelpath + pathend, "level.lmf");
