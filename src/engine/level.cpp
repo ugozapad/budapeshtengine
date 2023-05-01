@@ -172,6 +172,13 @@ void LevelMesh::load(IReader* reader) {
 	vertices.resize(vertices_count);
 
 	reader->read(vertices.data(), sizeof(LevelMeshVertex_LM) * vertices_count);
+
+	int counter = 0;
+	for (Array<LevelMeshVertex_LM>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
+		LevelMeshVertex_LM& vertex = (*it);
+		//printf("%i:\t%f\t%f\n", counter, vertex.texcoord1.x, vertex.texcoord1.y);
+		counter++;
+	}
 	
 	uint32_t indices_count = 0;
 	reader->read(&indices_count, sizeof(indices_count));

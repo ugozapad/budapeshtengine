@@ -422,6 +422,8 @@ pipelineIndex_t SokolRenderDevice::createPipeline(const pipelineDesc_t& pipeline
 	pipeline_backend_desc.depth.write_enabled = true;
 	pipeline_backend_desc.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;
 
+	pipeline_backend_desc.cull_mode = SG_CULLMODE_FRONT;
+
 	// get backend shader
 	sg_shader shader_backend = getShaderFromIndex(pipeline_desc.shader);
 	pipeline_backend_desc.shader = shader_backend;
@@ -525,8 +527,8 @@ textureIndex_t SokolRenderDevice::createTexture(const textureDesc_t& texture_des
 		image_backend_desc.wrap_v = SG_WRAP_REPEAT;
 		//image_backend_desc.wrap_w = SG_WRAP_REPEAT;
 	} else {
-		image_backend_desc.wrap_u = SG_WRAP_CLAMP_TO_BORDER;
-		image_backend_desc.wrap_v = SG_WRAP_CLAMP_TO_BORDER;
+		image_backend_desc.wrap_u = SG_WRAP_CLAMP_TO_EDGE;
+		image_backend_desc.wrap_v = SG_WRAP_CLAMP_TO_EDGE;
 		//image_backend_desc.wrap_w = SG_WRAP_CLAMP_TO_BORDER;
 	}
 
