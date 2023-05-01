@@ -520,15 +520,14 @@ textureIndex_t SokolRenderDevice::createTexture(const textureDesc_t& texture_des
 	image_backend_desc.usage = SG_USAGE_IMMUTABLE; 	// for now all textures is immutable
 	image_backend_desc.min_filter = SG_FILTER_LINEAR;
 	image_backend_desc.mag_filter = SG_FILTER_LINEAR;
-
 	if (texture_desc.repeat) {
 		image_backend_desc.wrap_u = SG_WRAP_REPEAT;
 		image_backend_desc.wrap_v = SG_WRAP_REPEAT;
-		image_backend_desc.wrap_w = SG_WRAP_REPEAT;
+		//image_backend_desc.wrap_w = SG_WRAP_REPEAT;
 	} else {
 		image_backend_desc.wrap_u = SG_WRAP_CLAMP_TO_BORDER;
 		image_backend_desc.wrap_v = SG_WRAP_CLAMP_TO_BORDER;
-		image_backend_desc.wrap_w = SG_WRAP_CLAMP_TO_BORDER;
+		//image_backend_desc.wrap_w = SG_WRAP_CLAMP_TO_BORDER;
 	}
 
 	// fill data
