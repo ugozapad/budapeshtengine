@@ -3,6 +3,7 @@
 #include "engine/filesystem.h"
 #include "engine/engine.h"
 #include "engine/camera.h"
+#include "engine/debug.h"
 
 #include "render/texture.h"
 
@@ -61,15 +62,13 @@ Entity* Level::createEntity() {
 
 void Level::addEntity(Entity* entity) {
 	if (!entity) {
-		printf("Level::addEntity: failed to add null ptr entity\n");
-		DebugBreak();
+		FATAL("Level::addEntity: failed to add null ptr entity");
 	}
 
 	size_t entity_count = m_entities.size();
 	for (size_t i = 0; i < entity_count; i++) {
 		if (m_entities[i] == entity) {
-			printf("Level::addEntity: entity (classname=%s ptr=0x%p) already exists\n", entity->getClassName(), entity);
-			DebugBreak();
+			FATAL("Level::addEntity: entity (classname=%s ptr=0x%p) already exists", entity->getClassName(), entity);
 		}
 	}
 
@@ -227,8 +226,7 @@ void bindLightmapShader() {
 
 		lightmapped_generic_shader = g_render_device->createShader(shader_desc);
 		if (lightmapped_generic_shader == INVALID_SHADER_INDEX) {
-			printf("!!! lightmapped_generic_shader == INVALID_SHADER_INDEX\n");
-			DebugBreak();
+			FATAL("!!! lightmapped_generic_shader == INVALID_SHADER_INDEX");
 		}
 
 		// free data
@@ -244,8 +242,7 @@ void bindLightmapShader() {
 
 		lightmapped_generic_pipe = g_render_device->createPipeline(pipeline_desc);
 		if (lightmapped_generic_pipe == INVALID_PIPELINE_INDEX) {
-			printf("!!! lightmapped_generic_pipe == INVALID_PIPELINE_INDEX\n");
-			DebugBreak();
+			FATAL("!!! lightmapped_generic_pipe == INVALID_PIPELINE_INDEX");
 		}
 
 		is_lightmapped_shader_inited = true;
