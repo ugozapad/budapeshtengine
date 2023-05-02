@@ -4,6 +4,7 @@
 #include "engine/engine.h"
 #include "engine/camera.h"
 #include "engine/debug.h"
+#include "engine/shader_engine.h"
 
 #include "render/texture.h"
 
@@ -194,6 +195,7 @@ void LevelMesh::load(IReader* reader) {
 }
 
 void bindLightmapShader() {
+	/*
 	static bool is_lightmapped_shader_inited = false;
 	static shaderIndex_t lightmapped_generic_shader = INVALID_SHADER_INDEX;
 	static pipelineIndex_t lightmapped_generic_pipe = INVALID_PIPELINE_INDEX;
@@ -250,8 +252,9 @@ void bindLightmapShader() {
 
 		is_lightmapped_shader_inited = true;
 	}
-
-	g_render_device->setPipeline(lightmapped_generic_pipe);
+	*/
+	ShaderData sd = g_pShaderEngine->loadShader("lightmapped_generic");
+	g_render_device->setPipeline(sd.pipelineIndex);
 }
 
 #include <glm/glm.hpp>

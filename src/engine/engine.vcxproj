@@ -172,6 +172,7 @@
     <ClInclude Include="object.h" />
     <ClInclude Include="objectfactory.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="shader_engine.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -186,6 +187,7 @@
     <ClCompile Include="material_system.cpp" />
     <ClCompile Include="objectfactory.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="shader_engine.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
