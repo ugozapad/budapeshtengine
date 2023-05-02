@@ -92,7 +92,10 @@ LevelMesh::LevelMesh() :
 	m_vertex_buffer(INVALID_BUFFER_INDEX),
 	m_index_buffer(INVALID_BUFFER_INDEX),
 	m_vertices_count(0),
-	m_mesh_name(nullptr)
+	m_mesh_name(nullptr),
+	m_diffuse_texture(NULL),
+	m_lightmap_texture(NULL),
+	m_indices_count(0)
 {
 }
 
