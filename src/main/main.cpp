@@ -84,6 +84,8 @@ int Main::init(int argc, char* argv[]) {
 }
 
 void Main::shutdown() {
+	MEM_DELETE(*g_default_allocator, ShaderEngine, g_pShaderEngine);
+
 	m_render_device->shutdown();
 	MEM_DELETE(*g_default_allocator, IRenderDevice, m_render_device);
 

@@ -13,7 +13,7 @@ ShaderEngine::ShaderEngine(const char* renderName)
 
 ShaderEngine::~ShaderEngine()
 {
-
+	m_shaders.clear();
 }
 
 ShaderData ShaderEngine::loadShader(const char* shaderName)
