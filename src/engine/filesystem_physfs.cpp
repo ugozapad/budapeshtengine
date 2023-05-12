@@ -1,12 +1,13 @@
-#if 0
+#ifdef ENABLE_PHYSFS
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+#include <SDL.h>
+#include <physfs.h>
 
+#include <stdio.h>
+
+#include "engine/debug.h"
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
-
-#include <physfs.h>
 
 // File reader
 class FileReaderPhysFS : public IReader {
@@ -24,6 +25,7 @@ private:
 FileReaderPhysFS::FileReaderPhysFS(const char* filename) :
 	m_file_handle(nullptr) {
 	m_file_handle = PHYSFS_openRead(filename);
+	ASSERT_MSG(m_file_handle, "Unable to open file %s", filename);
 }
 
 FileReaderPhysFS::~FileReaderPhysFS() {
@@ -78,6 +80,7 @@ private:
 FileWriterPhysFS::FileWriterPhysFS(const char* filename) :
 	m_file_handle(nullptr) {
 	m_file_handle = PHYSFS_openWrite(filename);
+	ASSERT_MSG(m_file_handle, "Unable to open file %s", filename);
 }
 
 FileWriterPhysFS::~FileWriterPhysFS() {
@@ -142,13 +145,19 @@ FileSystemPhysFS::FileSystemPhysFS(IAllocator& allocator) :
 	m_allocator(&allocator) {
 	PHYSFS_init(NULL);
 
-#ifdef WIN32
-	char buffer[1024];
-	GetCurrentDirectoryA(sizeof(buffer), buffer);
-	PHYSFS_addToSearchPath(buffer, 0);
-#endif // WIN32
+	const char* current_directory = SDL_GetBasePath();
+	printf("Current path: %s\n", current_directory);
+	PHYSFS_mount(current_directory, nullptr, 0);
 
-	PHYSFS_addToSearchPath("data.zip", 1);
+	// mount arhives
+#if 0
+	char** fileList = PHYSFS_enumerateFiles(PHYSFS_getBaseDir());
+	for (char** it = fileList; it != nullptr; it++)
+	{
+		if (SDL_strstr(*it, ".zip"))
+			PHYSFS_mount(*it, nullptr, 1);
+	}
+#endif
 }
 
 FileSystemPhysFS::~FileSystemPhysFS() {
@@ -174,4 +183,5 @@ void FileSystemPhysFS::deleteReader(IReader*& reader) {
 void FileSystemPhysFS::deleteWriter(IWriter*& writer) {
 	MEM_DELETE(*m_allocator, IWriter, writer);
 }
-#endif
+
+#endif // ENABLE_PHYSFS

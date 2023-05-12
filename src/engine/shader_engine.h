@@ -9,6 +9,7 @@
 
 #include <Windows.h>
 #include <map>
+#include <string>
 
 struct ShaderData // 8 bytes, it fits in u64, so we can return it just by value
 {
