@@ -22,8 +22,8 @@ public:
 	textureIndex_t getTextureIndex() { return m_textureIndex; }
 
 private:
-	IAllocator& m_allocator;
-	IRenderDevice& m_render;
+	IAllocator* m_allocator;
+	IRenderDevice* m_render;
 	textureIndex_t m_textureIndex;
 };
 

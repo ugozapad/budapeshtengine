@@ -1,3 +1,4 @@
+#include "engine/debug.h"
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
 #include "render/texture.h"
@@ -9,8 +10,8 @@
 #include "stb_image_write.h"
 
 Texture::Texture(IAllocator& allocator, IRenderDevice& render) :
-	m_allocator(allocator)
-,	m_render(render)
+	m_allocator(&allocator)
+,	m_render(&render)
 ,	m_textureIndex(INVALID_TEXTURE_INDEX)
 {
 }
@@ -21,7 +22,7 @@ Texture::~Texture() {
 
 void Texture::destroy() {
 	if (m_textureIndex != INVALID_TEXTURE_INDEX) {
-		m_render.deleteTexture(m_textureIndex);
+		m_render->deleteTexture(m_textureIndex);
 		m_textureIndex = INVALID_TEXTURE_INDEX;
 	}
 }
@@ -32,7 +33,7 @@ void Texture::load(IReader* reader, bool repeat) {
 	reader->seek(SeekWay::Begin, 0);
 
 	// allocate image buffer
-	uint8_t* image_buffer = (uint8_t*)m_allocator.allocate(length, 4);
+	uint8_t* image_buffer = (uint8_t*)m_allocator->allocate(length, 4);
 
 	// read file
 	reader->read(image_buffer, length);
@@ -53,19 +54,19 @@ void Texture::load(IReader* reader, bool repeat) {
 	texture_desc.size = size_t(width) * size_t(height) * 4;
 	texture_desc.mipmaps_count = 0;
 	texture_desc.repeat = repeat;
-	m_textureIndex = m_render.createTexture(texture_desc);
+	m_textureIndex = m_render->createTexture(texture_desc);
 
 	// validate texture index
 	if (m_textureIndex == INVALID_TEXTURE_INDEX) {
 		// ERROR: Some parameters of texture_desc is invalid or pool is out
-		__debugbreak();
+		FATAL("Failed to create texture. Texture pool is fully or invalid parameters.");
 	}
 
 	// free stbi memory
 	STBI_FREE(image_data);
 
 	// free file memory
-	m_allocator.deallocate(image_buffer);
+	m_allocator->deallocate(image_buffer);
 }
 
 // stb image write callback
