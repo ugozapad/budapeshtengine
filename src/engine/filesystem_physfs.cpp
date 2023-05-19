@@ -1,5 +1,10 @@
 #ifdef ENABLE_PHYSFS
 
+#ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif // WIN32
+
 #include <SDL.h>
 #include <physfs.h>
 
@@ -145,7 +150,17 @@ FileSystemPhysFS::FileSystemPhysFS(IAllocator& allocator) :
 	m_allocator(&allocator) {
 	PHYSFS_init(NULL);
 
+	// Kirill: SDL lacks of platform-independent function for gettings current work dir
+	// #TODO: Do something
+
+#ifdef WIN32
+	char current_directory[256];
+	GetCurrentDirectoryA(sizeof(current_directory), current_directory);
+#else
+#error Please implement something like OsDriver::getCurrentDirectory()
 	const char* current_directory = SDL_GetBasePath();
+#endif // WIN32
+
 	printf("Current path: %s\n", current_directory);
 	PHYSFS_mount(current_directory, nullptr, 0);
 
