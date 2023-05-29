@@ -31,20 +31,20 @@ const int INPUT_LAYOUT_MAX = 8;
 enum uniformConstants_t
 {
 	CONSTANT_MODEL_MATRIX,
-	CONSTANT_VIEW_MATRIX = CONSTANT_MODEL_MATRIX + MATRIX4_SIZE,
-	CONSTANT_PROJ_MATRIX = CONSTANT_VIEW_MATRIX + MATRIX4_SIZE,
-	CONSTANT_MVP_MATRIX = CONSTANT_PROJ_MATRIX + MATRIX4_SIZE,
+	CONSTANT_VIEW_MATRIX,
+	CONSTANT_PROJ_MATRIX,
+	CONSTANT_MVP_MATRIX,
 
 	// camera specific (vector4)
-	CONSTANT_CAMERA_EYE = CONSTANT_MVP_MATRIX + VECTOR4_SIZE, 
-	CONSTANT_CAMERA_DIR = CONSTANT_CAMERA_EYE + VECTOR4_SIZE,
+	CONSTANT_CAMERA_EYE, 
+	CONSTANT_CAMERA_DIR,
 
 	// light specific
-	CONSTANT_LIGHT_POS = CONSTANT_CAMERA_DIR + VECTOR4_SIZE,
-	CONSTANT_LIGHT_COLOR = CONSTANT_LIGHT_POS + VECTOR4_SIZE,
+	CONSTANT_LIGHT_POS,
+	CONSTANT_LIGHT_COLOR,
 
 	// Skinned specific
-	CONSTANT_BONE_MATRICES = CONSTANT_LIGHT_COLOR + BONEMATRIXARRAY_SIZE
+	CONSTANT_BONE_MATRICES
 };
 
 enum bufferType_t {
@@ -84,9 +84,9 @@ enum shaderSemantic_t {
 };
 
 enum passClearFlags_t {
-	PASSCLEAR_COLOR = 1 << 0,
-	PASSCLEAR_DEPTH = 1 << 1,
-	PASSCLEAR_STENCIL = 1 << 2
+	PASSCLEAR_COLOR = 1 << 1,
+	PASSCLEAR_DEPTH = 1 << 2,
+	PASSCLEAR_STENCIL = 1 << 3
 };
 
 enum textureType_t {
@@ -142,6 +142,7 @@ struct textureDesc_t {
 	int width;
 	int height;
 	int mipmaps_count;
+	bool repeat;
 };
 
 struct viewport_t {
@@ -149,15 +150,14 @@ struct viewport_t {
 };
 
 //! Interface to renderer
-class IRender {
+class IRenderDevice {
 public:
-	virtual ~IRender() {}
+	virtual ~IRenderDevice() {}
 
 	virtual void init(SDL_Window* render_window) = 0;
 	virtual void shutdown() = 0;
 
 	virtual void uiFrame() = 0;
-	virtual void renderFrame() = 0;
 
 	// Draw API
 
@@ -191,13 +191,14 @@ public:
 	virtual void beginBinding() = 0;
 
 	virtual void setVertexBuffer(bufferIndex_t buffer_index) = 0;
+	virtual void setIndexBuffer(bufferIndex_t buffer_index) = 0;
 	virtual void setPipeline(pipelineIndex_t pipeline) = 0;
-	virtual void setTexture(textureIndex_t texture) = 0;
+	virtual void setTexture(int index, textureIndex_t texture) = 0;
 
 	virtual void endBinding() = 0;
 
 	// Pass API
-	virtual void beginPass(const viewport_t& viewport, passClearFlags_t pass_clear_flags) = 0;
+	virtual void beginPass(const viewport_t& viewport, int pass_clear_flags) = 0;
 	virtual void endPass() = 0;
 
 	// Core API
@@ -207,8 +208,8 @@ public:
 	virtual void present(bool vsync) = 0;
 };
 
-extern IRender* g_render;
+extern IRenderDevice* g_render_device;
 
-IRender* createRender();
+IRenderDevice* createRenderDevice();
 
 #endif

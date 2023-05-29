@@ -15,14 +15,17 @@
 #define DBG_STR
 #endif // !NDEBUG
 
+Engine* g_engine = nullptr;
 
 Engine::Engine() :
     m_render_window(nullptr),
 	m_level(nullptr)
 {
+	g_engine = this;
 }
 
 Engine::~Engine() {
+	g_engine = nullptr;
 }
 
 void Engine::init(int width, int height, bool fullscreen) {
@@ -31,7 +34,11 @@ void Engine::init(int width, int height, bool fullscreen) {
     }
 
     // create filesystem
-    g_file_system = IFileSystem::create();
+#ifdef ENABLE_PHYSFS
+	g_file_system = IFileSystem::createPhysFS();
+#else
+	g_file_system = IFileSystem::create();
+#endif // ENABLE_PHYSFS
 
     // Initialize OpenGL context
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);

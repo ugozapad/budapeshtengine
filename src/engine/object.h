@@ -38,10 +38,13 @@ typeId_t get_type_id() {
 	return TypedObject::getTypeId<T>();
 }
 
-
 //! Define for subclass of TypedObject
 #define OBJECT_IMPLEMENT(CLASS, BASECLASS) \
 	virtual const char* getClassName() { return #CLASS; } \
 	virtual bool isKindOf(const typeId_t typeId) const { return getTypeId<CLASS>() == typeId ? true : BASECLASS::isKindOf(typeId);  }
+
+//! Define for easy using isKindOf for subclasses of TypedObject
+#define OBJECT_ISKINDOF(PTR, CLASS) \
+	PTR->isKindOf(get_type_id<CLASS>())
 
 #endif

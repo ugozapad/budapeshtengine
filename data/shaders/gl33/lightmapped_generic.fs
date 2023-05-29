@@ -5,11 +5,11 @@ in vec2 v_texcoord1;
 
 out vec4 fragColor;
 
-uniform sampler2D u_diffuseTexture;
-uniform sampler2D u_lightmapTexture;
+uniform sampler2D u_diffuse_texture;
+uniform sampler2D u_lightmap_texture;
 
 void main() {
-	vec3 color = texture2D(u_diffuseTexture, v_texcoord0);
-	color *= texture2D(u_lightmapTexture, v_texcoord1);
-	return color;
+	vec3 color = texture2D(u_diffuse_texture, v_texcoord0).rgb;
+	color *= texture2D(u_lightmap_texture, v_texcoord1).rgb;
+	fragColor = vec4( color, 1.0 );
 }

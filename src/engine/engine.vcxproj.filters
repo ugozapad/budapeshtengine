@@ -12,6 +12,10 @@
     <ClInclude Include="level.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="debug.h" />
+    <ClInclude Include="material_system.h" />
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="shader_engine.h" />
+    <ClInclude Include="iosdriver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -24,5 +28,9 @@
     <ClCompile Include="level.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="debug.cpp" />
+    <ClCompile Include="material_system.cpp" />
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="shader_engine.cpp" />
+    <ClCompile Include="osdriver_win32.cpp" />
   </ItemGroup>
 </Project>

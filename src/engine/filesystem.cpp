@@ -1,3 +1,4 @@
+#include "engine/debug.h"
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
 
@@ -22,6 +23,7 @@ private:
 FileReader::FileReader(const char* filename) :
 	m_file_handle(nullptr) {
 	m_file_handle = fopen(filename, "rb");
+	ASSERT_MSG(m_file_handle, "Unable to open file %s", filename);
 }
 
 FileReader::~FileReader() {
@@ -59,6 +61,7 @@ private:
 FileWriter::FileWriter(const char* filename) :
 	m_file_handle(nullptr) {
 	m_file_handle = fopen(filename, "wb");
+	ASSERT_MSG(m_file_handle, "TODO: Return null ptr instead FileReader instance when file doesn't exist on disk.");
 }
 
 FileWriter::~FileWriter() {
