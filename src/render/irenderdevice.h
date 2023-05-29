@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "engine/allocator.h"
+
 struct SDL_Window;
 
 // Render types
@@ -210,6 +212,6 @@ public:
 
 extern IRenderDevice* g_render_device;
 
-IRenderDevice* createRenderDevice();
+__declspec(dllexport) IRenderDevice* createRenderDevice(IAllocator& render_dev_allocator);
 
 #endif

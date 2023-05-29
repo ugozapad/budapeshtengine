@@ -10,9 +10,10 @@
 #include "engine/engine.h"
 #include "engine/level.h"
 #include "engine/camera.h"
-#include "render/irenderdevice.h"
-#include "render/texture.h"
+#include "engine/texture.h"
 #include "engine/shader_engine.h"
+
+#include "render/irenderdevice.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -73,7 +74,7 @@ int Main::init(int argc, char* argv[]) {
 	m_engine->init(1024, 768, fullscreen);
 
 	printf("Creating render device\n");
-	m_render_device = createRenderDevice();
+	m_render_device = createRenderDevice(*g_default_allocator);
 	m_render_device->init(m_engine->getRenderWindow());
 
 	g_pShaderEngine = MEM_NEW(*g_default_allocator, ShaderEngine, "gl33");

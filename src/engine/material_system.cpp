@@ -6,7 +6,7 @@
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
 #include "engine/material_system.h"
-#include "render/texture.h"
+#include "engine/texture.h"
 #include "render/irenderdevice.h"
 
 enum textureFileFormats_t {

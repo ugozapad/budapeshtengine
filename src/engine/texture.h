@@ -23,7 +23,7 @@ public:
 
 private:
 	IAllocator* m_allocator;
-	IRenderDevice* m_render;
+	IRenderDevice* m_render_device;
 	textureIndex_t m_textureIndex;
 };
 
