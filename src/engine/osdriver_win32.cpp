@@ -39,6 +39,7 @@ OsDriverWin32::~OsDriverWin32()
 
 void OsDriverWin32::init()
 {
+	
 }
 
 void OsDriverWin32::shutdown()

@@ -1,10 +1,12 @@
 #include "engine/allocator.h"
 #include "engine/engine.h"
+#include "engine/iosdriver.h"
 #include "engine/filesystem.h"
 #include "engine/input_system.h"
 #include "engine/objectfactory.h"
 #include "engine/entity.h"
 #include "engine/level.h"
+#include "engine/level_mesh.h"
 #include "engine/player.h"
 
 #include <stdio.h>
@@ -16,6 +18,13 @@
 #endif // !NDEBUG
 
 Engine* g_engine = nullptr;
+
+void registerEngineStuff()
+{
+	g_object_factory->registerObject<Entity>();
+	g_object_factory->registerObject<LevelMesh>();
+	g_object_factory->registerObject<Player>();
+}
 
 Engine::Engine() :
     m_render_window(nullptr),
@@ -32,6 +41,9 @@ void Engine::init(int width, int height, bool fullscreen) {
     if (SDL_Init(SDL_INIT_EVERYTHING ^ SDL_INIT_SENSOR) != 0) {
         printf("Failed to initialize SDL2. Error core: %s\n", SDL_GetError());
     }
+
+	// Initialize OS Driver
+	IOsDriver::getInstance()->init();
 
     // create filesystem
 #ifdef ENABLE_PHYSFS
@@ -65,7 +77,7 @@ void Engine::init(int width, int height, bool fullscreen) {
 	g_object_factory = MEM_NEW(*g_default_allocator, ObjectFactory, *g_default_allocator);
 
 	// register engine objects
-	g_object_factory->registerObject<Player>();
+	registerEngineStuff();
 
 	// create level
 	m_level = MEM_NEW(*g_default_allocator, Level, *g_default_allocator);
