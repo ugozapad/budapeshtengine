@@ -74,7 +74,7 @@ int Main::init(int argc, char* argv[]) {
 	m_engine->init(1024, 768, fullscreen);
 
 	printf("Creating render device\n");
-	m_render_device = createRenderDevice();
+	m_render_device = createRenderDevice(*g_default_allocator);
 	m_render_device->init(m_engine->getRenderWindow());
 
 	g_pShaderEngine = MEM_NEW(*g_default_allocator, ShaderEngine, "gl33");

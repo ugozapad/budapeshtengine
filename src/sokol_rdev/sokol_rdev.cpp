@@ -21,8 +21,9 @@ extern "C" {
 
 class SokolRenderDevice : public IRenderDevice {
 public:
-	SokolRenderDevice() :
-		m_bindings{0}
+	SokolRenderDevice(IAllocator& allocator) :
+		m_allocator(&allocator)
+	,	m_bindings{0}
 	,	m_gl_context(nullptr)
 	,	m_bindings_begin(false)
 	{
@@ -66,6 +67,7 @@ public:
 	void present(bool vsync) override;
 
 private:
+	IAllocator* m_allocator;
 	SDL_Window* m_render_window;
 	SDL_GLContext m_gl_context;
 	sg_bindings m_bindings;
@@ -75,8 +77,8 @@ private:
 
 IRenderDevice* g_render_device = nullptr;
 
-IRenderDevice* createRenderDevice() {
-	return MEM_NEW(*g_default_allocator, SokolRenderDevice);
+__declspec(dllexport) IRenderDevice* createRenderDevice(IAllocator& render_dev_allocator) {
+	return MEM_NEW(render_dev_allocator, SokolRenderDevice, render_dev_allocator);
 }
 
 void SokolRenderDevice::init(SDL_Window* render_window) {

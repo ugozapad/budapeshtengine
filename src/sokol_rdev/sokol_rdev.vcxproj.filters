@@ -12,7 +12,7 @@
     <ClInclude Include="..\..\thirdparty\microui\src\microui.h">
       <Filter>MicroUI - TODO REMOVE</Filter>
     </ClInclude>
-    <ClInclude Include="irenderdevice.h" />
+    <ClInclude Include="..\render\irenderdevice.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MicroUI - TODO REMOVE">
