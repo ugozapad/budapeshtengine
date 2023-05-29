@@ -5,8 +5,7 @@
 #include "engine/camera.h"
 #include "engine/debug.h"
 #include "engine/shader_engine.h"
-
-#include "render/texture.h"
+#include "engine/texture.h"
 
 #include <glm/glm.hpp>
 

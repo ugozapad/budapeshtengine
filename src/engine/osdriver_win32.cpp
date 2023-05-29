@@ -1,4 +1,4 @@
-#ifdef WIN32
+#ifdef _MSC_VER
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -53,4 +53,4 @@ const char* OsDriverWin32::getCurrentDirectory()
 	return nullptr;
 }
 
-#endif // WIN32
+#endif // _MSC_VER
