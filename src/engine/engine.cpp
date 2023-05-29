@@ -18,7 +18,8 @@
 Engine* g_engine = nullptr;
 
 Engine::Engine() :
-    m_render_window(nullptr),
+	m_bExitRequested(false),
+	m_render_window(nullptr),
 	m_level(nullptr)
 {
 	g_engine = this;

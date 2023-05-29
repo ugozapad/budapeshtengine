@@ -19,7 +19,11 @@ public:
 	IInputSystem* getInputSystem();
 	Level* getLevel();
 
+	inline void requestExit		() { m_bExitRequested = true; }
+	inline bool isExitRequested	() const { return (m_bExitRequested); }
+
 private:
+	bool		m_bExitRequested;
 	SDL_Window* m_render_window;
 	Level* m_level;
 };
