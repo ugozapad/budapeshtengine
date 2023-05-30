@@ -9,6 +9,5 @@ target_include_directories(main PRIVATE "${CMAKE_SOURCE_DIR}/src")
 
 target_link_libraries(main engine sokol_rdev)
 
-set_target_properties(main PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/"
-									  OUTPUT_NAME "budapest_gl"
-									  DEBUG_POSTFIX "_d")
+set_target_properties(main PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/")
+set_target_properties(main PROPERTIES DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
