@@ -6,13 +6,10 @@
 #include "engine/debug.h"
 #include "engine/shader_engine.h"
 #include "engine/level_mesh.h"
-
-#include "render/texture.h"
+#include "engine/texture.h"
 
 #include <glm/glm.hpp>
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
 #include <stdio.h>
 
 Level::Level(IAllocator& allocator) :

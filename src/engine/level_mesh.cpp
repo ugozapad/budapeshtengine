@@ -4,7 +4,7 @@
 #include "engine/shader_engine.h"
 #include "engine/level_mesh.h"
 #include "engine/camera.h"
-#include "render/texture.h"
+#include "engine/texture.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
