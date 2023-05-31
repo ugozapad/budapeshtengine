@@ -1,4 +1,5 @@
 #include "engine/mesh.h"
+#include "engine/engine.h"
 #include "engine/shader_engine.h"
 #include "engine/texture.h"
 #include "engine/material_system.h"
@@ -39,7 +40,7 @@ void StaticMesh::createGpu_Vertex(Array<LevelMeshVertex_LM>& vertices)
 	vertex_buffer_desc.access = BUFFERACCESS_STATIC;
 	vertex_buffer_desc.data = &vertices[0];
 	vertex_buffer_desc.size = vertices.size() * sizeof(LevelMeshVertex_LM);
-	m_vertex_buffer = g_render_device->createBuffer(vertex_buffer_desc);
+	m_vertex_buffer = g_engine->getRenderDevice()->createBuffer(vertex_buffer_desc);
 }
 
 void StaticMesh::createGpu_Indices(Array<uint16_t>& indices)
@@ -49,7 +50,7 @@ void StaticMesh::createGpu_Indices(Array<uint16_t>& indices)
 	index_buffer_desc.access = BUFFERACCESS_STATIC;
 	index_buffer_desc.data = &indices[0];
 	index_buffer_desc.size = indices.size() * sizeof(uint16_t);
-	m_index_buffer = g_render_device->createBuffer(index_buffer_desc);
+	m_index_buffer = g_engine->getRenderDevice()->createBuffer(index_buffer_desc);
 }
 
 void StaticMesh::createGpu_Material(const char* material_name, const char* texture_name, const char* lm_name)
@@ -66,35 +67,37 @@ void StaticMesh::createGpu_Material(const char* material_name, const char* textu
 void StaticMesh::destroyGpu()
 {
 	if (m_index_buffer != INVALID_BUFFER_INDEX) {
-		g_render_device->deleteBuffer(m_index_buffer);
+		g_engine->getRenderDevice()->deleteBuffer(m_index_buffer);
 		m_index_buffer = INVALID_BUFFER_INDEX;
 	}
 
 	if (m_vertex_buffer != INVALID_BUFFER_INDEX) {
-		g_render_device->deleteBuffer(m_vertex_buffer);
+		g_engine->getRenderDevice()->deleteBuffer(m_vertex_buffer);
 		m_vertex_buffer = INVALID_BUFFER_INDEX;
 	}
 }
 
 void StaticMesh::draw(const glm::mat4& model_matrix, const renderContext_t& render_context)
 {
+	IRenderDevice* render_device = g_engine->getRenderDevice();
+
 	// set device stuff
-	g_render_device->setPipeline(m_pipeline);
+	render_device->setPipeline(m_pipeline);
 
 	// fill constants
-	g_render_device->setVSConstant(CONSTANT_MODEL_MATRIX, &model_matrix[0], MATRIX4_SIZE);
-	g_render_device->setVSConstant(CONSTANT_VIEW_MATRIX, &render_context.view_matrix[0], MATRIX4_SIZE);
-	g_render_device->setVSConstant(CONSTANT_PROJ_MATRIX, &render_context.projection_matrix[0], MATRIX4_SIZE);
+	render_device->setVSConstant(CONSTANT_MODEL_MATRIX, &model_matrix[0], MATRIX4_SIZE);
+	render_device->setVSConstant(CONSTANT_VIEW_MATRIX, &render_context.view_matrix[0], MATRIX4_SIZE);
+	render_device->setVSConstant(CONSTANT_PROJ_MATRIX, &render_context.projection_matrix[0], MATRIX4_SIZE);
 
 	glm::mat4 mvp = render_context.getMVP(model_matrix);
-	g_render_device->setVSConstant(CONSTANT_MVP_MATRIX, &mvp[0], MATRIX4_SIZE);
+	render_device->setVSConstant(CONSTANT_MVP_MATRIX, &mvp[0], MATRIX4_SIZE);
 
-	g_render_device->beginBinding();
-	g_render_device->setTexture(0, m_diffuse_texture->getTextureIndex());
-	g_render_device->setTexture(1, m_lightmap_texture->getTextureIndex());
-	g_render_device->setVertexBuffer(m_vertex_buffer);
-	g_render_device->setIndexBuffer(m_index_buffer);
-	g_render_device->endBinding();
+	render_device->beginBinding();
+	render_device->setTexture(0, m_diffuse_texture->getTextureIndex());
+	render_device->setTexture(1, m_lightmap_texture->getTextureIndex());
+	render_device->setVertexBuffer(m_vertex_buffer);
+	render_device->setIndexBuffer(m_index_buffer);
+	render_device->endBinding();
 
-	g_render_device->draw(0, m_indices_count, 1);
+	render_device->draw(0, m_indices_count, 1);
 }

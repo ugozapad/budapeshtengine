@@ -167,6 +167,11 @@ Level* Engine::getLevel()
 	return m_level;
 }
 
+IRenderDevice* Engine::getRenderDevice()
+{
+	return m_render_device;
+}
+
 void Engine::onWindowSizeChanged(uint32_t w, uint32_t h)
 {
 	m_viewport.width	= w;

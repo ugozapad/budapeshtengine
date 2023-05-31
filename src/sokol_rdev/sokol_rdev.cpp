@@ -27,11 +27,9 @@ public:
 	,	m_gl_context(nullptr)
 	,	m_bindings_begin(false)
 	{
-		g_render_device = this;
 	}
 
 	~SokolRenderDevice() {
-		g_render_device = nullptr;
 	}
 
 	void init(SDL_Window* render_window) override;
@@ -74,8 +72,6 @@ private:
 
 	bool m_bindings_begin;
 };
-
-IRenderDevice* g_render_device = nullptr;
 
 __declspec(dllexport) IRenderDevice* createRenderDevice(IAllocator& render_dev_allocator) {
 	return MEM_NEW(render_dev_allocator, SokolRenderDevice, render_dev_allocator);

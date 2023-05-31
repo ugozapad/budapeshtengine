@@ -42,7 +42,7 @@ void LevelMesh::load(IReader* reader) {
 	}
 
 	// load texture
-	m_diffuse_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_render_device);
+	m_diffuse_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_engine->getRenderDevice());
 
 	char* path_to_texture = strstr(diffuse_texture_path, "/temp/") + strlen("/temp/");
 
@@ -69,7 +69,7 @@ void LevelMesh::load(IReader* reader) {
 	char buffer2[260];
 	snprintf(buffer2, sizeof(buffer2), "data/levels/%s/%s", "test_baking", lightmap_texture_path);
 
-	m_lightmap_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_render_device);
+	m_lightmap_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_engine->getRenderDevice());
 
 	texture_reader = g_file_system->openRead(buffer2);
 	m_lightmap_texture->load(texture_reader, false);
@@ -184,7 +184,7 @@ void bindLightmapShader() {
 	}
 	*/
 	ShaderData sd = g_pShaderEngine->loadShader("lightmapped_generic");
-	g_render_device->setPipeline(sd.pipelineIndex);
+	g_engine->getRenderDevice()->setPipeline(sd.pipelineIndex);
 }
 
 void LevelMesh::render() {
@@ -209,20 +209,22 @@ void LevelMesh::render() {
 	glm::mat4 mvp = s_mat4_idenitity;
 	mvp = proj * g_camera.getViewMatrix() * s_mat4_idenitity;
 
-	g_render_device->setVSConstant(CONSTANT_MODEL_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
-	g_render_device->setVSConstant(CONSTANT_VIEW_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
-	g_render_device->setVSConstant(CONSTANT_PROJ_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
+	IRenderDevice* render_device = g_engine->getRenderDevice();
 
-	g_render_device->setVSConstant(CONSTANT_MVP_MATRIX, &mvp[0], MATRIX4_SIZE);
+	render_device->setVSConstant(CONSTANT_MODEL_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
+	render_device->setVSConstant(CONSTANT_VIEW_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
+	render_device->setVSConstant(CONSTANT_PROJ_MATRIX, &s_mat4_idenitity[0], MATRIX4_SIZE);
 
-	g_render_device->beginBinding();
-	g_render_device->setTexture(0, m_diffuse_texture->getTextureIndex());
-	g_render_device->setTexture(1, m_lightmap_texture->getTextureIndex());
-	g_render_device->setVertexBuffer(m_vertex_buffer);
-	g_render_device->setIndexBuffer(m_index_buffer);
-	g_render_device->endBinding();
+	render_device->setVSConstant(CONSTANT_MVP_MATRIX, &mvp[0], MATRIX4_SIZE);
 
-	g_render_device->draw(0, m_indices_count, 1);
+	render_device->beginBinding();
+	render_device->setTexture(0, m_diffuse_texture->getTextureIndex());
+	render_device->setTexture(1, m_lightmap_texture->getTextureIndex());
+	render_device->setVertexBuffer(m_vertex_buffer);
+	render_device->setIndexBuffer(m_index_buffer);
+	render_device->endBinding();
+
+	render_device->draw(0, m_indices_count, 1);
 }
 
 void LevelMesh::createGpu_Vertex(Array<LevelMeshVertex_LM>& vertices) {
@@ -231,7 +233,7 @@ void LevelMesh::createGpu_Vertex(Array<LevelMeshVertex_LM>& vertices) {
 	vertex_buffer_desc.access = BUFFERACCESS_STATIC;
 	vertex_buffer_desc.data = &vertices[0];
 	vertex_buffer_desc.size = vertices.size() * sizeof(LevelMeshVertex_LM);
-	m_vertex_buffer = g_render_device->createBuffer(vertex_buffer_desc);
+	m_vertex_buffer = g_engine->getRenderDevice()->createBuffer(vertex_buffer_desc);
 }
 
 void LevelMesh::createGpu_Indices(Array<uint16_t>& indices) {
@@ -240,5 +242,5 @@ void LevelMesh::createGpu_Indices(Array<uint16_t>& indices) {
 	index_buffer_desc.access = BUFFERACCESS_STATIC;
 	index_buffer_desc.data = &indices[0];
 	index_buffer_desc.size = indices.size() * sizeof(uint16_t);
-	m_index_buffer = g_render_device->createBuffer(index_buffer_desc);
+	m_index_buffer = g_engine->getRenderDevice()->createBuffer(index_buffer_desc);
 }

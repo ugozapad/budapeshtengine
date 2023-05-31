@@ -5,6 +5,7 @@
 #include "engine/debug.h"
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
+#include "engine/engine.h"
 #include "engine/material_system.h"
 #include "engine/texture.h"
 #include "render/irenderdevice.h"
@@ -47,7 +48,7 @@ void MaterialSystem::Init() {
 		exit(-1);
 	}
 
-	m_notex = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_render_device);
+	m_notex = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_engine->getRenderDevice());
 
 	// open reader
 	IReader* reader = g_file_system->openRead(buffer);

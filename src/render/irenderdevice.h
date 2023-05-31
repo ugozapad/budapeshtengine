@@ -210,8 +210,6 @@ public:
 	virtual void present(bool vsync) = 0;
 };
 
-extern IRenderDevice* g_render_device;
-
 __declspec(dllexport) IRenderDevice* createRenderDevice(IAllocator& render_dev_allocator);
 
 #endif

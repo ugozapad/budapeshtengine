@@ -1,5 +1,6 @@
 #include "engine/shader_engine.h"
 #include "engine/filesystem.h"
+#include "engine/engine.h"
 
 ShaderEngine* g_pShaderEngine = NULL;
 
@@ -57,7 +58,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		shader_desc.fragment_shader_data = fragment_shader;
 		shader_desc.fragment_shader_size = fragment_length;
 
-		sd.shaderIndex = g_render_device->createShader(shader_desc);
+		sd.shaderIndex = g_engine->getRenderDevice()->createShader(shader_desc);
 		if (sd.shaderIndex == INVALID_SHADER_INDEX) {
 			FATAL("!!! %s index is invalid", shaderName);
 		}
@@ -73,7 +74,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD1 };
 		pipeline_desc.layout_count = 3;
 
-		sd.pipelineIndex = g_render_device->createPipeline(pipeline_desc);
+		sd.pipelineIndex = g_engine->getRenderDevice()->createPipeline(pipeline_desc);
 		if (sd.pipelineIndex == INVALID_PIPELINE_INDEX) {
 			FATAL("!!! %s pipeline is invalid", shaderName);
 		}
