@@ -10,9 +10,10 @@
 #include "engine/engine.h"
 #include "engine/level.h"
 #include "engine/camera.h"
-#include "render/irenderdevice.h"
-#include "render/texture.h"
+#include "engine/texture.h"
 #include "engine/shader_engine.h"
+
+#include "render/irenderdevice.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>

@@ -97,7 +97,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\physfs-3.2.0\src;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\physfs-3.2.0\src;..\..\thirdparty\stb;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
@@ -112,7 +112,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions);_HAS_EXCEPTIONS=0</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\physfs-3.2.0\src;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\physfs-3.2.0\src;..\..\thirdparty\stb;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
@@ -130,7 +130,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\physfs-3.2.0\src;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\physfs-3.2.0\src;..\..\thirdparty\stb;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
@@ -149,7 +149,7 @@
       <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions);_HAS_EXCEPTIONS=0</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\physfs-3.2.0\src;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\thirdparty\glm;..\..\thirdparty\physfs-3.2.0\src;..\..\thirdparty\stb;..\..\thirdparty\SDL2-2.26.5\include;..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>false</ExceptionHandling>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
@@ -176,6 +176,7 @@
     <ClInclude Include="objectfactory.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="shader_engine.h" />
+    <ClInclude Include="texture.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -192,6 +193,7 @@
     <ClCompile Include="osdriver_win32.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="shader_engine.cpp" />
+    <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

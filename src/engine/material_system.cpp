@@ -6,7 +6,7 @@
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
 #include "engine/material_system.h"
-#include "render/texture.h"
+#include "engine/texture.h"
 #include "render/irenderdevice.h"
 
 enum textureFileFormats_t {
@@ -66,5 +66,5 @@ void MaterialSystem::Shutdown() {
 }
 
 Texture* MaterialSystem::LoadTexture(const char* filename) {
-	return nullptr;
+	return m_notex;
 }

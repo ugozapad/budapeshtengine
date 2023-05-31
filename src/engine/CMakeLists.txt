@@ -10,6 +10,7 @@ target_compile_definitions(engine PRIVATE -DENABLE_PHYSFS)
 
 target_include_directories(engine PRIVATE "${CMAKE_SOURCE_DIR}/src"
 								  PUBLIC "${CMAKE_SOURCE_DIR}/thirdparty/SDL2-2.26.5/include"
-								  PUBLIC "${CMAKE_SOURCE_DIR}/thirdparty/glm")
+								  PUBLIC "${CMAKE_SOURCE_DIR}/thirdparty/glm"
+								  PUBLIC "${CMAKE_SOURCE_DIR}/thirdparty/stb")
 
 target_link_libraries(engine SDL2 physfs)
