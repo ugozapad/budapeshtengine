@@ -30,7 +30,9 @@ void registerEngineStuff()
 Engine::Engine() :
 	m_bExitRequested(false),
 	m_render_window(nullptr),
-	m_level(nullptr)
+	m_level(nullptr),
+	m_render_device(nullptr),
+	m_viewport{0}
 {
 	g_engine = this;
 }
@@ -90,7 +92,7 @@ void Engine::init(int width, int height, bool fullscreen) {
 
 	// create renderer
 	printf("Creating render device\n");
-	m_render_device = createRenderDevice();
+	m_render_device = createRenderDevice(*g_default_allocator);
 	m_render_device->init(m_render_window);
 
 	// init viewport
