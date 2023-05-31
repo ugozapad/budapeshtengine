@@ -28,8 +28,8 @@ void Camera::updateLook(int width, int height)
 	float x = (float)mouseX;
 	float y = (float)mouseY;
 
-	static float lastX = (float)width / 2.0;
-	static float lastY = (float)height / 2.0;
+	static float lastX = (float)width / 2.0f;
+	static float lastY = (float)height / 2.0f;
 
 	float sensitivity = 0.2f;
 
