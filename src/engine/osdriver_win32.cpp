@@ -16,6 +16,8 @@ public:
 
 	const char* getCurrentDirectory() override;
 
+	bool isDirectoryExist(const char* path) override;
+
 private:
 	char m_current_directory[256];
 };
@@ -52,6 +54,16 @@ const char* OsDriverWin32::getCurrentDirectory()
 		return m_current_directory;
 
 	return nullptr;
+}
+
+bool OsDriverWin32::isDirectoryExist(const char* path)
+{
+	DWORD dw_attribute = GetFileAttributesA(path);
+	if (dw_attribute == INVALID_FILE_ATTRIBUTES)
+		return false;  //something is wrong with your path!
+	if (dw_attribute & FILE_ATTRIBUTE_DIRECTORY)
+		return true;   // this is a directory!
+	return false;
 }
 
 #endif // _MSC_VER

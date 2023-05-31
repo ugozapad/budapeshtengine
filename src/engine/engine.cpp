@@ -52,6 +52,10 @@ void Engine::init(int width, int height, bool fullscreen) {
 	g_file_system = IFileSystem::create();
 #endif // ENABLE_PHYSFS
 
+	if (!g_file_system->fileExist("data/")) {
+		FATAL("ERROR: Not found game data folder.");
+	}
+
     // Initialize OpenGL context
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);

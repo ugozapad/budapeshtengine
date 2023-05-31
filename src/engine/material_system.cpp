@@ -66,5 +66,5 @@ void MaterialSystem::Shutdown() {
 }
 
 Texture* MaterialSystem::LoadTexture(const char* filename) {
-	return nullptr;
+	return m_notex;
 }

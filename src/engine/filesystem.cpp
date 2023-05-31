@@ -1,8 +1,10 @@
 #include "engine/debug.h"
 #include "engine/allocator.h"
+#include "engine/iosdriver.h"
 #include "engine/filesystem.h"
 
 #include <stdio.h>
+#include <string.h>
 
 IFileSystem* g_file_system = nullptr;
 static int s_stdio_seek[] = { SEEK_SET, SEEK_CUR, SEEK_END };
@@ -107,7 +109,21 @@ void IFileSystem::destroy(IFileSystem*& fs_ptr) {
 	fs_ptr = nullptr;
 }
 
-bool FileSystem::fileExist(const char * filename) {
+bool FileSystem::fileExist(const char* filename) {
+	ASSERT(filename);
+
+	size_t length = strlen(filename);
+	ASSERT(length != 0);
+
+	if (filename && length > 0 && filename[length - 1] == '/')
+		return IOsDriver::getInstance()->isDirectoryExist(filename);
+
+	FILE* f = fopen(filename, "rb");
+	if (f) {
+		fclose(f);
+		return true;
+	}
+
 	return false;
 }
 

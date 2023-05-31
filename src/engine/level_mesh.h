@@ -4,31 +4,19 @@
 #include "engine/allocator.h"
 #include "engine/array.h"
 #include "engine/entity.h"
+#include "engine/mesh.h"
 
 #include "render/irenderdevice.h"
+
+#define LEVEL_MESH_VERSION 1
 
 class IReader;
 class Texture;
 
-struct Vector2 {
-	float x, y;
-};
-
-struct Vector3 {
-	float x, y, z;
-};
-
-#define LEVEL_MESH_VERSION 1
-
-struct LevelMeshHeader {
+struct LevelMeshHeader
+{
 	uint16_t version;
 	uint16_t mesh_count;
-};
-
-struct LevelMeshVertex_LM {
-	Vector3 position;
-	Vector2 texcoord0;
-	Vector2 texcoord1;
 };
 
 //////////////////////////////////////////////
