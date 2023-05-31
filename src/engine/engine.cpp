@@ -8,6 +8,7 @@
 #include "engine/level.h"
 #include "engine/level_mesh.h"
 #include "engine/player.h"
+#include "engine/camera.h"
 
 #include <stdio.h>
 
@@ -27,7 +28,8 @@ void registerEngineStuff()
 }
 
 Engine::Engine() :
-    m_render_window(nullptr),
+	m_bExitRequested(false),
+	m_render_window(nullptr),
 	m_level(nullptr)
 {
 	g_engine = this;
@@ -38,9 +40,9 @@ Engine::~Engine() {
 }
 
 void Engine::init(int width, int height, bool fullscreen) {
-    if (SDL_Init(SDL_INIT_EVERYTHING ^ SDL_INIT_SENSOR) != 0) {
-        printf("Failed to initialize SDL2. Error core: %s\n", SDL_GetError());
-    }
+	if (SDL_Init(SDL_INIT_EVERYTHING ^ SDL_INIT_SENSOR) != 0) {
+		printf("Failed to initialize SDL2. Error core: %s\n", SDL_GetError());
+	}
 
 	// Initialize OS Driver
 	IOsDriver::getInstance()->init();
@@ -85,9 +87,45 @@ void Engine::init(int width, int height, bool fullscreen) {
 
 	// create level
 	m_level = MEM_NEW(*g_default_allocator, Level, *g_default_allocator);
+
+	// create renderer
+	printf("Creating render device\n");
+	m_render_device = createRenderDevice();
+	m_render_device->init(m_render_window);
+
+	// init viewport
+	m_viewport.x = 0;
+	m_viewport.y = 0;
+	SDL_GetWindowSize(
+		m_render_window,
+		&m_viewport.width,
+		&m_viewport.height
+	);
+}
+
+void Engine::update()
+{
+	g_camera.updateLook(
+		m_viewport.width,
+		m_viewport.height
+	);
+
+	m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
+
+	m_level->render();
+
+	m_render_device->endPass();
+	m_render_device->commit();
+
+	m_render_device->present(false);
 }
 
 void Engine::shutdown() {
+	if (m_render_device) {
+		m_render_device->shutdown();
+		MEM_DELETE(*g_default_allocator, IRenderDevice, m_render_device);
+	}
+
 	if (m_level) {
 		MEM_DELETE(*g_default_allocator, Level, m_level);
 		m_level = nullptr;
@@ -104,18 +142,18 @@ void Engine::shutdown() {
 		g_input_system = nullptr;
 	}
 
-    if (m_render_window) {
-        SDL_DestroyWindow(m_render_window);
-        m_render_window = nullptr;
-    }
+	if (m_render_window) {
+		SDL_DestroyWindow(m_render_window);
+		m_render_window = nullptr;
+	}
 
-    IFileSystem::destroy(g_file_system);
+	IFileSystem::destroy(g_file_system);
 
-    SDL_Quit();
+	SDL_Quit();
 }
 
 SDL_Window* Engine::getRenderWindow() {
-    return m_render_window;
+	return m_render_window;
 }
 
 IInputSystem* Engine::getInputSystem() {
@@ -125,4 +163,10 @@ IInputSystem* Engine::getInputSystem() {
 Level* Engine::getLevel()
 {
 	return m_level;
+}
+
+void Engine::onWindowSizeChanged(uint32_t w, uint32_t h)
+{
+	m_viewport.width	= w;
+	m_viewport.height	= h;
 }

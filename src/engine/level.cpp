@@ -80,6 +80,5 @@ void Level::render() {
 		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(entity)) {
 			level_mesh->render();
 		}
-
 	}
 }

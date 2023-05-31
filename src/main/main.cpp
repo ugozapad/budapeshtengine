@@ -27,7 +27,6 @@ class Main {
 public:
 	Main() :
 		m_engine(nullptr)
-	,	m_render_device(nullptr)
 	{
 	}
 
@@ -35,12 +34,12 @@ public:
 	void shutdown();
 
 	void update();
+	void onEvent(SDL_Event& event);
 
 	Engine* getEngine() { return m_engine; }
 
 private:
 	Engine* m_engine;
-	IRenderDevice* m_render_device;
 };
 
 static Main s_main;
@@ -73,10 +72,6 @@ int Main::init(int argc, char* argv[]) {
 	m_engine = MEM_NEW(*g_default_allocator, Engine);
 	m_engine->init(1024, 768, fullscreen);
 
-	printf("Creating render device\n");
-	m_render_device = createRenderDevice(*g_default_allocator);
-	m_render_device->init(m_engine->getRenderWindow());
-
 	g_pShaderEngine = MEM_NEW(*g_default_allocator, ShaderEngine, "gl33");
 
 	m_engine->getLevel()->load("test_baking");
@@ -87,9 +82,6 @@ int Main::init(int argc, char* argv[]) {
 void Main::shutdown() {
 	MEM_DELETE(*g_default_allocator, ShaderEngine, g_pShaderEngine);
 
-	m_render_device->shutdown();
-	MEM_DELETE(*g_default_allocator, IRenderDevice, m_render_device);
-
 	m_engine->shutdown();
 	MEM_DELETE(*g_default_allocator, Engine, m_engine);
 }
@@ -97,61 +89,59 @@ void Main::shutdown() {
 static glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
 
 void Main::update() {
-	int width = 0, height = 0;
-	SDL_GetWindowSize(m_engine->getRenderWindow(), &width, &height);
+	if (g_input_system->isKeyPressed(SDL_SCANCODE_ESCAPE))
+		m_engine->requestExit();
+	
+	m_engine->update();
+}
 
-	g_camera.updateLook(width, height);
-
-	viewport_t viewport = { 0,0,width,height };
-	m_render_device->beginPass(viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
-
-	m_engine->getLevel()->render();
-
-	m_render_device->endPass();
-	m_render_device->commit();
-
-	m_render_device->present(false);
+void Main::onEvent(SDL_Event& event)
+{
+	switch (event.type)
+	{
+	case SDL_QUIT: m_engine->requestExit(); break;
+	case SDL_KEYDOWN:
+		g_input_system->onKeyDown(event.key.keysym.scancode);
+		break;
+	case SDL_KEYUP:
+		g_input_system->onKeyUp(event.key.keysym.scancode);
+		break;
+	case SDL_MOUSEBUTTONDOWN:
+		g_input_system->onMouseKeyDown(event.button.button);
+		break;
+	case SDL_MOUSEBUTTONUP:
+		g_input_system->onMouseKeyUp(event.button.button);
+		break;
+	case SDL_MOUSEMOTION:
+		g_input_system->onMouseMove(event.motion.x, event.motion.y);
+		break;
+	case SDL_MOUSEWHEEL:
+		g_input_system->onMouseWheel(event.wheel.x, event.wheel.y);
+		break;
+	case SDL_WINDOWEVENT:
+	{
+		switch (event.window.type)
+		{
+		case SDL_WINDOWEVENT_SIZE_CHANGED:
+			m_engine->onWindowSizeChanged(
+				event.window.data1,
+				event.window.data2
+			);
+			break;
+		}
+	}break;
+	}
 }
 
 int main(int argc, char* argv[]) {
 
 	int retval = s_main.init(argc, argv);
 
-	bool run = true;
-	while (run) {
+	Engine* pEngine = s_main.getEngine();
+	while (!pEngine->isExitRequested()) {
 		SDL_Event event;
-		while (SDL_PollEvent(&event)) {
-			if (event.type == SDL_QUIT) {
-				run = false;
-			}
-			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) {
-				run = false;
-			}
-
-			if (event.type == SDL_KEYDOWN) {
-				inputEvent_t input_event = {};
-				input_event.type = INPUT_EVENT_KEY_DOWN;
-				input_event.scancode = event.key.keysym.scancode;
-				g_input_system->pushEvent(input_event);
-			} else if (event.type == SDL_KEYUP) {
-				inputEvent_t input_event = {};
-				input_event.type = INPUT_EVENT_KEY_UP;
-				input_event.scancode = event.key.keysym.scancode;
-				g_input_system->pushEvent(input_event);
-			}
-
-			if (event.type == SDL_MOUSEBUTTONDOWN) {
-				inputEvent_t input_event = {};
-				input_event.type = INPUT_EVENT_MOUSE_BUTTON_DOWN;
-				input_event.mousebutton = event.button.button;
-				g_input_system->pushEvent(input_event);
-			} else if (event.type == SDL_MOUSEBUTTONUP) {
-				inputEvent_t input_event = {};
-				input_event.type = INPUT_EVENT_MOUSE_BUTTON_UP;
-				input_event.mousebutton = event.button.button;
-				g_input_system->pushEvent(input_event);
-			}
-		}
+		while (SDL_PollEvent(&event))
+			s_main.onEvent(event);
 
 		s_main.update();
 	}
