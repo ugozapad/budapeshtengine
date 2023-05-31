@@ -6,6 +6,7 @@
 #include "engine/entity.h"
 #include "engine/level.h"
 #include "engine/player.h"
+#include "engine/camera.h"
 
 #include <stdio.h>
 
@@ -70,9 +71,45 @@ void Engine::init(int width, int height, bool fullscreen) {
 
 	// create level
 	m_level = MEM_NEW(*g_default_allocator, Level, *g_default_allocator);
+
+	// create renderer
+	printf("Creating render device\n");
+	m_render_device = createRenderDevice();
+	m_render_device->init(m_render_window);
+
+	// init viewport
+	m_viewport.x = 0;
+	m_viewport.y = 0;
+	SDL_GetWindowSize(
+		m_render_window,
+		&m_viewport.width,
+		&m_viewport.height
+	);
+}
+
+void Engine::update()
+{
+	g_camera.updateLook(
+		m_viewport.width,
+		m_viewport.height
+	);
+
+	m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
+
+	m_level->render();
+
+	m_render_device->endPass();
+	m_render_device->commit();
+
+	m_render_device->present(false);
 }
 
 void Engine::shutdown() {
+	if (m_render_device) {
+		m_render_device->shutdown();
+		MEM_DELETE(*g_default_allocator, IRenderDevice, m_render_device);
+	}
+
 	if (m_level) {
 		MEM_DELETE(*g_default_allocator, Level, m_level);
 		m_level = nullptr;
@@ -110,4 +147,10 @@ IInputSystem* Engine::getInputSystem() {
 Level* Engine::getLevel()
 {
 	return m_level;
+}
+
+void Engine::onWindowSizeChanged(uint32_t w, uint32_t h)
+{
+	m_viewport.width	= w;
+	m_viewport.height	= h;
 }
