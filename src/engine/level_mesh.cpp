@@ -36,7 +36,7 @@ void LevelMesh::load(IReader* reader) {
 
 	diffuse_texture_path[diffuse_texture_len] = '\0';
 
-	for (int i = 0; i < diffuse_texture_len; i++) {
+	for (uint32_t i = 0; i < diffuse_texture_len; i++) {
 		if (diffuse_texture_path[i] == '\\')
 			diffuse_texture_path[i] = '/';
 	}
@@ -61,7 +61,7 @@ void LevelMesh::load(IReader* reader) {
 
 	lightmap_texture_path[lightmap_texture_len] = '\0';
 
-	for (int i = 0; i < lightmap_texture_len; i++) {
+	for (uint32_t i = 0; i < lightmap_texture_len; i++) {
 		if (lightmap_texture_path[i] == '\\')
 			lightmap_texture_path[i] = '/';
 	}
