@@ -1,5 +1,5 @@
 .idea
-.vcxproj.user
+*.vcxproj.user
 # Folders
 .vs/
 src/.vs/
