@@ -151,21 +151,14 @@ FileSystemPhysFS::FileSystemPhysFS(IAllocator& allocator) :
 	PHYSFS_mount(current_directory, nullptr, 0);
 
 	// mount arhives
-	PHYSFS_mount("data_textures.zip", nullptr, 1);
-	PHYSFS_mount("data_levels.zip", nullptr, 1);
-	PHYSFS_mount("data_scripts.zip", nullptr, 1);
-	PHYSFS_mount("data_shaders.zip", nullptr, 1);
-	PHYSFS_mount("data_models.zip", nullptr, 1);
-	PHYSFS_mount("data_sounds.zip", nullptr, 1);
-
-#if 0
-	char** fileList = PHYSFS_enumerateFiles(PHYSFS_getBaseDir());
-	for (char** it = fileList; it != nullptr; it++)
+	char** file_list = PHYSFS_enumerateFiles("/");
+	for (char** it = file_list; *it != NULL; it++)
 	{
-		if (*it && SDL_strstr(*it, ".zip"))
+		if (SDL_strstr(*it, ".zip")) {
+			printf("found arhive: %s\n", *it);
 			PHYSFS_mount(*it, nullptr, 1);
+		}
 	}
-#endif
 }
 
 FileSystemPhysFS::~FileSystemPhysFS() {
