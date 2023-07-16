@@ -12,9 +12,7 @@
 
 #include <stdio.h>
 
-Level::Level(IAllocator& allocator) :
-	m_allocator(&allocator),
-	m_entities(allocator)
+Level::Level()
 {
 }
 
@@ -22,7 +20,8 @@ Level::~Level()
 {
 }
 
-void Level::load(const char* levelname) {
+void Level::load(const char* levelname)
+{
 	IReader* reader;
 	char levelpath[512];
 	snprintf(levelpath, 512, "data/levels/%s/", levelname);
@@ -39,13 +38,15 @@ void Level::load(const char* levelname) {
 	// etc.
 }
 
-void Level::loadLMF(IReader* reader) {
+void Level::loadLMF(IReader* reader)
+{
 	// read header
 	LevelMeshHeader header;
 	reader->read(&header, sizeof(header));
 
-	for (uint16_t i = 0; i < header.mesh_count; i++) {
-		LevelMesh* level_mesh = MEM_NEW(*m_allocator, LevelMesh);
+	for (uint16_t i = 0; i < header.mesh_count; i++)
+	{
+		LevelMesh* level_mesh = new LevelMesh();
 		level_mesh->load(reader);
 
 		Entity* level_mesh_entity = level_mesh;
@@ -53,19 +54,23 @@ void Level::loadLMF(IReader* reader) {
 	}
 }
 
-Entity* Level::createEntity() {
-	Entity* entity = MEM_NEW(*m_allocator, Entity);
+Entity* Level::createEntity()
+{
+	Entity* entity = new Entity();
 	m_entities.push_back(entity);
 	return entity;
 }
 
-void Level::addEntity(Entity* entity) {
-	if (!entity) {
+void Level::addEntity(Entity* entity)
+{
+	if (!entity)
+	{
 		FATAL("Level::addEntity: failed to add null ptr entity");
 	}
 
 	size_t entity_count = m_entities.size();
-	for (size_t i = 0; i < entity_count; i++) {
+	for (size_t i = 0; i < entity_count; i++)
+	{
 		if (m_entities[i] == entity) {
 			FATAL("Level::addEntity: entity (classname=%s ptr=0x%p) already exists", entity->getClassName(), entity);
 		}
@@ -74,10 +79,13 @@ void Level::addEntity(Entity* entity) {
 	m_entities.push_back(entity);
 }
 
-void Level::render() {
-	for (Array<Entity*>::iterator it = m_entities.begin(); it != m_entities.end(); ++it) {
+void Level::render()
+{
+	for (Array<Entity*>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+	{
 		Entity* entity = (*it);
-		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(entity)) {
+		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(entity))
+		{
 			level_mesh->render();
 		}
 	}

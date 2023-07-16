@@ -5,6 +5,7 @@
 #include "engine/debug.h"
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
+#include "engine/logger.h"
 #include "engine/engine.h"
 #include "engine/material_system.h"
 #include "engine/texture.h"
@@ -21,21 +22,25 @@ enum textureFileFormats_t {
 
 static const char* s_texture_file_formats[TEXEXT_MAX] = { ".png", ".jpg", ".jpeg", ".tga", ".tiff" };
 
+MaterialSystem g_material_system;
+
 MaterialSystem::MaterialSystem() :
 	m_notex(nullptr)
 {
 }
 
-MaterialSystem::~MaterialSystem() {
+MaterialSystem::~MaterialSystem()
+{
 }
 
-void MaterialSystem::Init() {
-	printf("Material System initialization ...\n");
+void MaterialSystem::Init()
+{
+	Msg("Material System initialization ...");
 
 	char buffer[260];
 	bool texfound = false;
 	for (int i = 0; i < TEXEXT_MAX; i++) {
-		snprintf(buffer, sizeof(buffer), "data/textures/system/notex.%s", s_texture_file_formats[i]);
+		snprintf(buffer, sizeof(buffer), "data/textures/system/notex%s", s_texture_file_formats[i]);
 		if (g_file_system->fileExist(buffer)) {
 			texfound = true;
 			break;
@@ -48,7 +53,7 @@ void MaterialSystem::Init() {
 		exit(-1);
 	}
 
-	m_notex = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_engine->getRenderDevice());
+	m_notex = new Texture(*g_engine->getRenderDevice());
 
 	// open reader
 	IReader* reader = g_file_system->openRead(buffer);
@@ -60,12 +65,21 @@ void MaterialSystem::Init() {
 	g_file_system->deleteReader(reader);
 }
 
-void MaterialSystem::Shutdown() {
-	if (m_notex) {
-		MEM_DELETE(*g_default_allocator, Texture, m_notex);
+void MaterialSystem::Shutdown()
+{
+	if (m_notex)
+	{
+		delete m_notex;
+		m_notex = nullptr;
 	}
 }
 
-Texture* MaterialSystem::LoadTexture(const char* filename) {
+Texture* MaterialSystem::LoadTexture(const char* filename, bool absolutePath /*= false*/)
+{
+	return nullptr;
+}
+
+Texture* MaterialSystem::GetNoTexture()
+{
 	return m_notex;
 }

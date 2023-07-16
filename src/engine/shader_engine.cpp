@@ -8,7 +8,7 @@ ShaderEngine::ShaderEngine(const char* renderName)
 	: m_renderName(renderName)
 {
 	char shadersFolder[MAX_PATH];
-	sprintf(shadersFolder, "data/shaders/%s", m_renderName);
+	snprintf(shadersFolder, sizeof(shadersFolder), "data/shaders/%s", m_renderName);
 	m_shadersFolder = shadersFolder;
 }
 
@@ -25,14 +25,14 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 	{
 		char shaderPath[MAX_PATH];
 
-		sprintf(shaderPath, "%s/%s.vs", m_shadersFolder.c_str(), shaderName);
-
+		snprintf(shaderPath, sizeof(shaderPath), "%s/%s.vs", m_shadersFolder.c_str(), shaderName);
+		
 		IReader* reader = g_file_system->openRead(shaderPath);
 		reader->seek(End, 0);
 		size_t vertex_length = reader->tell();
 		reader->seek(Begin, 0);
 
-		char* vertex_shader = (char*)g_default_allocator->allocate(vertex_length + 1, 1);
+		char* vertex_shader = (char*)g_allocator->allocate(vertex_length + 1, 1);
 		reader->read(vertex_shader, vertex_length);
 		vertex_shader[vertex_length] = '\0';
 
@@ -46,7 +46,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		size_t fragment_length = reader->tell();
 		reader->seek(Begin, 0);
 
-		char* fragment_shader = (char*)g_default_allocator->allocate(fragment_length + 1, 1);
+		char* fragment_shader = (char*)g_allocator->allocate(fragment_length + 1, 1);
 		reader->read(fragment_shader, fragment_length);
 		fragment_shader[fragment_length] = '\0';
 
@@ -64,8 +64,8 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		}
 
 		// free data
-		g_default_allocator->deallocate(fragment_shader);
-		g_default_allocator->deallocate(vertex_shader);
+		g_allocator->deallocate(fragment_shader);
+		g_allocator->deallocate(vertex_shader);
 
 		pipelineDesc_t pipeline_desc = {};
 		pipeline_desc.shader = sd.shaderIndex;

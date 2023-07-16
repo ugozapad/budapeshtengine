@@ -100,16 +100,19 @@ public:
 	void deleteWriter(IWriter*& writer) override;
 };
 
-IFileSystem* IFileSystem::create() {
-	return MEM_NEW(*g_default_allocator, FileSystem);
+IFileSystem* IFileSystem::create()
+{
+	return new FileSystem();
 }
 
-void IFileSystem::destroy(IFileSystem*& fs_ptr) {
-	MEM_DELETE(*g_default_allocator, IFileSystem, fs_ptr);
+void IFileSystem::destroy(IFileSystem*& fs_ptr)
+{
+	delete fs_ptr;
 	fs_ptr = nullptr;
 }
 
-bool FileSystem::fileExist(const char* filename) {
+bool FileSystem::fileExist(const char* filename)
+{
 	ASSERT(filename);
 
 	size_t length = strlen(filename);
@@ -127,18 +130,24 @@ bool FileSystem::fileExist(const char* filename) {
 	return false;
 }
 
-IReader* FileSystem::openRead(const char* filename) {
-	return MEM_NEW(*g_default_allocator, FileReader, filename);
+IReader* FileSystem::openRead(const char* filename)
+{
+	return new FileReader(filename);
 }
 
-IWriter* FileSystem::openWrite(const char* filename) {
-	return MEM_NEW(*g_default_allocator, FileWriter, filename);
+IWriter* FileSystem::openWrite(const char* filename)
+{
+	return new FileWriter(filename);
 }
 
-void FileSystem::deleteReader(IReader*& reader) {
-	MEM_DELETE(*g_default_allocator, IReader, reader);
+void FileSystem::deleteReader(IReader*& reader)
+{
+	delete reader;
+	reader = nullptr;
 }
 
-void FileSystem::deleteWriter(IWriter*& writer) {
-	MEM_DELETE(*g_default_allocator, IWriter, writer);
+void FileSystem::deleteWriter(IWriter*& writer)
+{
+	delete writer;
+	writer = nullptr;
 }

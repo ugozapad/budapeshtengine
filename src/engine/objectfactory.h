@@ -5,11 +5,11 @@
 #include "engine/object.h"
 
 class TypedObject;
-typedef TypedObject* (*pfnCreateObject_t)(IAllocator& allocator);
+typedef TypedObject* (*pfnCreateObject_t)();
 
 template <typename T>
-T* createObjectTemplated(IAllocator& allocator) {
-	return MEM_NEW(allocator, T);
+T* createObjectTemplated() {
+	return new T();
 }
 
 struct objectCreationInfo_t {
@@ -19,18 +19,17 @@ struct objectCreationInfo_t {
 
 class ObjectFactory {
 public:
-	ObjectFactory(IAllocator& allocator);
+	ObjectFactory();
 	~ObjectFactory();
 
 	template <typename T>
 	void registerObject();
 
 	template <typename T>
-	T* createObject(IAllocator& allocator);
+	T* createObject();
 
 private:
 	Array<objectCreationInfo_t> m_objectCreationInfos;
-	IAllocator& m_allocator;
 };
 
 extern ObjectFactory* g_object_factory;
@@ -46,10 +45,13 @@ inline void ObjectFactory::registerObject() {
 }
 
 template<typename T>
-inline T* ObjectFactory::createObject(IAllocator& allocator) {
-	for (auto it : m_objectCreationInfos) {
-		if (it.id == get_type_id<T>()) {
-			return (T*)it.create_proc(allocator);
+inline T* ObjectFactory::createObject()
+{
+	for (auto it : m_objectCreationInfos)
+	{
+		if (it.id == get_type_id<T>())
+		{
+			return (T*)it.create_proc();
 		}
 	}
 	

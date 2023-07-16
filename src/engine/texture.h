@@ -10,7 +10,7 @@ class IRenderDevice;
 
 class Texture {
 public:
-	Texture(IAllocator& allocator, IRenderDevice& render);
+	Texture(IRenderDevice& render);
 	~Texture();
 
 	void destroy();
@@ -22,7 +22,6 @@ public:
 	textureIndex_t getTextureIndex() { return m_textureIndex; }
 
 private:
-	IAllocator* m_allocator;
 	IRenderDevice* m_render_device;
 	textureIndex_t m_textureIndex;
 };

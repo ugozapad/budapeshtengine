@@ -9,9 +9,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-Texture::Texture(IAllocator& allocator, IRenderDevice& render_device) :
-	m_allocator(&allocator)
-,	m_render_device(&render_device)
+Texture::Texture(IRenderDevice& render_device) :
+	m_render_device(&render_device)
 ,	m_textureIndex(INVALID_TEXTURE_INDEX)
 {
 }
@@ -33,7 +32,7 @@ void Texture::load(IReader* reader, bool repeat) {
 	reader->seek(SeekWay::Begin, 0);
 
 	// allocate image buffer
-	uint8_t* image_buffer = (uint8_t*)m_allocator->allocate(length, 4);
+	uint8_t* image_buffer = (uint8_t*)g_allocator->allocate(length, 4);
 
 	// read file
 	reader->read(image_buffer, length);
@@ -66,7 +65,7 @@ void Texture::load(IReader* reader, bool repeat) {
 	STBI_FREE(image_data);
 
 	// free file memory
-	m_allocator->deallocate(image_buffer);
+	g_allocator->deallocate(image_buffer);
 }
 
 // stb image write callback

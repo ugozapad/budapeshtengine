@@ -42,8 +42,7 @@ struct renderContext_t
 class StaticMesh
 {
 public:
-	StaticMesh(IAllocator& allocator, 
-		Array<LevelMeshVertex_LM>& vertices, 
+	StaticMesh(Array<LevelMeshVertex_LM>& vertices, 
 		Array<uint16_t>& indices, 
 		const char* material_name, 
 		const char* texture_name, 
@@ -63,8 +62,6 @@ private:
 	void destroyGpu();
 
 private:
-	IAllocator* m_allocator;
-
 	Texture* m_diffuse_texture;
 	Texture* m_lightmap_texture;
 

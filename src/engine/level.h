@@ -10,10 +10,8 @@ class IReader;
 class Level
 {
 public:
-	Level(IAllocator& allocator);
+	Level();
 	~Level();
-
-	IAllocator& getAllocator() { return *m_allocator; }
 
 	void load(const char* levelname);
 	void loadLMF(IReader* reader);
@@ -24,7 +22,6 @@ public:
 	void render();
 
 private:
-	IAllocator* m_allocator;
 	Array<Entity*> m_entities;
 };
 

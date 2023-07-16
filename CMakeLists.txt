@@ -13,5 +13,13 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/$<0:>")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin/$<0:>") 
 set(CMAKE_DEBUG_POSTFIX "_d")
 
+if (MSVC)
+    # Always generate PDBs
+    add_compile_options(/Zi)
+    add_link_options(/DEBUG)
+
+    add_compile_options(/W3) # Warning level
+endif()
+
 add_subdirectory(thirdparty)
 add_subdirectory(src)

@@ -1,5 +1,6 @@
 #include "engine/debug.h"
 #include "engine/allocator.h"
+#include "engine/logger.h"
 #include "render/irenderdevice.h"
 
 extern "C" {
@@ -21,15 +22,15 @@ extern "C" {
 
 class SokolRenderDevice : public IRenderDevice {
 public:
-	SokolRenderDevice(IAllocator& allocator) :
-		m_allocator(&allocator)
-	,	m_bindings{0}
+	SokolRenderDevice() :
+		m_bindings{0}
 	,	m_gl_context(nullptr)
 	,	m_bindings_begin(false)
 	{
 	}
 
-	~SokolRenderDevice() {
+	~SokolRenderDevice()
+	{
 	}
 
 	void init(SDL_Window* render_window) override;
@@ -73,8 +74,9 @@ private:
 	bool m_bindings_begin;
 };
 
-__declspec(dllexport) IRenderDevice* createRenderDevice(IAllocator& render_dev_allocator) {
-	return MEM_NEW(render_dev_allocator, SokolRenderDevice, render_dev_allocator);
+__declspec(dllexport) IRenderDevice* createRenderDevice()
+{
+	return new SokolRenderDevice();
 }
 
 void SokolRenderDevice::init(SDL_Window* render_window) {
@@ -95,7 +97,7 @@ void SokolRenderDevice::init(SDL_Window* render_window) {
 	const char* api_name = "Direct3D 11";
 #endif // SOKOL_GLCORE33
 
-	printf("SokolRenderDevice created, API %s\n", api_name);
+	Msg("SokolRenderDevice created, API %s", api_name);
 
 	// initialize microui
 	MicroUIRender_init();

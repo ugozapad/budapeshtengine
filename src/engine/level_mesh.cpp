@@ -5,6 +5,8 @@
 #include "engine/level_mesh.h"
 #include "engine/camera.h"
 #include "engine/texture.h"
+#include "engine/material_system.h"
+#include "engine/logger.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -31,7 +33,7 @@ void LevelMesh::load(IReader* reader) {
 	// Load LevelMeshMaterial
 	uint32_t diffuse_texture_len = 0;
 	reader->read(&diffuse_texture_len, sizeof(diffuse_texture_len));
-	char* diffuse_texture_path = (char*)g_default_allocator->allocate(size_t(diffuse_texture_len) + 1, 1);
+	char* diffuse_texture_path = (char*)g_allocator->allocate(size_t(diffuse_texture_len) + 1, 1);
 	reader->read(diffuse_texture_path, diffuse_texture_len);
 
 	diffuse_texture_path[diffuse_texture_len] = '\0';
@@ -42,7 +44,7 @@ void LevelMesh::load(IReader* reader) {
 	}
 
 	// load texture
-	m_diffuse_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_engine->getRenderDevice());
+	m_diffuse_texture = new Texture(*g_engine->getRenderDevice());
 
 	char* path_to_texture = strstr(diffuse_texture_path, "/temp/") + strlen("/temp/");
 
@@ -56,7 +58,7 @@ void LevelMesh::load(IReader* reader) {
 
 	uint32_t lightmap_texture_len = 0;
 	reader->read(&lightmap_texture_len, sizeof(lightmap_texture_len));
-	char* lightmap_texture_path = (char*)g_default_allocator->allocate(size_t(lightmap_texture_len) + 1, 1);
+	char* lightmap_texture_path = (char*)g_allocator->allocate(size_t(lightmap_texture_len) + 1, 1);
 	reader->read(lightmap_texture_path, lightmap_texture_len);
 
 	lightmap_texture_path[lightmap_texture_len] = '\0';
@@ -69,40 +71,48 @@ void LevelMesh::load(IReader* reader) {
 	char buffer2[260];
 	snprintf(buffer2, sizeof(buffer2), "data/levels/%s/%s", "test_baking", lightmap_texture_path);
 
-	m_lightmap_texture = MEM_NEW(*g_default_allocator, Texture, *g_default_allocator, *g_engine->getRenderDevice());
+	m_lightmap_texture = new Texture(*g_engine->getRenderDevice());
 
 	texture_reader = g_file_system->openRead(buffer2);
 	m_lightmap_texture->load(texture_reader, false);
 
 	g_file_system->deleteReader(texture_reader);
 
-	g_default_allocator->deallocate(lightmap_texture_path);
-	g_default_allocator->deallocate(diffuse_texture_path);
+	g_allocator->deallocate(lightmap_texture_path);
+	g_allocator->deallocate(diffuse_texture_path);
 
 	// Load LevelMesh
 	uint32_t mesh_name_len = 0;
 	reader->read(&mesh_name_len, sizeof(mesh_name_len));
-	char* mesh_name = (char*)g_default_allocator->allocate(size_t(mesh_name_len) + 1, 1);
+	char* mesh_name = (char*)g_allocator->allocate(size_t(mesh_name_len) + 1, 1);
 	reader->read(mesh_name, mesh_name_len);
 
 	mesh_name[mesh_name_len] = '\0';
 
-	g_default_allocator->deallocate(mesh_name);
+	g_allocator->deallocate(mesh_name);
 
 	uint32_t vertices_count = 0;
 	reader->read(&vertices_count, sizeof(vertices_count));
 
 	m_vertices_count = vertices_count;
 
-	Array<LevelMeshVertex_LM> vertices(*g_default_allocator);
+	Array<LevelMeshVertex_LM> vertices;
 	vertices.resize(vertices_count);
 
 	reader->read(vertices.data(), sizeof(LevelMeshVertex_LM) * vertices_count);
 
 	int counter = 0;
-	for (Array<LevelMeshVertex_LM>::iterator it = vertices.begin(); it != vertices.end(); ++it) {
+	for (Array<LevelMeshVertex_LM>::iterator it = vertices.begin(); it != vertices.end(); ++it)
+	{
 		LevelMeshVertex_LM& vertex = (*it);
-		//printf("%i:\t%f\t%f\n", counter, vertex.texcoord1.x, vertex.texcoord1.y);
+		if (isnan(vertex.position.x) || isnan(vertex.position.y) || isnan(vertex.position.z))
+		{
+			Msg("triangle %i reset to zero size", counter);
+			vertex.position.x = 0.0f;
+			vertex.position.y = 0.0f;
+			vertex.position.z = 0.0f;
+		}
+
 		counter++;
 	}
 
@@ -111,7 +121,7 @@ void LevelMesh::load(IReader* reader) {
 
 	m_indices_count = indices_count;
 
-	Array<uint16_t> indices(*g_default_allocator);
+	Array<uint16_t> indices;
 	indices.resize(indices_count);
 
 	reader->read(indices.data(), indices_count * sizeof(uint16_t));
@@ -135,7 +145,7 @@ void bindLightmapShader() {
 		size_t vertex_length = reader->tell();
 		reader->seek(Begin, 0);
 
-		char* vertex_shader = (char*)g_default_allocator->allocate(vertex_length + 1, 1);
+		char* vertex_shader = (char*)g_allocator->allocate(vertex_length + 1, 1);
 		reader->read(vertex_shader, vertex_length);
 		vertex_shader[vertex_length] = '\0';
 
@@ -147,7 +157,7 @@ void bindLightmapShader() {
 		size_t fragment_length = reader->tell();
 		reader->seek(Begin, 0);
 
-		char* fragment_shader = (char*)g_default_allocator->allocate(fragment_length + 1, 1);
+		char* fragment_shader = (char*)g_allocator->allocate(fragment_length + 1, 1);
 		reader->read(fragment_shader, fragment_length);
 		fragment_shader[fragment_length] = '\0';
 
@@ -165,8 +175,8 @@ void bindLightmapShader() {
 		}
 
 		// free data
-		g_default_allocator->deallocate(fragment_shader);
-		g_default_allocator->deallocate(vertex_shader);
+		g_allocator->deallocate(fragment_shader);
+		g_allocator->deallocate(vertex_shader);
 
 		pipelineDesc_t pipeline_desc = {};
 		pipeline_desc.shader = lightmapped_generic_shader;
@@ -218,7 +228,7 @@ void LevelMesh::render() {
 	render_device->setVSConstant(CONSTANT_MVP_MATRIX, &mvp[0], MATRIX4_SIZE);
 
 	render_device->beginBinding();
-	render_device->setTexture(0, m_diffuse_texture->getTextureIndex());
+	render_device->setTexture(0, g_material_system.GetNoTexture()->getTextureIndex());
 	render_device->setTexture(1, m_lightmap_texture->getTextureIndex());
 	render_device->setVertexBuffer(m_vertex_buffer);
 	render_device->setIndexBuffer(m_index_buffer);

@@ -9,9 +9,11 @@
 #include "engine/allocator.h"
 #include "engine/iosdriver.h"
 #include "engine/filesystem.h"
+#include "engine/logger.h"
 
 // File reader
-class FileReaderPhysFS : public IReader {
+class FileReaderPhysFS : public IReader
+{
 public:
 	FileReaderPhysFS(const char* filename);
 	~FileReaderPhysFS();
@@ -24,19 +26,23 @@ private:
 };
 
 FileReaderPhysFS::FileReaderPhysFS(const char* filename) :
-	m_file_handle(nullptr) {
+	m_file_handle(nullptr)
+{
 	m_file_handle = PHYSFS_openRead(filename);
 	ASSERT_MSG(m_file_handle, "Unable to open file %s", filename);
 }
 
-FileReaderPhysFS::~FileReaderPhysFS() {
-	if (m_file_handle) {
+FileReaderPhysFS::~FileReaderPhysFS()
+{
+	if (m_file_handle)
+	{
 		PHYSFS_close(m_file_handle);
 		m_file_handle = nullptr;
 	}
 }
 
-void FileReaderPhysFS::seek(SeekWay seekway, long offset) {
+void FileReaderPhysFS::seek(SeekWay seekway, long offset)
+{
 	switch (seekway)
 	{
 	case Begin:
@@ -57,16 +63,19 @@ void FileReaderPhysFS::seek(SeekWay seekway, long offset) {
 	}
 }
 
-size_t FileReaderPhysFS::tell() {
+size_t FileReaderPhysFS::tell()
+{
 	return (size_t)PHYSFS_tell(m_file_handle);
 }
 
-size_t FileReaderPhysFS::read(void* data, size_t size) {
+size_t FileReaderPhysFS::read(void* data, size_t size)
+{
 	return PHYSFS_read(m_file_handle, data, sizeof(char), size);
 }
 
 // File Writer
-class FileWriterPhysFS : public IWriter {
+class FileWriterPhysFS : public IWriter
+{
 public:
 	FileWriterPhysFS(const char* filename);
 	~FileWriterPhysFS();
@@ -78,20 +87,30 @@ private:
 	PHYSFS_file* m_file_handle;
 };
 
-FileWriterPhysFS::FileWriterPhysFS(const char* filename) :
-	m_file_handle(nullptr) {
+FileWriterPhysFS::FileWriterPhysFS(const char* filename):
+	m_file_handle(nullptr)
+{
+	if (!g_file_system->fileExist(filename))
+	{
+		FILE* f = fopen(filename, "wb");
+		if (f) fclose(f);
+	}
+
 	m_file_handle = PHYSFS_openWrite(filename);
 	ASSERT_MSG(m_file_handle, "Unable to open file %s", filename);
 }
 
-FileWriterPhysFS::~FileWriterPhysFS() {
-	if (m_file_handle) {
+FileWriterPhysFS::~FileWriterPhysFS()
+{
+	if (m_file_handle)
+	{
 		PHYSFS_close(m_file_handle);
 		m_file_handle = nullptr;
 	}
 }
 
-void FileWriterPhysFS::seek(SeekWay seekway, long offset) {
+void FileWriterPhysFS::seek(SeekWay seekway, long offset)
+{
 	switch (seekway)
 	{
 	case Begin:
@@ -112,18 +131,21 @@ void FileWriterPhysFS::seek(SeekWay seekway, long offset) {
 	}
 }
 
-size_t FileWriterPhysFS::tell() {
+size_t FileWriterPhysFS::tell()
+{
 	return (size_t)PHYSFS_tell(m_file_handle);
 }
 
-size_t FileWriterPhysFS::write(const void* data, size_t size) {
+size_t FileWriterPhysFS::write(const void* data, size_t size)
+{
 	return PHYSFS_write(m_file_handle, data, sizeof(char), size);
 }
 
 // File system
-class FileSystemPhysFS : public IFileSystem {
+class FileSystemPhysFS : public IFileSystem
+{
 public:
-	FileSystemPhysFS(IAllocator& allocator);
+	FileSystemPhysFS();
 	~FileSystemPhysFS();
 
 	bool fileExist(const char* filename) override;
@@ -133,21 +155,19 @@ public:
 
 	void deleteReader(IReader*& reader) override;
 	void deleteWriter(IWriter*& writer) override;
-
-private:
-	IAllocator* m_allocator;
 };
 
-IFileSystem* IFileSystem::createPhysFS() {
-	return MEM_NEW(*g_default_allocator, FileSystemPhysFS, *g_default_allocator);
+IFileSystem* IFileSystem::createPhysFS()
+{
+	return new FileSystemPhysFS();
 }
 
-FileSystemPhysFS::FileSystemPhysFS(IAllocator& allocator) :
-	m_allocator(&allocator) {
+FileSystemPhysFS::FileSystemPhysFS()
+{
 	PHYSFS_init(NULL);
 
 	const char* current_directory = IOsDriver::getInstance()->getCurrentDirectory();
-	printf("Current path: %s\n", current_directory);
+	Msg("Current path: %s", current_directory);
 	PHYSFS_mount(current_directory, nullptr, 0);
 
 	// mount arhives
@@ -155,34 +175,44 @@ FileSystemPhysFS::FileSystemPhysFS(IAllocator& allocator) :
 	for (char** it = file_list; *it != NULL; it++)
 	{
 		if (SDL_strstr(*it, ".zip")) {
-			printf("found arhive: %s\n", *it);
+			Msg("found archive: %s", *it);
 			PHYSFS_mount(*it, nullptr, 1);
 		}
 	}
 }
 
-FileSystemPhysFS::~FileSystemPhysFS() {
+FileSystemPhysFS::~FileSystemPhysFS()
+{
 	PHYSFS_deinit();
 }
 
-bool FileSystemPhysFS::fileExist(const char* filename) {
+bool FileSystemPhysFS::fileExist(const char* filename)
+{
 	return PHYSFS_exists(filename);
 }
 
-IReader* FileSystemPhysFS::openRead(const char* filename) {
-	return MEM_NEW(*m_allocator, FileReaderPhysFS, filename);
+IReader* FileSystemPhysFS::openRead(const char* filename)
+{
+	return new FileReaderPhysFS(filename);
 }
 
-IWriter* FileSystemPhysFS::openWrite(const char* filename) {
-	return MEM_NEW(*m_allocator, FileWriterPhysFS, filename);
+IWriter* FileSystemPhysFS::openWrite(const char* filename)
+{
+	PHYSFS_setWriteDir("");
+
+	return new FileWriterPhysFS(filename);
 }
 
-void FileSystemPhysFS::deleteReader(IReader*& reader) {
-	MEM_DELETE(*m_allocator, IReader, reader);
+void FileSystemPhysFS::deleteReader(IReader*& reader)
+{
+	delete reader;
+	reader = nullptr;
 }
 
-void FileSystemPhysFS::deleteWriter(IWriter*& writer) {
-	MEM_DELETE(*m_allocator, IWriter, writer);
+void FileSystemPhysFS::deleteWriter(IWriter*& writer)
+{
+	delete writer;
+	writer = nullptr;
 }
 
 #endif // ENABLE_PHYSFS

@@ -1,4 +1,5 @@
 #include "engine/debug.h"
+#include "engine/logger.h"
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
@@ -63,7 +64,7 @@ void assertBackend(const char* expression, const char* file, int line, const cha
 		strcat(buffer, "\n\nPress OK for exit.");
 	}
 
-	printf("%s(%d) - %s : %s\n", file, line, function, fmt ? msg : expression);
+	Msg("%s(%d) - %s : %s", file, line, function, fmt ? msg : expression);
 
 	switch (MessageBoxA(NULL, buffer, "Ooops... It's crash time", msgBoxType))
 	{

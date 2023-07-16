@@ -4,13 +4,11 @@
 #include "engine/texture.h"
 #include "engine/material_system.h"
 
-StaticMesh::StaticMesh(IAllocator& allocator, 
-	Array<LevelMeshVertex_LM>& vertices, 
+StaticMesh::StaticMesh(Array<LevelMeshVertex_LM>& vertices, 
 	Array<uint16_t>& indices, 
 	const char* material_name,
 	const char* texture_name, 
 	const char* lm_name) :
-	m_allocator(&allocator),
 	m_vertex_buffer(INVALID_BUFFER_INDEX),
 	m_index_buffer(INVALID_BUFFER_INDEX),
 	m_pipeline(INVALID_PIPELINE_INDEX),
