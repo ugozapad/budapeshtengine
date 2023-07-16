@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="analysis.c" />
+    <ClCompile Include="barkmel.c" />
+    <ClCompile Include="bitrate.c" />
+    <ClCompile Include="block.c" />
+    <ClCompile Include="codebook.c" />
+    <ClCompile Include="envelope.c" />
+    <ClCompile Include="floor0.c" />
+    <ClCompile Include="floor1.c" />
+    <ClCompile Include="info.c" />
+    <ClCompile Include="lookup.c" />
+    <ClCompile Include="lpc.c" />
+    <ClCompile Include="lsp.c" />
+    <ClCompile Include="mapping0.c" />
+    <ClCompile Include="mdct.c" />
+    <ClCompile Include="psy.c" />
+    <ClCompile Include="registry.c" />
+    <ClCompile Include="res0.c" />
+    <ClCompile Include="sharedbook.c" />
+    <ClCompile Include="smallft.c" />
+    <ClCompile Include="synthesis.c" />
+    <ClCompile Include="vorbisenc.c" />
+    <ClCompile Include="window.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="backends.h" />
+    <ClInclude Include="bitrate.h" />
+    <ClInclude Include="codebook.h" />
+    <ClInclude Include="codec.h" />
+    <ClInclude Include="codec_internal.h" />
+    <ClInclude Include="envelope.h" />
+    <ClInclude Include="highlevel.h" />
+    <ClInclude Include="lookup.h" />
+    <ClInclude Include="lookup_data.h" />
+    <ClInclude Include="lpc.h" />
+    <ClInclude Include="lsp.h" />
+    <ClInclude Include="masking.h" />
+    <ClInclude Include="mdct.h" />
+    <ClInclude Include="misc.h" />
+    <ClInclude Include="os.h" />
+    <ClInclude Include="psy.h" />
+    <ClInclude Include="registry.h" />
+    <ClInclude Include="scales.h" />
+    <ClInclude Include="smallft.h" />
+    <ClInclude Include="vorbisenc.h" />
+    <ClInclude Include="window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vorbis.def" />
+    <None Include="vorbisenc.def" />
+  </ItemGroup>
+</Project>
