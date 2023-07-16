@@ -1,8 +1,6 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include <stdint.h>
-
 struct SDL_Window;
 
 // Render types
