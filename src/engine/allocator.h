@@ -1,8 +1,6 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
-#include <new>
-
 class IAllocator {
 public:
 	virtual ~IAllocator() {}

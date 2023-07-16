@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "engine/level.h"
 #include "engine/objectfactory.h"
 #include "engine/filesystem.h"
@@ -7,12 +8,6 @@
 #include "engine/shader_engine.h"
 
 #include "render/texture.h"
-
-#include <glm/glm.hpp>
-
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <stdio.h>
 
 Level::Level(IAllocator& allocator) :
 	m_allocator(&allocator),

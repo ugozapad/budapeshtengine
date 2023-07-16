@@ -1,8 +1,6 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
-#include <memory.h>
-
 #include "engine/debug.h"
 #include "engine/allocator.h"
 

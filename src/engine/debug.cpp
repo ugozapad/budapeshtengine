@@ -1,11 +1,5 @@
+#include "pch.h"
 #include "engine/debug.h"
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
-
-#include <Windows.h>
-
-#include "SDL.h"
 
 void assertBackend(const char* expression, const char* file, int line, const char* function, bool* ignore, const char* fmt, ...)
 {
