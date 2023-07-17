@@ -1,7 +1,7 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
-#include <new>
+#define DEFAUL_ALIGMENT 16
 
 class IAllocator {
 public:
@@ -12,11 +12,23 @@ public:
 	virtual void deallocate(void* ptr) = 0;
 };
 
-extern IAllocator* g_default_allocator;
+extern IAllocator* g_allocator;
 
-IAllocator* createDefaultAllocator();
+//#define MEM_NEW(T, ...) new(sizeof(T), alignof(T)) T(__VA_ARGS__)
 
-#define MEM_NEW(a, T, ...) (new ((a).allocate(sizeof(T), alignof(T))) T(__VA_ARGS__))
-#define MEM_DELETE(a, T, p)	if (p) {(p)->~T(); (a).deallocate(p);}
+#define SAFE_DELETE(PTR) \
+	delete PTR; \
+	PTR = nullptr
+
+#define IMPLEMENT_ALLOCATOR \
+	void* operator new(size_t size) \
+	{ \
+		return g_allocator->allocate(size, DEFAUL_ALIGMENT); \
+	} \
+	void operator delete(void* ptr) \
+	{ \
+		g_allocator->deallocate(ptr); \
+	}
+
 
 #endif // !ALLOCATOR_H

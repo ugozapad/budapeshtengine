@@ -11,7 +11,9 @@ public:
 	void Init();
 	void Shutdown();
 
-	Texture* LoadTexture(const char* filename);
+	Texture* LoadTexture(const char* filename, bool absolutePath = false);
+
+	Texture* GetNoTexture();
 
 private:
 	Texture* m_notex;

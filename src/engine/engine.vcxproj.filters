@@ -16,6 +16,11 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="shader_engine.h" />
     <ClInclude Include="iosdriver.h" />
+    <ClInclude Include="sound_system.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="texture.h" />
+    <ClInclude Include="level_mesh.h" />
+    <ClInclude Include="logger.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -32,5 +37,10 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="shader_engine.cpp" />
     <ClCompile Include="osdriver_win32.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="sound_system.cpp" />
+    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="level_mesh.cpp" />
+    <ClCompile Include="logger.cpp" />
   </ItemGroup>
 </Project>

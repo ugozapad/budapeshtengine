@@ -1,8 +1,6 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#define SDL_MAIN_HANDLED
-#include "SDL.h"
 #include "render/irenderdevice.h"
 
 class IInputSystem;
@@ -20,6 +18,7 @@ public:
 	SDL_Window* getRenderWindow();
 	IInputSystem* getInputSystem();
 	Level* getLevel();
+	IRenderDevice* getRenderDevice();
 
 	inline void requestExit		() { m_bExitRequested = true; }
 	inline bool isExitRequested	() const { return (m_bExitRequested); }

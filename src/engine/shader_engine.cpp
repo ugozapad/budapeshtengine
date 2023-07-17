@@ -1,5 +1,7 @@
+#include "pch.h"
 #include "engine/shader_engine.h"
 #include "engine/filesystem.h"
+#include "engine/engine.h"
 
 ShaderEngine* g_pShaderEngine = NULL;
 
@@ -7,7 +9,7 @@ ShaderEngine::ShaderEngine(const char* renderName)
 	: m_renderName(renderName)
 {
 	char shadersFolder[MAX_PATH];
-	sprintf(shadersFolder, "data/shaders/%s", m_renderName);
+	snprintf(shadersFolder, sizeof(shadersFolder), "data/shaders/%s", m_renderName);
 	m_shadersFolder = shadersFolder;
 }
 
@@ -24,14 +26,14 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 	{
 		char shaderPath[MAX_PATH];
 
-		sprintf(shaderPath, "%s/%s.vs", m_shadersFolder.c_str(), shaderName);
-
+		snprintf(shaderPath, sizeof(shaderPath), "%s/%s.vs", m_shadersFolder.c_str(), shaderName);
+		
 		IReader* reader = g_file_system->openRead(shaderPath);
 		reader->seek(End, 0);
 		size_t vertex_length = reader->tell();
 		reader->seek(Begin, 0);
 
-		char* vertex_shader = (char*)g_default_allocator->allocate(vertex_length + 1, 1);
+		char* vertex_shader = (char*)g_allocator->allocate(vertex_length + 1, 1);
 		reader->read(vertex_shader, vertex_length);
 		vertex_shader[vertex_length] = '\0';
 
@@ -45,7 +47,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		size_t fragment_length = reader->tell();
 		reader->seek(Begin, 0);
 
-		char* fragment_shader = (char*)g_default_allocator->allocate(fragment_length + 1, 1);
+		char* fragment_shader = (char*)g_allocator->allocate(fragment_length + 1, 1);
 		reader->read(fragment_shader, fragment_length);
 		fragment_shader[fragment_length] = '\0';
 
@@ -57,14 +59,14 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		shader_desc.fragment_shader_data = fragment_shader;
 		shader_desc.fragment_shader_size = fragment_length;
 
-		sd.shaderIndex = g_render_device->createShader(shader_desc);
+		sd.shaderIndex = g_engine->getRenderDevice()->createShader(shader_desc);
 		if (sd.shaderIndex == INVALID_SHADER_INDEX) {
 			FATAL("!!! %s index is invalid", shaderName);
 		}
 
 		// free data
-		g_default_allocator->deallocate(fragment_shader);
-		g_default_allocator->deallocate(vertex_shader);
+		g_allocator->deallocate(fragment_shader);
+		g_allocator->deallocate(vertex_shader);
 
 		pipelineDesc_t pipeline_desc = {};
 		pipeline_desc.shader = sd.shaderIndex;
@@ -73,7 +75,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD1 };
 		pipeline_desc.layout_count = 3;
 
-		sd.pipelineIndex = g_render_device->createPipeline(pipeline_desc);
+		sd.pipelineIndex = g_engine->getRenderDevice()->createPipeline(pipeline_desc);
 		if (sd.pipelineIndex == INVALID_PIPELINE_INDEX) {
 			FATAL("!!! %s pipeline is invalid", shaderName);
 		}

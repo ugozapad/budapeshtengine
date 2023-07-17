@@ -1,8 +1,6 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
-#include <memory.h>
-
 #include "engine/debug.h"
 #include "engine/allocator.h"
 
@@ -21,11 +19,11 @@ struct StlAllocator {
 	constexpr StlAllocator(const StlAllocator<U>&) noexcept {}
 
 	T* allocate(std::size_t n) {
-		return (T*)g_default_allocator->allocate(n * sizeof(T), alignof(T));
+		return (T*)g_allocator->allocate(n * sizeof(T), alignof(T));
 	}
 
 	void deallocate(T* p, std::size_t n) noexcept {
-		g_default_allocator->deallocate(p);
+		g_allocator->deallocate(p);
 	}
 };
 
@@ -49,7 +47,7 @@ public:
 	typedef value_type const*	const_iterator;
 
 public:
-	Array(IAllocator& allocator);
+	Array();
 	~Array();
 
 	iterator insert(const_iterator pos, const_reference value)
@@ -144,16 +142,14 @@ private:
 	void realloc_buffer(size_type);
 
 private:
-	IAllocator* m_allocator;
 	value_type* m_memory;
 	size_type m_size;
 	size_type m_capacity;
 };
 
 template <typename T>
-inline Array<T>::Array(IAllocator& allocator) :
-	m_allocator(&allocator)
-,	m_memory(nullptr)
+inline Array<T>::Array() :
+	m_memory(nullptr)
 ,	m_size(0)
 ,	m_capacity(0)
 {
@@ -162,7 +158,7 @@ inline Array<T>::Array(IAllocator& allocator) :
 template <typename T>
 inline Array<T>::~Array() {
 	if (m_memory) {
-		m_allocator->deallocate(m_memory);
+		g_allocator->deallocate(m_memory);
 		m_memory = nullptr;
 	}
 }
@@ -170,10 +166,10 @@ inline Array<T>::~Array() {
 template<typename T>
 void Array<T>::realloc_buffer(size_type size) {
 	if (m_memory) {
-		m_memory = (value_type*)m_allocator->reallocate(m_memory, sizeof(value_type) * size, alignof(value_type));
+		m_memory = (value_type*)g_allocator->reallocate(m_memory, sizeof(value_type) * size, alignof(value_type));
 	}
 	else {
-		m_memory = (value_type*)m_allocator->allocate(sizeof(value_type) * size, alignof(value_type));
+		m_memory = (value_type*)g_allocator->allocate(sizeof(value_type) * size, alignof(value_type));
 	}
 
 	m_capacity = size;

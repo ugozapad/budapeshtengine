@@ -1,4 +1,5 @@
-#include "entity.h"
+#include "pch.h"
+#include "engine/entity.h"
 
 Entity::Entity() {
 }

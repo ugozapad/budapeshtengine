@@ -1,8 +1,6 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include <stdint.h>
-
 struct SDL_Window;
 
 // Render types
@@ -208,8 +206,6 @@ public:
 	virtual void present(bool vsync) = 0;
 };
 
-extern IRenderDevice* g_render_device;
-
-IRenderDevice* createRenderDevice();
+__declspec(dllexport) IRenderDevice* createRenderDevice();
 
 #endif
