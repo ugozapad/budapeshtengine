@@ -22,3 +22,4 @@ intermediate
 intermediate/
 
 data/log.txt
+*.log

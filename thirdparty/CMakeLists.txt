@@ -1,3 +1,6 @@
 add_subdirectory(SDL2-2.26.5)
 add_subdirectory(physfs-3.2.0)
 add_subdirectory(microui)
+add_subdirectory(ogg)
+add_subdirectory(vorbis)
+add_subdirectory(vorbisfile)

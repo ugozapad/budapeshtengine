@@ -16,7 +16,6 @@
 #include <openal/al.h>
 
 #pragma comment(lib, "openal32.lib")
-#pragma comment(lib, "engine.lib")
 
 #include "../engine/allocator.h"
 #include "../engine/sound_system.h"
