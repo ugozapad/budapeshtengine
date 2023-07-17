@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "engine/iosdriver.h"
 
+#ifdef _MSC_VER
+
 class OsDriverWin32 : public IOsDriver
 {
 public:

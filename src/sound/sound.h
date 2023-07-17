@@ -19,8 +19,8 @@ class Sound : public ISound
 	};
 	typedef uint32_t SoundState;
 public:
-	Sound	(IAllocator* pAllocator, const char* sFileName);
-	Sound	(IAllocator* pAllocator, ISoundReader* pSoundFile);
+	Sound	(const char* sFileName);
+	Sound	(ISoundReader* pSoundFile);
 	~Sound	();
 
 	void play	() override;
@@ -65,8 +65,6 @@ private:
 
 	uint32_t*		m_pSoundBuffers;
 	uint32_t		m_dwSoundSource;
-
-	IAllocator*		m_pAllocator;
 };
 
 #endif

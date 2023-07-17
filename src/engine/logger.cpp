@@ -1,19 +1,11 @@
-#include <stdint.h>
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#include <stdarg.h>
-#include <time.h>
-
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+#include "pch.h"
 
 #include "engine/logger.h"
 #include "engine/filesystem.h"
 
 IWriter* g_logWriter = nullptr;
 
-static char* g_month[12] = { "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec" };
+static const char* g_month[12] = { "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec" };
 static int g_day_in_month[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 int build_id;
 

@@ -39,7 +39,7 @@ class SoundSystem_OpenAL : public ISoundSystem
 	typedef Array<SoundDeviceDescr> DEVICES;
 	typedef Array<ISound*>			SOUNDS;
 public:
-	SoundSystem_OpenAL	(IAllocator* allocator);
+	SoundSystem_OpenAL	();
 	~SoundSystem_OpenAL	();
 
 	void			selectDevice	(SoundDeviceID deviceId) override;
@@ -60,7 +60,6 @@ public:
 	void	setMasterVolume	(float fVolume) override;
 
 private:
-	IAllocator*	m_pAllocator;
 	DEVICES		m_devices;
 	SOUNDS		m_sounds;
 };

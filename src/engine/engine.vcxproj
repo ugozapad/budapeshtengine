@@ -180,6 +180,7 @@
     <ClInclude Include="iosdriver.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="level_mesh.h" />
+    <ClInclude Include="logger.h" />
     <ClInclude Include="material_system.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="objectfactory.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="input_system.cpp" />
     <ClCompile Include="level.cpp" />
     <ClCompile Include="level_mesh.cpp" />
+    <ClCompile Include="logger.cpp" />
     <ClCompile Include="material_system.cpp" />
     <ClCompile Include="objectfactory.cpp" />
     <ClCompile Include="osdriver_win32.cpp" />

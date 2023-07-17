@@ -1,9 +1,12 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include <stdarg.h>
-#include <string.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <string.h>
+#include <assert.h>
+#include <stdarg.h>
+#include <time.h>
 
 #include <malloc.h>
 #include <memory.h>
@@ -20,3 +23,4 @@
 #include "engine/debug.h"
 #include "engine/array.h"
 #include "engine/object.h"
+#include "engine/logger.h"

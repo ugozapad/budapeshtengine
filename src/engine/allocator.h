@@ -20,4 +20,15 @@ extern IAllocator* g_allocator;
 	delete PTR; \
 	PTR = nullptr
 
+#define IMPLEMENT_ALLOCATOR \
+	void* operator new(size_t size) \
+	{ \
+		return g_allocator->allocate(size, DEFAUL_ALIGMENT); \
+	} \
+	void operator delete(void* ptr) \
+	{ \
+		g_allocator->deallocate(ptr); \
+	}
+
+
 #endif // !ALLOCATOR_H

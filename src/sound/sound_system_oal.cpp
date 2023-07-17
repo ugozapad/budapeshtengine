@@ -6,12 +6,11 @@ extern "C"
 {
 	__declspec(dllexport) ISoundSystem* __stdcall createSoundSystem(IAllocator* allocator)
 	{
-		return (MEM_NEW(*allocator, SoundSystem_OpenAL, allocator));
+		return new SoundSystem_OpenAL();
 	}
 };
 
-SoundSystem_OpenAL::SoundSystem_OpenAL(IAllocator* allocator)
-	: m_pAllocator(allocator), m_devices(*allocator), m_sounds(*allocator)
+SoundSystem_OpenAL::SoundSystem_OpenAL()
 {
 	SoundDeviceID defaultDeviceId = 0;
 
@@ -142,7 +141,7 @@ SoundDeviceID SoundSystem_OpenAL::selectedDevice() const
 
 ISound* SoundSystem_OpenAL::createSound(const char* sSoundFile)
 {
-	ISound* pSound = MEM_NEW(*m_pAllocator, Sound, m_pAllocator, sSoundFile);
+	ISound* pSound = new Sound(sSoundFile);
 	m_sounds.push_back(pSound);
 	return (pSound);
 }
@@ -159,7 +158,7 @@ void SoundSystem_OpenAL::destroySound(ISound*& pSound)
 		SOUNDS::iterator it = std::find(m_sounds.begin(), m_sounds.end(), pSound);
 		if (it != m_sounds.end())
 			m_sounds.erase(it);
-		MEM_DELETE(*m_pAllocator, ISound, pSound);
+		delete pSound;
 		pSound = NULL;
 	}
 	pSound = NULL;
@@ -190,7 +189,7 @@ void SoundSystem_OpenAL::releaseAllSounds()
 {
 	size_t const E = m_sounds.size();
 	for (size_t I = 0; I < E; ++I)
-		MEM_DELETE(*m_pAllocator, ISound, m_sounds[I]);
+		delete m_sounds[I];
 	m_sounds.clear();
 }
 

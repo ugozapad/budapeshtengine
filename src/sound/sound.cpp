@@ -6,21 +6,19 @@
 #define isValidBuffer alIsBuffer
 #define isValidSource alIsSource
 
-Sound::Sound(IAllocator* pAllocator, const char* sFileName)
-	: m_pAllocator(pAllocator),
-	m_pSoundFile(NULL), m_pBuffer(NULL),
+Sound::Sound(const char* sFileName)
+	: m_pSoundFile(NULL), m_pBuffer(NULL),
 	m_pSoundBuffers(NULL), m_dwSoundSource(0),
 	m_state(SoundState_Stopped), m_nextState(SoundState_Stopped),
 	m_flags(SoundFlags_OwnsFile)
 {
-	m_pSoundFile = MEM_NEW(*m_pAllocator, OggSoundFileReader, sFileName);
+	m_pSoundFile =new OggSoundFileReader(sFileName);
 
 	initSoundBuffers(SOUND_BUFFERS_COUNT);
 }
 
-Sound::Sound(IAllocator* pAllocator, ISoundReader* pSoundFile)
-	: m_pAllocator(pAllocator),
-	m_pSoundFile(pSoundFile), m_pBuffer(NULL),
+Sound::Sound(ISoundReader* pSoundFile)
+	: m_pSoundFile(pSoundFile), m_pBuffer(NULL),
 	m_pSoundBuffers(NULL), m_dwSoundSource(0),
 	m_state(SoundState_Stopped), m_nextState(SoundState_Stopped),
 	m_flags(0)
@@ -38,15 +36,15 @@ Sound::~Sound()
 
 	if (m_flags & SoundFlags_OwnsFile)
 	{
-		MEM_DELETE(*m_pAllocator, ISoundReader, m_pSoundFile);
+		delete m_pSoundFile;
 		m_pSoundFile = NULL;
 	}
 
 	alDeleteSources(1, &m_dwSoundSource);
 	alDeleteBuffers(SOUND_BUFFERS_COUNT, m_pSoundBuffers);
-	m_pAllocator->deallocate(m_pSoundBuffers);
+	g_allocator->deallocate(m_pSoundBuffers);
 
-	m_pAllocator->deallocate(m_pBuffer);
+	g_allocator->deallocate(m_pBuffer);
 }
 
 void Sound::play()
@@ -179,7 +177,7 @@ void Sound::onStateSwitch(SoundState next_state)
 void Sound::initSoundBuffers(uint32_t dwSoundBuffersCount)
 {
 	m_pSoundBuffers = static_cast<uint32_t*>(
-		m_pAllocator->allocate(
+		g_allocator->allocate(
 			sizeof(uint32_t) * dwSoundBuffersCount,
 			alignof(uint32_t) // TODO : DMan to Kirill : correct???
 		)
@@ -189,7 +187,7 @@ void Sound::initSoundBuffers(uint32_t dwSoundBuffersCount)
 	alGenSources(1, &m_dwSoundSource);
 
 	m_pBuffer = static_cast<char*>(
-		m_pAllocator->allocate(
+		g_allocator->allocate(
 			m_pSoundFile->getBufferSize(),
 			alignof(char) // TODO : DMan to Kirill : correct???
 		)
