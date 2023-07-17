@@ -2,7 +2,7 @@
 #include "engine/debug.h"
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
-#include "render/texture.h"
+#include "engine/texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -10,9 +10,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-Texture::Texture(IAllocator& allocator, IRenderDevice& render) :
-	m_allocator(&allocator)
-,	m_render(&render)
+Texture::Texture(IRenderDevice& render_device) :
+	m_render_device(&render_device)
 ,	m_textureIndex(INVALID_TEXTURE_INDEX)
 {
 }
@@ -23,7 +22,7 @@ Texture::~Texture() {
 
 void Texture::destroy() {
 	if (m_textureIndex != INVALID_TEXTURE_INDEX) {
-		m_render->deleteTexture(m_textureIndex);
+		m_render_device->deleteTexture(m_textureIndex);
 		m_textureIndex = INVALID_TEXTURE_INDEX;
 	}
 }
@@ -34,7 +33,7 @@ void Texture::load(IReader* reader, bool repeat) {
 	reader->seek(SeekWay::Begin, 0);
 
 	// allocate image buffer
-	uint8_t* image_buffer = (uint8_t*)m_allocator->allocate(length, 4);
+	uint8_t* image_buffer = (uint8_t*)g_allocator->allocate(length, 4);
 
 	// read file
 	reader->read(image_buffer, length);
@@ -55,7 +54,7 @@ void Texture::load(IReader* reader, bool repeat) {
 	texture_desc.size = size_t(width) * size_t(height) * 4;
 	texture_desc.mipmaps_count = 0;
 	texture_desc.repeat = repeat;
-	m_textureIndex = m_render->createTexture(texture_desc);
+	m_textureIndex = m_render_device->createTexture(texture_desc);
 
 	// validate texture index
 	if (m_textureIndex == INVALID_TEXTURE_INDEX) {
@@ -67,7 +66,7 @@ void Texture::load(IReader* reader, bool repeat) {
 	STBI_FREE(image_data);
 
 	// free file memory
-	m_allocator->deallocate(image_buffer);
+	g_allocator->deallocate(image_buffer);
 }
 
 // stb image write callback

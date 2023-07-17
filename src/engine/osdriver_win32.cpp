@@ -1,5 +1,4 @@
 #include "pch.h"
-#ifdef WIN32
 #include "engine/iosdriver.h"
 
 class OsDriverWin32 : public IOsDriver
@@ -12,6 +11,8 @@ public:
 	void shutdown() override;
 
 	const char* getCurrentDirectory() override;
+
+	bool isDirectoryExist(const char* path) override;
 
 private:
 	char m_current_directory[256];
@@ -36,6 +37,7 @@ OsDriverWin32::~OsDriverWin32()
 
 void OsDriverWin32::init()
 {
+	
 }
 
 void OsDriverWin32::shutdown()
@@ -50,4 +52,14 @@ const char* OsDriverWin32::getCurrentDirectory()
 	return nullptr;
 }
 
-#endif // WIN32
+bool OsDriverWin32::isDirectoryExist(const char* path)
+{
+	DWORD dw_attribute = GetFileAttributesA(path);
+	if (dw_attribute == INVALID_FILE_ATTRIBUTES)
+		return false;  //something is wrong with your path!
+	if (dw_attribute & FILE_ATTRIBUTE_DIRECTORY)
+		return true;   // this is a directory!
+	return false;
+}
+
+#endif // _MSC_VER

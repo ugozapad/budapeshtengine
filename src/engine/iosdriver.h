@@ -13,6 +13,8 @@ public:
 	virtual void shutdown() = 0;
 
 	virtual const char* getCurrentDirectory() = 0;
+
+	virtual bool isDirectoryExist(const char* path) = 0;
 };
 
 #endif // !IOSDRIVER_H

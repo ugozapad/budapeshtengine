@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "engine/allocator.h"
 
-IAllocator* g_default_allocator = nullptr;
-
 class DefaultAllocator : public IAllocator {
 public:
 	DefaultAllocator() {}
@@ -12,6 +10,9 @@ public:
 	void* reallocate(void* ptr, size_t size, size_t align) override;
 	void deallocate(void* ptr) override;
 };
+
+static DefaultAllocator s_default_allocator_impl;
+IAllocator* g_allocator = (IAllocator*)&s_default_allocator_impl;
 
 void* DefaultAllocator::allocate(size_t size, size_t align) {
 	return _aligned_malloc(size, align);
@@ -25,8 +26,18 @@ void DefaultAllocator::deallocate(void* ptr) {
 	_aligned_free(ptr);
 }
 
-IAllocator* createDefaultAllocator()
+void* operator new(size_t size)
 {
-	static char memoryBuffer[sizeof(DefaultAllocator)];
-	return new(memoryBuffer) DefaultAllocator();
+	return g_allocator->allocate(size, DEFAUL_ALIGMENT);
 }
+//
+//void* operator new(size_t size, size_t aligment)
+//{
+//	return g_allocator->allocate(size, aligment);
+//}
+
+void operator delete(void* ptr)
+{
+	g_allocator->deallocate(ptr);
+}
+

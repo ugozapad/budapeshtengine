@@ -18,6 +18,8 @@
     <ClInclude Include="iosdriver.h" />
     <ClInclude Include="sound_system.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="texture.h" />
+    <ClInclude Include="level_mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -36,5 +38,7 @@
     <ClCompile Include="osdriver_win32.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="sound_system.cpp" />
+    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="level_mesh.cpp" />
   </ItemGroup>
 </Project>

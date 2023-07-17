@@ -1,5 +1,16 @@
 #include "pch.h"
 #include "engine/debug.h"
+<<<<<<< HEAD
+=======
+#include "engine/logger.h"
+#include <stdarg.h>
+#include <string.h>
+#include <stdio.h>
+
+#include <Windows.h>
+
+#include "SDL.h"
+>>>>>>> kirill_dev
 
 void assertBackend(const char* expression, const char* file, int line, const char* function, bool* ignore, const char* fmt, ...)
 {
@@ -57,7 +68,7 @@ void assertBackend(const char* expression, const char* file, int line, const cha
 		strcat(buffer, "\n\nPress OK for exit.");
 	}
 
-	printf("%s(%d) - %s : %s\n", file, line, function, fmt ? msg : expression);
+	Msg("%s(%d) - %s : %s", file, line, function, fmt ? msg : expression);
 
 	switch (MessageBoxA(NULL, buffer, "Ooops... It's crash time", msgBoxType))
 	{

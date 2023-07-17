@@ -18,6 +18,7 @@ public:
 	SDL_Window* getRenderWindow();
 	IInputSystem* getInputSystem();
 	Level* getLevel();
+	IRenderDevice* getRenderDevice();
 
 	inline void requestExit		() { m_bExitRequested = true; }
 	inline bool isExitRequested	() const { return (m_bExitRequested); }

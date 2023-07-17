@@ -6,10 +6,18 @@
 #include "engine/engine.h"
 #include "engine/level.h"
 #include "engine/camera.h"
-#include "render/irenderdevice.h"
-#include "render/texture.h"
+#include "engine/texture.h"
 #include "engine/shader_engine.h"
 
+<<<<<<< HEAD
+=======
+#include "render/irenderdevice.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+>>>>>>> kirill_dev
 extern "C" {
 #include "render/microui_render.h"
 }
@@ -58,12 +66,10 @@ int Main::init(int argc, char* argv[]) {
 		}
 	}
 
-	g_default_allocator = createDefaultAllocator();
-
-	m_engine = MEM_NEW(*g_default_allocator, Engine);
+	m_engine = new Engine();
 	m_engine->init(1024, 768, fullscreen);
 
-	g_pShaderEngine = MEM_NEW(*g_default_allocator, ShaderEngine, "gl33");
+	g_pShaderEngine = new ShaderEngine("gl33");
 
 	m_engine->getLevel()->load("test_baking");
 
@@ -71,10 +77,10 @@ int Main::init(int argc, char* argv[]) {
 }
 
 void Main::shutdown() {
-	MEM_DELETE(*g_default_allocator, ShaderEngine, g_pShaderEngine);
+	SAFE_DELETE(g_pShaderEngine);
 
 	m_engine->shutdown();
-	MEM_DELETE(*g_default_allocator, Engine, m_engine);
+	SAFE_DELETE(m_engine);
 }
 
 static glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);

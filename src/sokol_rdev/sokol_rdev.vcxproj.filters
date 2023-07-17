@@ -11,12 +11,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="microui_render.h" />
-    <ClInclude Include="texture.h" />
-    <ClInclude Include="irenderdevice.h" />
-    <ClInclude Include="pch.h" />
     <ClInclude Include="..\..\thirdparty\microui\src\microui.h">
       <Filter>MicroUI - TODO REMOVE</Filter>
     </ClInclude>
+    <ClInclude Include="..\render\irenderdevice.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MicroUI - TODO REMOVE">

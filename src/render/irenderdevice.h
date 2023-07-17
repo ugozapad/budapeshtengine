@@ -206,8 +206,6 @@ public:
 	virtual void present(bool vsync) = 0;
 };
 
-extern IRenderDevice* g_render_device;
-
-IRenderDevice* createRenderDevice();
+__declspec(dllexport) IRenderDevice* createRenderDevice();
 
 #endif

@@ -22,7 +22,7 @@ class SDLInputSystem : public IInputSystem {
 		int32_t		y;
 	};
 public:
-	SDLInputSystem(IAllocator* allocator);
+	SDLInputSystem();
 	~SDLInputSystem();
 
 	void init() override;
@@ -46,13 +46,14 @@ private:
 	Point						m_wheelPosition;
 };
 
-IInputSystem* IInputSystem::create(IAllocator* allocator) {
-	return MEM_NEW(*allocator, SDLInputSystem, allocator);
+IInputSystem* IInputSystem::create(IAllocator* allocator)
+{
+	return new SDLInputSystem();
 }
 
-SDLInputSystem::SDLInputSystem(IAllocator* allocator) :
-	m_allocator(allocator), m_mouseButtonBitfield(0),
-	m_mousePosition({ 0, 0 }), m_wheelPosition({ 0, 0 })
+SDLInputSystem::SDLInputSystem() :
+	m_mouseButtonBitfield(0), m_mousePosition({ 0, 0 }), 
+	m_wheelPosition({ 0, 0 })
 {
 	for(size_t I = 0; I < KEYSTATES_SIZE; ++I)
 		m_keyState[I] = 0;
