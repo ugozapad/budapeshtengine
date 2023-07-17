@@ -1,10 +1,6 @@
 #ifndef RENDER_H
 #define RENDER_H
 
-#include <stdint.h>
-
-#include "engine/allocator.h"
-
 struct SDL_Window;
 
 // Render types

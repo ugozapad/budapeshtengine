@@ -1,4 +1,6 @@
 .idea
+*.vcxproj.user
+*.swatch
 # Folders
 .vs/
 src/.vs/

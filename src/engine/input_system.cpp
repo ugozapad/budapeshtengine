@@ -1,8 +1,4 @@
-#include <stdint.h>
-#include <string.h>
-
-#include <SDL_scancode.h>
-
+#include "pch.h"
 #include "engine/allocator.h"
 #include "engine/input_system.h"
 

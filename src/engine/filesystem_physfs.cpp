@@ -1,9 +1,7 @@
+#include "pch.h"
 #ifdef ENABLE_PHYSFS
 
-#include <SDL.h>
 #include <physfs.h>
-
-#include <stdio.h>
 
 #include "engine/debug.h"
 #include "engine/allocator.h"

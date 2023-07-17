@@ -1,8 +1,6 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
-#include <new>
-
 #define DEFAUL_ALIGMENT 16
 
 class IAllocator {

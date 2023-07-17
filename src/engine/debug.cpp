@@ -1,4 +1,7 @@
+#include "pch.h"
 #include "engine/debug.h"
+<<<<<<< HEAD
+=======
 #include "engine/logger.h"
 #include <stdarg.h>
 #include <string.h>
@@ -7,6 +10,7 @@
 #include <Windows.h>
 
 #include "SDL.h"
+>>>>>>> kirill_dev
 
 void assertBackend(const char* expression, const char* file, int line, const char* function, bool* ignore, const char* fmt, ...)
 {

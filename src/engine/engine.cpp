@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "engine/allocator.h"
 #include "engine/engine.h"
 #include "engine/iosdriver.h"
@@ -11,8 +12,6 @@
 #include "engine/player.h"
 #include "engine/camera.h"
 #include "engine/material_system.h"
-
-#include <stdio.h>
 
 #ifndef NDEBUG
 #define DBG_STR " Dbg"

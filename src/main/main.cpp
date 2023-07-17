@@ -1,8 +1,4 @@
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
-#include <stdint.h>
-#include <stdio.h>
+#include "pch.h"
 
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
@@ -13,12 +9,15 @@
 #include "engine/texture.h"
 #include "engine/shader_engine.h"
 
+<<<<<<< HEAD
+=======
 #include "render/irenderdevice.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+>>>>>>> kirill_dev
 extern "C" {
 #include "render/microui_render.h"
 }

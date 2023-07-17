@@ -1,10 +1,8 @@
+#include "pch.h"
 #include "engine/debug.h"
 #include "engine/allocator.h"
 #include "engine/iosdriver.h"
 #include "engine/filesystem.h"
-
-#include <stdio.h>
-#include <string.h>
 
 IFileSystem* g_file_system = nullptr;
 static int s_stdio_seek[] = { SEEK_SET, SEEK_CUR, SEEK_END };

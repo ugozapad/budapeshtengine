@@ -2,10 +2,12 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="microui_render.c" />
+    <ClCompile Include="texture.cpp" />
+    <ClCompile Include="sokol_rdev.cpp" />
+    <ClCompile Include="pch.cpp" />
     <ClCompile Include="..\..\thirdparty\microui\src\microui.c">
       <Filter>MicroUI - TODO REMOVE</Filter>
     </ClCompile>
-    <ClCompile Include="sokol_rdev.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="microui_render.h" />

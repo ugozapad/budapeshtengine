@@ -1,8 +1,4 @@
-#ifdef _MSC_VER
-
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
+#include "pch.h"
 #include "engine/iosdriver.h"
 
 class OsDriverWin32 : public IOsDriver

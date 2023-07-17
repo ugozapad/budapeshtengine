@@ -1,8 +1,6 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#define SDL_MAIN_HANDLED
-#include "SDL.h"
 #include "render/irenderdevice.h"
 
 class IInputSystem;
