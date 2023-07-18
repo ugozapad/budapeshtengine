@@ -26,18 +26,5 @@ void DefaultAllocator::deallocate(void* ptr) {
 	_aligned_free(ptr);
 }
 
-void* operator new(size_t size)
-{
-	return g_allocator->allocate(size, DEFAUL_ALIGMENT);
-}
-//
-//void* operator new(size_t size, size_t aligment)
-//{
-//	return g_allocator->allocate(size, aligment);
-//}
-
-void operator delete(void* ptr)
-{
-	g_allocator->deallocate(ptr);
-}
+IMPLEMENT_ALLOCATOR;
 

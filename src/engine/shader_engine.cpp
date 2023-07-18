@@ -33,7 +33,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		size_t vertex_length = reader->tell();
 		reader->seek(Begin, 0);
 
-		char* vertex_shader = (char*)g_allocator->allocate(vertex_length + 1, 1);
+		char* vertex_shader = mem_tcalloc<char>(vertex_length + 1);
 		reader->read(vertex_shader, vertex_length);
 		vertex_shader[vertex_length] = '\0';
 
@@ -47,7 +47,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		size_t fragment_length = reader->tell();
 		reader->seek(Begin, 0);
 
-		char* fragment_shader = (char*)g_allocator->allocate(fragment_length + 1, 1);
+		char* fragment_shader = mem_tcalloc<char>(fragment_length + 1);
 		reader->read(fragment_shader, fragment_length);
 		fragment_shader[fragment_length] = '\0';
 
@@ -65,8 +65,8 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		}
 
 		// free data
-		g_allocator->deallocate(fragment_shader);
-		g_allocator->deallocate(vertex_shader);
+		mem_free(fragment_shader);
+		mem_free(vertex_shader);
 
 		pipelineDesc_t pipeline_desc = {};
 		pipeline_desc.shader = sd.shaderIndex;

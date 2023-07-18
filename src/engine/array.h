@@ -19,11 +19,11 @@ struct StlAllocator {
 	constexpr StlAllocator(const StlAllocator<U>&) noexcept {}
 
 	T* allocate(std::size_t n) {
-		return (T*)g_allocator->allocate(n * sizeof(T), alignof(T));
+		return (mem_tcalloc<T>(n));
 	}
 
 	void deallocate(T* p, std::size_t n) noexcept {
-		g_allocator->deallocate(p);
+		mem_free(p);
 	}
 };
 
@@ -158,18 +158,17 @@ inline Array<T>::Array() :
 template <typename T>
 inline Array<T>::~Array() {
 	if (m_memory) {
-		g_allocator->deallocate(m_memory);
-		m_memory = nullptr;
+		mem_free(m_memory);
 	}
 }
 
 template<typename T>
 void Array<T>::realloc_buffer(size_type size) {
 	if (m_memory) {
-		m_memory = (value_type*)g_allocator->reallocate(m_memory, sizeof(value_type) * size, alignof(value_type));
+		m_memory = mem_trealloc<value_type>(m_memory, size);
 	}
 	else {
-		m_memory = (value_type*)g_allocator->allocate(sizeof(value_type) * size, alignof(value_type));
+		m_memory = mem_tcalloc<value_type>(size);
 	}
 
 	m_capacity = size;
