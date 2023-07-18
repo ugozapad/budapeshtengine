@@ -16,9 +16,10 @@ extern IAllocator* g_allocator;
 
 //#define MEM_NEW(T, ...) new(sizeof(T), alignof(T)) T(__VA_ARGS__)
 
-#define SAFE_DELETE(PTR) \
+#define SAFE_DELETE(PTR) do { \
 	delete PTR; \
-	PTR = nullptr
+	PTR = nullptr; \
+	} while (0)
 
 #define IMPLEMENT_ALLOCATOR \
 	void* operator new(size_t size) \
