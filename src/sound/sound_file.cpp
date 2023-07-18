@@ -69,7 +69,12 @@ static void prepare_buffer(void* pBuffer, uint32_t dwBufferSize, uint32_t dwChan
 OggSoundFileReader::OggSoundFileReader(const char* sFileName)
 	: m_pInfo(NULL), m_pFile(NULL)
 {
-	m_pFile = NULL; // allocate mem for OggSoundFile
+	m_pFile = static_cast<OggSoundFile*>(
+		g_allocator->allocate(
+			sizeof(OggSoundFile),
+			alignof(OggSoundFile)
+		)
+	);
 
 	int32_t iOpenResult = ov_fopen(sFileName, m_pFile);
 	ASSERT_MSG(iOpenResult == 0, "Unable to open sound file: %s", sFileName);
@@ -91,7 +96,8 @@ OggSoundFileReader::~OggSoundFileReader()
 	{
 		m_pInfo = NULL;
 		ov_clear(m_pFile);
-		// free OggSoundFile
+		g_allocator->deallocate(m_pFile);
+		m_pFile = NULL;
 	}
 }
 
