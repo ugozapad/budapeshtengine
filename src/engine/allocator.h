@@ -1,7 +1,9 @@
 #ifndef ALLOCATOR_H
 #define ALLOCATOR_H
 
-#define DEFAUL_ALIGMENT 16
+#ifndef DEFAULT_ALIGMENT
+#	define DEFAULT_ALIGMENT 16
+#endif
 
 class IAllocator {
 public:
