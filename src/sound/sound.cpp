@@ -12,7 +12,7 @@ Sound::Sound(const char* sFileName)
 	m_state(SoundState_Stopped), m_nextState(SoundState_Stopped),
 	m_flags(SoundFlags_OwnsFile)
 {
-	m_pSoundFile =new OggSoundFileReader(sFileName);
+	m_pSoundFile = new OggSoundFileReader(sFileName);
 
 	initSoundBuffers(SOUND_BUFFERS_COUNT);
 }
@@ -179,7 +179,7 @@ void Sound::initSoundBuffers(uint32_t dwSoundBuffersCount)
 	m_pSoundBuffers = static_cast<uint32_t*>(
 		g_allocator->allocate(
 			sizeof(uint32_t) * dwSoundBuffersCount,
-			alignof(uint32_t) // TODO : DMan to Kirill : correct???
+			alignof(uint32_t)
 		)
 	);
 
@@ -189,7 +189,7 @@ void Sound::initSoundBuffers(uint32_t dwSoundBuffersCount)
 	m_pBuffer = static_cast<char*>(
 		g_allocator->allocate(
 			m_pSoundFile->getBufferSize(),
-			alignof(char) // TODO : DMan to Kirill : correct???
+			alignof(char)
 		)
 	);
 }
