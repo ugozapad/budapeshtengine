@@ -9,10 +9,11 @@
 #include "engine/entity.h"
 #include "engine/level.h"
 #include "engine/level_mesh.h"
-#include "engine/player.h"
 #include "engine/camera.h"
 #include "engine/material_system.h"
 #include "engine/sound_system.h"
+
+#include "game/gamelib.h"
 
 #ifndef NDEBUG
 #define DBG_STR " Dbg"
@@ -26,7 +27,6 @@ void registerEngineStuff()
 {
 	g_object_factory->registerObject<Entity>();
 	g_object_factory->registerObject<LevelMesh>();
-	g_object_factory->registerObject<Player>();
 }
 
 Engine::Engine() :
@@ -115,15 +115,19 @@ void Engine::init(int width, int height, bool fullscreen)
 	// initialize sound system
 	createSoundSystem("sound");
 
+	// load game library
+	createGameLib("game");
+
 	// create level
 	m_level = new Level();
 }
 
-// Kirill:	TODO: Make hRenderDeviceLib and hSoundSystemLib 
+//////////////////////////////////////////////////////////////////////
+// Kirill:	TODO: Make hRenderDeviceLib, hSoundSystemLib, hGameLib
 //			as global variables or rewrite to SDL dyn libs loading
 //
 //			TODO FUTURE: Linking full engine as static library to main
-
+//////////////////////////////////////////////////////////////////////
 void Engine::createRenderDevice(const char* devicename)
 {
 	IRenderDevice* pRenderDevice = nullptr;
@@ -171,6 +175,36 @@ void Engine::createSoundSystem(const char* soundname)
 
 	ASSERT(pSoundSystem && "Failed to load sound sys. Missing dll or OpenAL installation");
 	g_pSoundSystem = pSoundSystem;
+}
+
+static gameLibShutdown_t s_gameLibShutdownPfn = NULL;
+
+void Engine::createGameLib(const char* custompath)
+{
+	char buff[_MAX_PATH];
+	snprintf(buff, sizeof(buff), "%s.dll", custompath);
+	
+	Msg("Loading DLL %s", buff);
+
+	HMODULE hGameLib = LoadLibraryA(buff);
+	if (hGameLib != NULL)
+	{
+		gameLibInit_t gameLibInitPfn = 
+			(gameLibInit_t)GetProcAddress(hGameLib, "gameLibInit");
+		
+		gameLibShutdown_t gameLibShutdownPfn = 
+			(gameLibShutdown_t)GetProcAddress(hGameLib, "gameLibShutdown");
+
+		if (gameLibInitPfn != NULL && gameLibShutdownPfn != NULL)
+		{
+			gameLibInitPfn();
+
+			// make shutdown function as global variable
+			s_gameLibShutdownPfn = gameLibShutdownPfn;
+		}
+	}
+
+	ASSERT(s_gameLibShutdownPfn && "Missing exports from game library");
 }
 
 void Engine::update()

@@ -247,3 +247,5 @@ void SoundSystem_OpenAL::setMasterVolume(float fVolume)
 
 	alListenerf(AL_GAIN, fVolume);
 }
+
+IMPLEMENT_ALLOCATOR;
