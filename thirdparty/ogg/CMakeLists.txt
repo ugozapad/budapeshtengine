@@ -1,0 +1,7 @@
+file(GLOB OGG_SRC_FILES CONFIGURE_DEPENDS
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/*.h"
+)
+
+add_library(ogg STATIC ${OGG_SRC_FILES})
+target_include_directories(ogg PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../")

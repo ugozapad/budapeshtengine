@@ -3,9 +3,9 @@
 
 #include <algorithm>
 
-#pragma comment(lib, "ogg.lib")
-#pragma comment(lib, "vorbis.lib")
-#pragma comment(lib, "vorbisfile.lib")
+//#pragma comment(lib, "ogg.lib")
+//#pragma comment(lib, "vorbis.lib")
+//#pragma comment(lib, "vorbisfile.lib")
 
 #include <ogg/os_types.h>
 #include <vorbis/vorbisfile.h>
