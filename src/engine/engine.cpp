@@ -12,6 +12,7 @@
 #include "engine/player.h"
 #include "engine/camera.h"
 #include "engine/material_system.h"
+#include "engine/sound_system.h"
 
 #ifndef NDEBUG
 #define DBG_STR " Dbg"
@@ -89,6 +90,9 @@ void Engine::init(int width, int height, bool fullscreen)
 	g_input_system = IInputSystem::create(g_allocator);
 	g_input_system->init();
 
+	// initialize sound system
+	g_pSoundSystem = ISoundSystem::create("sound");
+
 	// initialize object factory
 	g_object_factory = new ObjectFactory();
 
@@ -122,6 +126,8 @@ void Engine::update()
 		m_viewport.height
 	);
 
+	g_pSoundSystem->update(0.0f);
+
 	m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
 
 	m_level->render();
@@ -153,6 +159,9 @@ void Engine::shutdown()
 		g_input_system->shutdown();
 		SAFE_DELETE(g_input_system);
 	}
+
+	if (g_pSoundSystem) {
+		SAFE_DELETE(g_pSoundSystem);
 	}
 
 	if (m_render_window) {
