@@ -14,6 +14,7 @@ public:
 	void init(int width, int height, bool fullscreen);
 	void createRenderDevice(const char* devicename);
 	void createSoundSystem(const char* soundname);
+	void createGameLib(const char* custompath);
 
 	void update();
 	void shutdown();
