@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "sound_system_oal.h"
+#include "engine/logger.h"
 #include <algorithm>
 
 extern "C"
@@ -16,6 +17,8 @@ SoundSystem_OpenAL::SoundSystem_OpenAL()
 
 	if (alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT"))
 	{
+		Msg("Sound: Devices enumeration...");
+
 		const char* pDevices = alcGetString(NULL, ALC_DEVICE_SPECIFIER);
 
 		while (*pDevices)
@@ -64,9 +67,46 @@ SoundSystem_OpenAL::SoundSystem_OpenAL()
 					alcMakeContextCurrent(NULL);
 					alcDestroyContext(pContext);
 				}
+				else
+				{
+					Msg("Sound: Can't create context for %s", pDevice);
+				}
 				alcCloseDevice(pDevice);
 			}
+			else
+			{
+				Msg("Sound: Can't open device %s", pDevices);
+			}
 			pDevices += strlen(pDevices) + 1;
+		}
+	}
+
+	if (m_devices.size())
+	{
+		Msg("Sound: All available devices:");
+		size_t const E = m_devices.size();
+		for (size_t I = 0; I < E; I++)
+		{
+			SoundDeviceDescr& sdd = m_devices[I];
+			uint8_t eax_ver = 0;
+			if (sdd.flags & SoundDeviceFeature_EAX20)
+				eax_ver = 2;
+			if (sdd.flags & SoundDeviceFeature_EAX30)
+				eax_ver = 3;
+			if (sdd.flags & SoundDeviceFeature_EAX40)
+				eax_ver = 4;
+			if (sdd.flags & SoundDeviceFeature_EAX50)
+				eax_ver = 5;
+			Msg("%u. %s, v%d.%d %s eax[%u] efx[%s] xram[%s]",
+				I + 1,
+				*sdd.name,
+				sdd.version.iMajor,
+				sdd.version.iMinor,
+				(I == defaultDeviceId) ? "(default)" : "",
+				eax_ver,
+				(sdd.flags & SoundDeviceFeature_EFX) ? "yes" : "no",
+				(sdd.flags & SoundDeviceFeature_XRAM) ? "yes" : "no"
+			);
 		}
 	}
 
