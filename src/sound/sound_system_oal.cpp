@@ -4,7 +4,7 @@
 
 extern "C"
 {
-	__declspec(dllexport) ISoundSystem* __stdcall createSoundSystem(IAllocator* allocator)
+	__declspec(dllexport) ISoundSystem* __stdcall createSoundSystem()
 	{
 		return new SoundSystem_OpenAL();
 	}
