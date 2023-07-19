@@ -91,7 +91,7 @@ void Engine::init(int width, int height, bool fullscreen)
 	g_input_system->init();
 
 	// initialize sound system
-	g_pSoundSystem = ISoundSystem::create("sound");
+	createSoundSystem("sound");
 
 	// initialize object factory
 	g_object_factory = new ObjectFactory();
@@ -117,6 +117,27 @@ void Engine::init(int width, int height, bool fullscreen)
 		&m_viewport.width,
 		&m_viewport.height
 	);
+}
+
+void Engine::createSoundSystem(const char* soundname)
+{
+	ISoundSystem* pSoundSystem = NULL;
+	char buff[_MAX_PATH]; snprintf(buff, sizeof(buff), "%s.dll", soundname);
+	HMODULE hSoundSystemLib = LoadLibrary(buff);
+	if (hSoundSystemLib != NULL)
+	{
+		createSoundSystem_t createSoundSystemProc = (createSoundSystem_t)GetProcAddress(hSoundSystemLib, "createSoundSystem");
+		if (createSoundSystemProc != NULL)
+		{
+			pSoundSystem = createSoundSystemProc();
+		}
+		// Dima : Do we need to close it? 
+		// Kirill: No
+		//CloseHandle(hSoundSystemLib);
+	}
+
+	ASSERT(pSoundSystem && "Failed to load sound sys. Missing dll or OpenAL installation");
+	g_pSoundSystem = pSoundSystem;
 }
 
 void Engine::update()

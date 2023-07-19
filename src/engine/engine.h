@@ -12,6 +12,8 @@ public:
 	~Engine();
 
 	void init(int width, int height, bool fullscreen);
+	void createSoundSystem(const char* soundname);
+
 	void update();
 	void shutdown();
 

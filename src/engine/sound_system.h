@@ -29,9 +29,6 @@ class IAllocator;
 class ISoundSystem
 {
 public:
-	static ISoundSystem* create(const char* sSoundSystemName);
-
-public:
 	virtual					~ISoundSystem	() { }
 
 	virtual void			selectDevice	(SoundDeviceID deviceId)	= 0;
