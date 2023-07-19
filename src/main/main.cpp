@@ -70,8 +70,6 @@ void Main::shutdown() {
 	SAFE_DELETE(m_engine);
 }
 
-static glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
-
 void Main::update() {
 	if (g_input_system->isKeyPressed(SDL_SCANCODE_ESCAPE))
 		m_engine->requestExit();
@@ -135,3 +133,4 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
+IMPLEMENT_ALLOCATOR;
