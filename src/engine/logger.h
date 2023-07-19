@@ -4,6 +4,6 @@
 void logOpen(const char* filename);
 void logClose();
 
-void Msg(const char* msg, ...);
+ENGINE_API void Msg(const char* msg, ...);
 
 #endif

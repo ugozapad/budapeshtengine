@@ -20,7 +20,7 @@
 #define DBG_STR
 #endif // !NDEBUG
 
-Engine* g_engine = nullptr;
+ENGINE_API Engine* g_engine = nullptr;
 
 void registerEngineStuff()
 {
@@ -90,21 +90,15 @@ void Engine::init(int width, int height, bool fullscreen)
 	g_input_system = IInputSystem::create(g_allocator);
 	g_input_system->init();
 
-	// initialize sound system
-	createSoundSystem("sound");
-
 	// initialize object factory
 	g_object_factory = new ObjectFactory();
 
 	// register engine objects
 	registerEngineStuff();
 
-	// create level
-	m_level = new Level();
-
 	// create renderer
 	Msg("Creating render device");
-	m_render_device = createRenderDevice();
+	createRenderDevice("sokol_rdev");
 	m_render_device->init(m_render_window);
 
 	g_material_system.Init();
@@ -117,12 +111,51 @@ void Engine::init(int width, int height, bool fullscreen)
 		&m_viewport.width,
 		&m_viewport.height
 	);
+
+	// initialize sound system
+	createSoundSystem("sound");
+
+	// create level
+	m_level = new Level();
+}
+
+// Kirill:	TODO: Make hRenderDeviceLib and hSoundSystemLib 
+//			as global variables or rewrite to SDL dyn libs loading
+//
+//			TODO FUTURE: Linking full engine as static library to main
+
+void Engine::createRenderDevice(const char* devicename)
+{
+	IRenderDevice* pRenderDevice = nullptr;
+	
+	char buff[_MAX_PATH];
+	snprintf(buff, sizeof(buff), "%s.dll", devicename);
+
+	Msg("Loading DLL %s", buff);
+
+	HMODULE hRenderDeviceLib = LoadLibraryA(buff);
+	if (hRenderDeviceLib != NULL)
+	{
+		createRenderDevice_t createRenderDeviceProc =
+			(createRenderDevice_t)GetProcAddress(hRenderDeviceLib, "createRenderDevice");
+
+		if (createRenderDeviceProc != NULL)
+		{
+			pRenderDevice = createRenderDeviceProc();
+		}
+
+		//CloseHandle(hRenderDeviceLib);
+	}
+
+	ASSERT(pRenderDevice && "Failed to load render device lib");
+	m_render_device = pRenderDevice;
 }
 
 void Engine::createSoundSystem(const char* soundname)
 {
 	ISoundSystem* pSoundSystem = NULL;
 	char buff[_MAX_PATH]; snprintf(buff, sizeof(buff), "%s.dll", soundname);
+	Msg("Loading DLL %s", buff);
 	HMODULE hSoundSystemLib = LoadLibrary(buff);
 	if (hSoundSystemLib != NULL)
 	{

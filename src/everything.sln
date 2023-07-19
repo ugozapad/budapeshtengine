@@ -30,8 +30,14 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vorbisfile", "..\thirdparty\vorbisfile\vorbisfile.vcxproj", "{986E73BD-6030-42C6-884F-B246E9045B8D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "engine", "engine\engine.vcxproj", "{F7CFC49D-543F-491D-B3D8-F9B9F688D574}"
+	ProjectSection(ProjectDependencies) = postProject
+		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68} = {81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sokol_rdev", "sokol_rdev\sokol_rdev.vcxproj", "{4ECD756E-E657-472D-BE59-24B7541915AF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F7CFC49D-543F-491D-B3D8-F9B9F688D574} = {F7CFC49D-543F-491D-B3D8-F9B9F688D574}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

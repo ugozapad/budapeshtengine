@@ -17,7 +17,7 @@ struct objectCreationInfo_t {
 	pfnCreateObject_t create_proc;
 };
 
-class ObjectFactory {
+class ENGINE_API ObjectFactory {
 public:
 	ObjectFactory();
 	~ObjectFactory();
@@ -32,7 +32,7 @@ private:
 	Array<objectCreationInfo_t> m_objectCreationInfos;
 };
 
-extern ObjectFactory* g_object_factory;
+extern ENGINE_API ObjectFactory* g_object_factory;
 
 template<typename T>
 inline void ObjectFactory::registerObject() {

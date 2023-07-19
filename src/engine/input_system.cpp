@@ -2,7 +2,7 @@
 #include "engine/allocator.h"
 #include "engine/input_system.h"
 
-IInputSystem* g_input_system = nullptr;
+ENGINE_API IInputSystem* g_input_system = nullptr;
 
 typedef uint32_t keyStateBitfield_t;
 typedef uint32_t mouseButtonsStateBitfield_t; // i'm very sceptical about idea that someone could have more than 8 mbuttons but whatever.

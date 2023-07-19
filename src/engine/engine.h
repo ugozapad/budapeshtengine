@@ -6,12 +6,13 @@
 class IInputSystem;
 class Level;
 
-class Engine {
+class ENGINE_API Engine {
 public:
 	Engine();
 	~Engine();
 
 	void init(int width, int height, bool fullscreen);
+	void createRenderDevice(const char* devicename);
 	void createSoundSystem(const char* soundname);
 
 	void update();
@@ -35,6 +36,6 @@ private:
 	viewport_t		m_viewport;
 };
 
-extern Engine* g_engine;
+extern ENGINE_API Engine* g_engine;
 
 #endif

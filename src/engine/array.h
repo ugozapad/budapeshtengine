@@ -4,38 +4,6 @@
 #include "engine/debug.h"
 #include "engine/allocator.h"
 
-//#define STD_ARRAY
-
-#ifdef STD_ARRAY
-#include <vector>
-
-template <typename T>
-struct StlAllocator {
-	typedef T value_type;
-
-	StlAllocator() = default;
-
-	template <class U>
-	constexpr StlAllocator(const StlAllocator<U>&) noexcept {}
-
-	T* allocate(std::size_t n) {
-		return (mem_tcalloc<T>(n));
-	}
-
-	void deallocate(T* p, std::size_t n) noexcept {
-		mem_free(p);
-	}
-};
-
-template <typename T>
-class Array : public std::vector<T, StlAllocator<T>> {
-public:
-	Array(IAllocator& allocator) : m_allocator(&allocator) {}
-
-private:
-	IAllocator* m_allocator;
-};
-#else
 template <typename T>
 class Array {
 public:
@@ -175,8 +143,5 @@ void Array<T>::realloc_buffer(size_type size) {
 	if (m_capacity < m_size)
 		m_size = m_capacity;
 }
-
-
-#endif // STD_ARRAY
 
 #endif // !ARRAY_H

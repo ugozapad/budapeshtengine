@@ -7,6 +7,7 @@
 #include "engine/material_system.h"
 #include "engine/texture.h"
 #include "render/irenderdevice.h"
+#include "engine/shader_engine.h"
 
 enum textureFileFormats_t {
 	TEXEXT_PNG,
@@ -33,6 +34,9 @@ MaterialSystem::~MaterialSystem()
 void MaterialSystem::Init()
 {
 	Msg("Material System initialization ...");
+
+	// Initialize shader engine
+	g_pShaderEngine = new ShaderEngine("gl33");
 
 	char buffer[260];
 	bool texfound = false;
@@ -69,6 +73,8 @@ void MaterialSystem::Shutdown()
 		delete m_notex;
 		m_notex = nullptr;
 	}
+
+	SAFE_DELETE(g_pShaderEngine);
 }
 
 Texture* MaterialSystem::LoadTexture(const char* filename, bool absolutePath /*= false*/)

@@ -7,7 +7,7 @@
 
 class IReader;
 
-class Level
+class ENGINE_API Level
 {
 public:
 	Level();

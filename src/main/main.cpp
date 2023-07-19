@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "engine/engine_api.h"
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
 #include "engine/input_system.h"
@@ -7,7 +8,6 @@
 #include "engine/level.h"
 #include "engine/camera.h"
 #include "engine/texture.h"
-#include "engine/shader_engine.h"
 
 extern "C" {
 #include "render/microui_render.h"
@@ -60,16 +60,12 @@ int Main::init(int argc, char* argv[]) {
 	m_engine = new Engine();
 	m_engine->init(1024, 768, fullscreen);
 
-	g_pShaderEngine = new ShaderEngine("gl33");
-
 	m_engine->getLevel()->load("test_baking");
 
 	return 0;
 }
 
 void Main::shutdown() {
-	SAFE_DELETE(g_pShaderEngine);
-
 	m_engine->shutdown();
 	SAFE_DELETE(m_engine);
 }

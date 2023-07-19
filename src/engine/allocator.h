@@ -14,7 +14,7 @@ public:
 	virtual void deallocate(void* ptr) = 0;
 };
 
-extern IAllocator* g_allocator;
+extern ENGINE_API IAllocator* g_allocator;
 
 inline void* mem_alloc(size_t size, size_t align = DEFAULT_ALIGMENT)
 {

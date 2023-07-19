@@ -17,7 +17,7 @@ enum mouseButton_
 
 class IInputSystem {
 public:
-	static IInputSystem* create(IAllocator* allocator);
+	ENGINE_API static IInputSystem* create(IAllocator* allocator);
 
 public:
 	virtual ~IInputSystem() {}
@@ -35,6 +35,6 @@ public:
 	virtual bool isKeyPressed	(scanCode_t scancode) const = 0;
 };
 
-extern IInputSystem* g_input_system;
+extern ENGINE_API IInputSystem* g_input_system;
 
 #endif // !INPUT_SYSTEM_H

@@ -21,6 +21,7 @@
     <ClInclude Include="texture.h" />
     <ClInclude Include="level_mesh.h" />
     <ClInclude Include="logger.h" />
+    <ClInclude Include="engine_api.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
