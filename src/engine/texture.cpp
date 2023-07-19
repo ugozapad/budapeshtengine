@@ -33,7 +33,7 @@ void Texture::load(IReader* reader, bool repeat) {
 	reader->seek(SeekWay::Begin, 0);
 
 	// allocate image buffer
-	uint8_t* image_buffer = (uint8_t*)g_allocator->allocate(length, 4);
+	uint8_t* image_buffer = mem_tcalloc<uint8_t>(length, 4);
 
 	// read file
 	reader->read(image_buffer, length);
@@ -66,7 +66,7 @@ void Texture::load(IReader* reader, bool repeat) {
 	STBI_FREE(image_data);
 
 	// free file memory
-	g_allocator->deallocate(image_buffer);
+	mem_free(image_buffer);
 }
 
 // stb image write callback

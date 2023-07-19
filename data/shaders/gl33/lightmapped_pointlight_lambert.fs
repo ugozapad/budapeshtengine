@@ -22,7 +22,7 @@ vec3 calculatePointLambert() {
 }
 
 void main() {
-	vec3 color = texture2D(u_diffuseTexture, v_texcoord0);
+	vec3 color = texture(u_diffuseTexture, v_texcoord0);
 	color *= calculatePointLambert();
 	return color;
 }

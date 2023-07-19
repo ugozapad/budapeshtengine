@@ -12,7 +12,7 @@ Sound::Sound(const char* sFileName)
 	m_state(SoundState_Stopped), m_nextState(SoundState_Stopped),
 	m_flags(SoundFlags_OwnsFile)
 {
-	m_pSoundFile =new OggSoundFileReader(sFileName);
+	m_pSoundFile = new OggSoundFileReader(sFileName);
 
 	initSoundBuffers(SOUND_BUFFERS_COUNT);
 }
@@ -36,15 +36,14 @@ Sound::~Sound()
 
 	if (m_flags & SoundFlags_OwnsFile)
 	{
-		delete m_pSoundFile;
-		m_pSoundFile = NULL;
+		SAFE_DELETE(m_pSoundFile);
 	}
 
 	alDeleteSources(1, &m_dwSoundSource);
 	alDeleteBuffers(SOUND_BUFFERS_COUNT, m_pSoundBuffers);
-	g_allocator->deallocate(m_pSoundBuffers);
+	mem_free(m_pSoundBuffers);
 
-	g_allocator->deallocate(m_pBuffer);
+	mem_free(m_pBuffer);
 }
 
 void Sound::play()
@@ -176,22 +175,12 @@ void Sound::onStateSwitch(SoundState next_state)
 
 void Sound::initSoundBuffers(uint32_t dwSoundBuffersCount)
 {
-	m_pSoundBuffers = static_cast<uint32_t*>(
-		g_allocator->allocate(
-			sizeof(uint32_t) * dwSoundBuffersCount,
-			alignof(uint32_t) // TODO : DMan to Kirill : correct???
-		)
-	);
+	m_pSoundBuffers = mem_tcalloc<uint32_t>(dwSoundBuffersCount);
 
 	alGenBuffers(dwSoundBuffersCount, m_pSoundBuffers);
 	alGenSources(1, &m_dwSoundSource);
 
-	m_pBuffer = static_cast<char*>(
-		g_allocator->allocate(
-			m_pSoundFile->getBufferSize(),
-			alignof(char) // TODO : DMan to Kirill : correct???
-		)
-	);
+	m_pBuffer = mem_tcalloc<char>(m_pSoundFile->getBufferSize());
 }
 
 void Sound::fillBuffer(uint32_t dwBufferId)
@@ -225,7 +214,7 @@ void Sound::refillBuffers()
 {
 	ASSERT(!isPlaying() && !isPaused());
 
-	for (uint32_t i = 0; i < SOUND_BUFFERS_COUNT; ++i)
+	for (size_t i = 0; i < SOUND_BUFFERS_COUNT; ++i)
 		fillBuffer(m_pSoundBuffers[i]);
 }
 

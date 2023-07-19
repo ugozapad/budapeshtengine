@@ -34,7 +34,7 @@ void LevelMesh::load(IReader* reader) {
 	// Load LevelMeshMaterial
 	uint32_t diffuse_texture_len = 0;
 	reader->read(&diffuse_texture_len, sizeof(diffuse_texture_len));
-	char* diffuse_texture_path = (char*)g_allocator->allocate(size_t(diffuse_texture_len) + 1, 1);
+	char* diffuse_texture_path = mem_tcalloc<char>(diffuse_texture_len + 1);
 	reader->read(diffuse_texture_path, diffuse_texture_len);
 
 	diffuse_texture_path[diffuse_texture_len] = '\0';
@@ -49,7 +49,7 @@ void LevelMesh::load(IReader* reader) {
 
 	char* path_to_texture = strstr(diffuse_texture_path, "/temp/") + strlen("/temp/");
 
-	char buffer1[260];
+	char buffer1[_MAX_PATH];
 	snprintf(buffer1, sizeof(buffer1), "data/textures/temp/%s", path_to_texture);
 
 	IReader* texture_reader = g_file_system->openRead(buffer1);
@@ -59,7 +59,7 @@ void LevelMesh::load(IReader* reader) {
 
 	uint32_t lightmap_texture_len = 0;
 	reader->read(&lightmap_texture_len, sizeof(lightmap_texture_len));
-	char* lightmap_texture_path = (char*)g_allocator->allocate(size_t(lightmap_texture_len) + 1, 1);
+	char* lightmap_texture_path = mem_tcalloc<char>(lightmap_texture_len + 1);
 	reader->read(lightmap_texture_path, lightmap_texture_len);
 
 	lightmap_texture_path[lightmap_texture_len] = '\0';
@@ -79,18 +79,18 @@ void LevelMesh::load(IReader* reader) {
 
 	g_file_system->deleteReader(texture_reader);
 
-	g_allocator->deallocate(lightmap_texture_path);
-	g_allocator->deallocate(diffuse_texture_path);
+	mem_free(lightmap_texture_path);
+	mem_free(diffuse_texture_path);
 
 	// Load LevelMesh
 	uint32_t mesh_name_len = 0;
 	reader->read(&mesh_name_len, sizeof(mesh_name_len));
-	char* mesh_name = (char*)g_allocator->allocate(size_t(mesh_name_len) + 1, 1);
+	char* mesh_name = mem_tcalloc<char>(mesh_name_len + 1);
 	reader->read(mesh_name, mesh_name_len);
 
 	mesh_name[mesh_name_len] = '\0';
 
-	g_allocator->deallocate(mesh_name);
+	mem_free(mesh_name);
 
 	uint32_t vertices_count = 0;
 	reader->read(&vertices_count, sizeof(vertices_count));

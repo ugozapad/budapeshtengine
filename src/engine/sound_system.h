@@ -40,7 +40,7 @@ public:
 	virtual ISound*			createSound		(const char* sSoundFile)	= 0;
 	virtual void			destroySound	(ISound*& pSound)			= 0;
 
-	virtual void			onFrame			(float delta)				= 0;
+	virtual void			update			(float delta)				= 0;
 
 	virtual void			stopAllSounds	()							= 0;
 	virtual void			pauseAllSounds	()							= 0;

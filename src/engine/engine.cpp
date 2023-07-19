@@ -12,6 +12,7 @@
 #include "engine/player.h"
 #include "engine/camera.h"
 #include "engine/material_system.h"
+#include "engine/sound_system.h"
 
 #ifndef NDEBUG
 #define DBG_STR " Dbg"
@@ -52,7 +53,7 @@ void Engine::init(int width, int height, bool fullscreen)
 	// Initialize OS Driver
 	IOsDriver::getInstance()->init();
 
-    // create filesystem
+	// create filesystem
 //#ifdef ENABLE_PHYSFS
 //	g_file_system = IFileSystem::createPhysFS();
 //#else
@@ -68,26 +69,29 @@ void Engine::init(int width, int height, bool fullscreen)
 		FATAL("ERROR: Not found game data folder.");
 	}
 
-    // Initialize OpenGL context
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	// Initialize OpenGL context
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    Uint32 window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
-    if (fullscreen)
-        window_flags |= SDL_WINDOW_FULLSCREEN;
+	Uint32 window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
+	if (fullscreen)
+		window_flags |= SDL_WINDOW_FULLSCREEN;
 
-    // Create window
-    m_render_window = SDL_CreateWindow("Budapesht" DBG_STR, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-    if (!m_render_window) {
-        Msg("Failed to create render window. Error core: %s", SDL_GetError());
-    }
+	// Create window
+	m_render_window = SDL_CreateWindow("Budapesht" DBG_STR, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	if (!m_render_window) {
+		Msg("Failed to create render window. Error core: %s", SDL_GetError());
+	}
 
 	// initialize input system
 	g_input_system = IInputSystem::create(g_allocator);
 	g_input_system->init();
+
+	// initialize sound system
+	g_pSoundSystem = ISoundSystem::create("sound");
 
 	// initialize object factory
 	g_object_factory = new ObjectFactory();
@@ -122,6 +126,8 @@ void Engine::update()
 		m_viewport.height
 	);
 
+	g_pSoundSystem->update(0.0f);
+
 	m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
 
 	m_level->render();
@@ -138,23 +144,24 @@ void Engine::shutdown()
 	
 	if (m_render_device) {
 		m_render_device->shutdown();
-		delete m_render_device;
+		SAFE_DELETE(m_render_device);
 	}
 
 	if (m_level) {
-		delete m_level;
-		m_level = nullptr;
+		SAFE_DELETE(m_level);
 	}
 
 	if (g_object_factory) {
-		delete g_object_factory;
-		g_object_factory = nullptr;
+		SAFE_DELETE(g_object_factory);
 	}
 
 	if (g_input_system) {
 		g_input_system->shutdown();
-	    delete g_input_system;
-		g_input_system = nullptr;
+		SAFE_DELETE(g_input_system);
+	}
+
+	if (g_pSoundSystem) {
+		SAFE_DELETE(g_pSoundSystem);
 	}
 
 	if (m_render_window) {
