@@ -29,7 +29,7 @@ class IAllocator;
 class ISoundSystem
 {
 public:
-	static ISoundSystem* create(IAllocator* allocator, const char* sSoundSystemName);
+	static ISoundSystem* create(const char* sSoundSystemName);
 
 public:
 	virtual					~ISoundSystem	() { }
@@ -55,10 +55,10 @@ extern ISoundSystem* g_pSoundSystem;
 #ifndef ENGINE_EXPORTS
 extern "C"
 {
-	__declspec(dllexport) ISoundSystem* __stdcall createSoundSystem(IAllocator* allocator);
+	__declspec(dllexport) ISoundSystem* __stdcall createSoundSystem();
 };
 #else
-typedef ISoundSystem*(__stdcall *createSoundSystem_t)(IAllocator* allocator);
+typedef ISoundSystem*(__stdcall *createSoundSystem_t)();
 #endif
 
 #endif
