@@ -138,23 +138,21 @@ void Engine::shutdown()
 	
 	if (m_render_device) {
 		m_render_device->shutdown();
-		delete m_render_device;
+		SAFE_DELETE(m_render_device);
 	}
 
 	if (m_level) {
-		delete m_level;
-		m_level = nullptr;
+		SAFE_DELETE(m_level);
 	}
 
 	if (g_object_factory) {
-		delete g_object_factory;
-		g_object_factory = nullptr;
+		SAFE_DELETE(g_object_factory);
 	}
 
 	if (g_input_system) {
 		g_input_system->shutdown();
-	    delete g_input_system;
-		g_input_system = nullptr;
+		SAFE_DELETE(g_input_system);
+	}
 	}
 
 	if (m_render_window) {
