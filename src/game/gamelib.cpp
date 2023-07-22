@@ -7,23 +7,19 @@
 
 #include "worldspawn.h"
 #include "player.h"
+#include "gamepersistent.h"
 
 void gameLibRegisterObjects()
 {
-	g_object_factory->registerObject<WorldSpawn>();
-	g_object_factory->registerObject<Player>();
+	g_object_factory->registerObject<GamePersistent>("game_persistent");
+	g_object_factory->registerObject<WorldSpawn>("world_spawn");
+	g_object_factory->registerObject<Player>("player");
 }
 
 void gameLibInit()
 {
 	Msg("Registering game objects");
-
 	gameLibRegisterObjects();
-
-	Msg("Create player");
-
-	Entity* pPlayer = g_object_factory->createObject<Player>();
-	g_engine->getLevel()->addEntity(pPlayer);
 }
 
 void gameLibShutdown()

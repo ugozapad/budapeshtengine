@@ -8,6 +8,7 @@
 #include "engine/shader_engine.h"
 #include "engine/level_mesh.h"
 #include "engine/texture.h"
+#include "engine/igamepersistent.h"
 
 #include <glm/glm.hpp>
 
@@ -37,6 +38,8 @@ void Level::load(const char* levelname)
 	// reader = g_file_system->openRead(levelpath);
 	// loadSomeFile(reader);
 	// etc.
+
+	g_pGamePersistent->onGameStart();
 }
 
 void Level::loadLMF(IReader* reader)
@@ -72,6 +75,8 @@ void Level::addEntity(Entity* entity)
 	size_t entity_count = m_entities.size();
 	for (size_t i = 0; i < entity_count; i++)
 	{
+		//Msg("entity %i %s", i, m_entities[i]->getClassName());
+
 		if (m_entities[i] == entity) {
 			FATAL("Level::addEntity: entity (classname=%s ptr=0x%p) already exists", entity->getClassName(), entity);
 		}

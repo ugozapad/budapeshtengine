@@ -12,6 +12,7 @@
 #include "engine/camera.h"
 #include "engine/material_system.h"
 #include "engine/sound_system.h"
+#include "engine/igamepersistent.h"
 
 #include "game/gamelib.h"
 
@@ -25,8 +26,8 @@ ENGINE_API Engine* g_engine = nullptr;
 
 void registerEngineStuff()
 {
-	g_object_factory->registerObject<Entity>();
-	g_object_factory->registerObject<LevelMesh>();
+	g_object_factory->registerObject<Entity>("entity");
+	g_object_factory->registerObject<LevelMesh>("level_mesh");
 }
 
 Engine::Engine() :
@@ -120,6 +121,10 @@ void Engine::init(int width, int height, bool fullscreen)
 
 	// load game library
 	createGameLib("game");
+
+	// create game persistent
+	ASSERT(!g_pGamePersistent);
+	g_pGamePersistent = (IGamePersistent*)g_object_factory->createByName("game_persistent");
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -228,6 +233,12 @@ void Engine::update()
 
 void Engine::shutdown()
 {
+	if (g_pGamePersistent)
+	{
+		delete g_pGamePersistent;
+		g_pGamePersistent = nullptr;
+	}
+
 	g_material_system.Shutdown();
 	
 	if (m_render_device) {
