@@ -69,7 +69,7 @@ void Main::shutdown() {
 	m_engine->shutdown();
 	SAFE_DELETE(m_engine);
 }
-
+	
 void Main::update() {
 	if (g_input_system->isKeyPressed(SDL_SCANCODE_ESCAPE))
 		m_engine->requestExit();

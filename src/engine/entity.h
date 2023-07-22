@@ -15,9 +15,14 @@ public:
 	Entity();
 	virtual ~Entity();
 
+	virtual void update(float dt);
+
 	// Inplace cast'ers
 	virtual Player* castPlayer();
 	virtual Weapon* castWeapon();
+
+protected:
+	glm::vec3 m_position;
 };
 
 #endif

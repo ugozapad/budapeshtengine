@@ -23,6 +23,7 @@ public:
 	IInputSystem* getInputSystem();
 	Level* getLevel();
 	IRenderDevice* getRenderDevice();
+	viewport_t getViewport();
 
 	inline void requestExit		() { m_bExitRequested = true; }
 	inline bool isExitRequested	() const { return (m_bExitRequested); }

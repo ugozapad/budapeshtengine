@@ -203,14 +203,9 @@ void LevelMesh::render() {
 
 	glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
 
-	glm::vec3 cameraPos = glm::vec3(5.0f, 7.0f, 5.0f);
-	g_camera.setPosition(cameraPos);
-
 	// calculate aspect ratio
-	int width = 0, height = 0;
-	SDL_GetWindowSize(g_engine->getRenderWindow(), &width, &height);
-
-	float aspectRatio = (float)width / (float)height;
+	viewport_t viewport = g_engine->getViewport();
+	float aspectRatio = (float)viewport.width / (float)viewport.height;
 
 	// calculate projection matrix
 	glm::mat4 proj = s_mat4_idenitity;

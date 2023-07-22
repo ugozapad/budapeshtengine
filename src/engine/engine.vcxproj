@@ -211,6 +211,7 @@
     <ClCompile Include="level_mesh.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="material_system.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="objectfactory.cpp" />
     <ClCompile Include="osdriver_win32.cpp" />
     <ClCompile Include="pch.cpp">

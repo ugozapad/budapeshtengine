@@ -41,5 +41,6 @@
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="level_mesh.cpp" />
     <ClCompile Include="logger.cpp" />
+    <ClCompile Include="mesh.cpp" />
   </ItemGroup>
 </Project>

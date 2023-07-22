@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "engine/mesh.h"
 #include "engine/engine.h"
 #include "engine/shader_engine.h"
@@ -98,4 +99,60 @@ void StaticMesh::draw(const glm::mat4& model_matrix, const renderContext_t& rend
 	render_device->endBinding();
 
 	render_device->draw(0, m_indices_count, 1);
+}
+
+//////////////////
+// Dynamic mesh //
+//////////////////
+
+DynamicMesh::DynamicMesh(Array<DynamicMeshVertex>& vertices, const char* texture_name)
+{
+	m_verticesCount = vertices.size();
+
+	bufferDesc_t bufferDesc = {};
+	bufferDesc.type = BUFFERTYPE_VERTEX;
+	bufferDesc.access = BUFFERACCESS_STATIC;
+	bufferDesc.data = vertices.data();
+	bufferDesc.size = m_verticesCount * sizeof(DynamicMeshVertex);
+
+	m_vertexBuffer = g_engine->getRenderDevice()->createBuffer(bufferDesc);
+	ASSERT(m_vertexBuffer != INVALID_BUFFER_INDEX);
+
+	const ShaderData shaderData = g_pShaderEngine->loadShader("model_test");
+	ASSERT(shaderData.pipelineIndex != INVALID_PIPELINE_INDEX);
+
+	m_pipelineIndex = shaderData.pipelineIndex;
+
+	m_tex = g_material_system.LoadTexture(texture_name);
+}
+
+DynamicMesh::~DynamicMesh()
+{
+	if (m_vertexBuffer != INVALID_BUFFER_INDEX) {
+		g_engine->getRenderDevice()->deleteBuffer(m_vertexBuffer);
+		m_vertexBuffer = INVALID_BUFFER_INDEX;
+	}
+}
+
+void DynamicMesh::draw(const glm::mat4& model_matrix, const renderContext_t& render_context)
+{
+	IRenderDevice* pRenderDevice = g_engine->getRenderDevice();
+
+	// set device stuff
+	pRenderDevice->setPipeline(m_pipelineIndex);
+
+	// fill constants
+	pRenderDevice->setVSConstant(CONSTANT_MODEL_MATRIX, &model_matrix[0], MATRIX4_SIZE);
+	pRenderDevice->setVSConstant(CONSTANT_VIEW_MATRIX, &render_context.view_matrix[0], MATRIX4_SIZE);
+	pRenderDevice->setVSConstant(CONSTANT_PROJ_MATRIX, &render_context.projection_matrix[0], MATRIX4_SIZE);
+
+	glm::mat4 mvp = render_context.getMVP(model_matrix);
+	pRenderDevice->setVSConstant(CONSTANT_MVP_MATRIX, &mvp[0], MATRIX4_SIZE);
+
+	pRenderDevice->beginBinding();
+	pRenderDevice->setTexture(0, m_tex->getTextureIndex());
+	pRenderDevice->setVertexBuffer(m_vertexBuffer);
+	pRenderDevice->endBinding();
+
+	pRenderDevice->draw(0, m_verticesCount, 1);
 }

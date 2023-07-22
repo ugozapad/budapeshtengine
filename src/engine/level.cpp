@@ -85,6 +85,9 @@ void Level::render()
 	for (Array<Entity*>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 	{
 		Entity* entity = (*it);
+
+		entity->update(0.003f);
+
 		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(entity))
 		{
 			level_mesh->render();

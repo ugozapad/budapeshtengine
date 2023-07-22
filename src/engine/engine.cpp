@@ -115,11 +115,11 @@ void Engine::init(int width, int height, bool fullscreen)
 	// initialize sound system
 	createSoundSystem("sound");
 
-	// load game library
-	createGameLib("game");
-
 	// create level
 	m_level = new Level();
+
+	// load game library
+	createGameLib("game");
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -280,6 +280,11 @@ Level* Engine::getLevel()
 IRenderDevice* Engine::getRenderDevice()
 {
 	return m_render_device;
+}
+
+viewport_t Engine::getViewport()
+{
+	return m_viewport;
 }
 
 void Engine::onWindowSizeChanged(uint32_t w, uint32_t h)
