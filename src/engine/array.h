@@ -80,6 +80,10 @@ public:
 			m_memory[j] = m_memory[j + 1];
 		m_size--;
 	}
+	inline void erase	(iterator first, iterator last)
+	{
+		// TODO : Need to implement this !!!
+	}
 	inline void shrink_to_fit()
 	{
 		if (m_capacity > m_size)
