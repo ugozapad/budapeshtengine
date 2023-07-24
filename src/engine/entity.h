@@ -18,6 +18,12 @@ public:
 	// Inplace cast'ers
 	virtual Player* castPlayer();
 	virtual Weapon* castWeapon();
+
+	inline bool canBeDestroyed() const { return (m_bCanBeDestroyed); }
+	inline void	setCanBeDestroyed() { m_bCanBeDestroyed = true; }
+
+private:
+	bool m_bCanBeDestroyed;
 };
 
 #endif

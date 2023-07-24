@@ -12,6 +12,8 @@
 #include <memory.h>
 #include <new>
 
+#include <algorithm>
+
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
 #include <SDL_scancode.h>

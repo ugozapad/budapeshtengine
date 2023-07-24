@@ -9,11 +9,8 @@
 #include "engine/level_mesh.h"
 #include "engine/texture.h"
 
-#include <glm/glm.hpp>
-
-#include <stdio.h>
-
 Level::Level()
+	: m_bBusy(false)
 {
 }
 
@@ -57,6 +54,14 @@ void Level::loadLMF(IReader* reader)
 
 Entity* Level::createEntity()
 {
+	if (m_bBusy)
+	{
+#ifdef _DEBUG
+		FATAL("Level::createEntity: level is currently busy");
+#endif
+		return (NULL);
+	}
+
 	Entity* entity = new Entity();
 	m_entities.push_back(entity);
 	return entity;
@@ -64,6 +69,10 @@ Entity* Level::createEntity()
 
 void Level::addEntity(Entity* entity)
 {
+	if (m_bBusy)
+	{
+		FATAL("Level::addEntity: level is currently busy");
+	}
 	if (!entity)
 	{
 		FATAL("Level::addEntity: failed to add null ptr entity");
@@ -80,8 +89,58 @@ void Level::addEntity(Entity* entity)
 	m_entities.push_back(entity);
 }
 
+void Level::destroyEntity(Entity* entity)
+{
+	if (!entity) return;
+
+	Array<Entity*>::iterator it = std::find(
+		m_entities.begin(),
+		m_entities.end(),
+		entity
+	);
+	if (it != m_entities.end())
+	{
+		if (m_bBusy)
+		{
+			(*it)->setCanBeDestroyed();
+			m_bNeedToDestroyEnt = true;
+		}
+		else
+		{
+			delete *it;
+			m_entities.erase(it);
+		}
+	}
+}
+
 void Level::render()
 {
+	if (m_bNeedToDestroyEnt)
+	{
+		struct _destroy_objects_pred
+		{
+			inline bool operator()(Entity* pE) const
+			{
+				if (pE->canBeDestroyed())
+				{
+					delete pE;
+					return (true);
+				}
+				return (false);
+			}
+		};
+		m_entities.erase(
+			std::remove_if(
+				m_entities.begin(),
+				m_entities.end(),
+				_destroy_objects_pred()
+			),
+			m_entities.end()
+		);
+		m_bNeedToDestroyEnt = false;
+	}
+
+	m_bBusy = true;
 	for (Array<Entity*>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 	{
 		Entity* entity = (*it);
@@ -90,4 +149,5 @@ void Level::render()
 			level_mesh->render();
 		}
 	}
+	m_bBusy = false;
 }
