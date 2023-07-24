@@ -15,8 +15,18 @@ public:
 	typedef value_type const*	const_iterator;
 
 public:
-	Array();
-	~Array();
+	inline Array() :
+		m_memory(nullptr)
+		, m_size(0)
+		, m_capacity(0)
+	{
+	}
+	inline ~Array()
+	{
+		if (m_memory) {
+			mem_free(m_memory);
+		}
+	}
 
 	iterator insert(const_iterator pos, const_reference value)
 	{
@@ -62,7 +72,7 @@ public:
 		m_size = size;
 	}
 	inline void clear	() { m_size = 0; }
-	inline void erase	(const_iterator pos)
+	inline void erase	(iterator pos)
 	{
 		ASSERT(pos >= begin() || pos <= end());
 		size_type i = size_type(end() - pos);
@@ -107,41 +117,23 @@ public:
 	inline const_reference	operator[](size_type i) const	{ return m_memory[i]; }
 
 private:
-	void realloc_buffer(size_type);
+	void realloc_buffer(size_type size) {
+		if (m_memory) {
+			m_memory = mem_trealloc<value_type>(m_memory, size);
+		}
+		else {
+			m_memory = mem_tcalloc<value_type>(size);
+		}
+
+		m_capacity = size;
+		if (m_capacity < m_size)
+			m_size = m_capacity;
+	}
 
 private:
 	value_type* m_memory;
 	size_type m_size;
 	size_type m_capacity;
 };
-
-template <typename T>
-inline Array<T>::Array() :
-	m_memory(nullptr)
-,	m_size(0)
-,	m_capacity(0)
-{
-}
-
-template <typename T>
-inline Array<T>::~Array() {
-	if (m_memory) {
-		mem_free(m_memory);
-	}
-}
-
-template<typename T>
-void Array<T>::realloc_buffer(size_type size) {
-	if (m_memory) {
-		m_memory = mem_trealloc<value_type>(m_memory, size);
-	}
-	else {
-		m_memory = mem_tcalloc<value_type>(size);
-	}
-
-	m_capacity = size;
-	if (m_capacity < m_size)
-		m_size = m_capacity;
-}
 
 #endif // !ARRAY_H
