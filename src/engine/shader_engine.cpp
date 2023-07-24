@@ -59,6 +59,49 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		shader_desc.fragment_shader_data = fragment_shader;
 		shader_desc.fragment_shader_size = fragment_length;
 
+		// Kirill: Little hack
+		if (strcmp(shaderName, "lightmapped_generic") == 0)
+		{
+			shader_desc.uniform_desc[0].type = SHADERUNIFORM_MAT4;
+			shader_desc.uniform_desc[0].name = "u_model_matrix";
+			shader_desc.uniform_desc[0].size = MATRIX4_SIZE;
+
+			shader_desc.uniform_desc[1].type = SHADERUNIFORM_MAT4;
+			shader_desc.uniform_desc[1].name = "u_view_matrix";
+			shader_desc.uniform_desc[1].size = MATRIX4_SIZE;
+
+			shader_desc.uniform_desc[2].type = SHADERUNIFORM_MAT4;
+			shader_desc.uniform_desc[2].name = "u_proj_matrix";
+			shader_desc.uniform_desc[2].size = MATRIX4_SIZE;
+
+			shader_desc.uniform_desc[3].type = SHADERUNIFORM_MAT4;
+			shader_desc.uniform_desc[3].name = "u_model_view_projection";
+			shader_desc.uniform_desc[3].size = MATRIX4_SIZE;
+
+			shader_desc.uniform_count = 4;
+
+		}
+		else if (strcmp(shaderName, "model_test"))
+		{
+			shader_desc.uniform_desc[0].type = SHADERUNIFORM_MAT4;
+			shader_desc.uniform_desc[0].name = "u_model_matrix";
+			shader_desc.uniform_desc[0].size = MATRIX4_SIZE;
+
+			shader_desc.uniform_desc[1].type = SHADERUNIFORM_MAT4;
+			shader_desc.uniform_desc[1].name = "u_view_matrix";
+			shader_desc.uniform_desc[1].size = MATRIX4_SIZE;
+
+			shader_desc.uniform_desc[2].type = SHADERUNIFORM_MAT4;
+			shader_desc.uniform_desc[2].name = "u_proj_matrix";
+			shader_desc.uniform_desc[2].size = MATRIX4_SIZE;
+
+			shader_desc.uniform_desc[3].type = SHADERUNIFORM_MAT4;
+			shader_desc.uniform_desc[3].name = "u_model_view_projection";
+			shader_desc.uniform_desc[3].size = MATRIX4_SIZE;
+
+			shader_desc.uniform_count = 4;
+		}
+
 		sd.shaderIndex = g_engine->getRenderDevice()->createShader(shader_desc);
 		if (sd.shaderIndex == INVALID_SHADER_INDEX) {
 			FATAL("!!! %s index is invalid", shaderName);
@@ -69,11 +112,24 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		mem_free(vertex_shader);
 
 		pipelineDesc_t pipeline_desc = {};
-		pipeline_desc.shader = sd.shaderIndex;
-		pipeline_desc.layouts[0] = { VERTEXATTR_VEC3, SHADERSEMANTIC_POSITION };
-		pipeline_desc.layouts[1] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD0 };
-		pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD1 };
-		pipeline_desc.layout_count = 3;
+
+		// Kirill: Little hack
+		if (strcmp(shaderName, "lightmapped_generic") == 0)
+		{
+			pipeline_desc.shader = sd.shaderIndex;
+			pipeline_desc.layouts[0] = { VERTEXATTR_VEC3, SHADERSEMANTIC_POSITION };
+			pipeline_desc.layouts[1] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD0 };
+			pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD1 };
+			pipeline_desc.layout_count = 3;
+		}
+		else if (strcmp(shaderName, "model_test"))
+		{
+			pipeline_desc.shader = sd.shaderIndex;
+			pipeline_desc.layouts[0] = { VERTEXATTR_VEC3, SHADERSEMANTIC_POSITION };
+			pipeline_desc.layouts[1] = { VERTEXATTR_VEC3, SHADERSEMANTIC_NORMAL };
+			pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD0 };
+			pipeline_desc.layout_count = 3;
+		}
 
 		sd.pipelineIndex = g_engine->getRenderDevice()->createPipeline(pipeline_desc);
 		if (sd.pipelineIndex == INVALID_PIPELINE_INDEX) {
