@@ -206,6 +206,13 @@ public:
 	virtual void present(bool vsync) = 0;
 };
 
-__declspec(dllexport) IRenderDevice* createRenderDevice();
+#ifndef ENGINE_EXPORTS
+extern "C"
+{
+	__declspec(dllexport) IRenderDevice* createRenderDevice();
+};
+#else
+typedef IRenderDevice*(__stdcall *createRenderDevice_t)();
+#endif
 
 #endif

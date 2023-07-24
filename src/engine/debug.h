@@ -1,7 +1,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-void assertBackend(const char* expression, const char* file, int line, const char* function, bool* ignore, const char* fmt, ...);
+void ENGINE_API assertBackend(const char* expression, const char* file, int line, const char* function, bool* ignore, const char* fmt, ...);
 
 #define ENABLE_ASSERTS
 

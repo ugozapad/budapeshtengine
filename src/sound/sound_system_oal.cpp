@@ -99,7 +99,7 @@ SoundSystem_OpenAL::SoundSystem_OpenAL()
 				eax_ver = 5;
 			Msg("%u. %s, v%d.%d %s eax[%u] efx[%s] xram[%s]",
 				I + 1,
-				*sdd.name,
+				sdd.name,
 				sdd.version.iMajor,
 				sdd.version.iMinor,
 				(I == defaultDeviceId) ? "(default)" : "",
@@ -247,3 +247,5 @@ void SoundSystem_OpenAL::setMasterVolume(float fVolume)
 
 	alListenerf(AL_GAIN, fVolume);
 }
+
+IMPLEMENT_ALLOCATOR;

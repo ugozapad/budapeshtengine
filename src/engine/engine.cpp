@@ -9,10 +9,11 @@
 #include "engine/entity.h"
 #include "engine/level.h"
 #include "engine/level_mesh.h"
-#include "engine/player.h"
 #include "engine/camera.h"
 #include "engine/material_system.h"
 #include "engine/sound_system.h"
+
+#include "game/gamelib.h"
 
 #ifndef NDEBUG
 #define DBG_STR " Dbg"
@@ -20,13 +21,12 @@
 #define DBG_STR
 #endif // !NDEBUG
 
-Engine* g_engine = nullptr;
+ENGINE_API Engine* g_engine = nullptr;
 
 void registerEngineStuff()
 {
 	g_object_factory->registerObject<Entity>();
 	g_object_factory->registerObject<LevelMesh>();
-	g_object_factory->registerObject<Player>();
 }
 
 Engine::Engine() :
@@ -90,21 +90,15 @@ void Engine::init(int width, int height, bool fullscreen)
 	g_input_system = IInputSystem::create(g_allocator);
 	g_input_system->init();
 
-	// initialize sound system
-	g_pSoundSystem = ISoundSystem::create("sound");
-
 	// initialize object factory
 	g_object_factory = new ObjectFactory();
 
 	// register engine objects
 	registerEngineStuff();
 
-	// create level
-	m_level = new Level();
-
 	// create renderer
 	Msg("Creating render device");
-	m_render_device = createRenderDevice();
+	createRenderDevice("sokol_rdev");
 	m_render_device->init(m_render_window);
 
 	g_material_system.Init();
@@ -117,6 +111,100 @@ void Engine::init(int width, int height, bool fullscreen)
 		&m_viewport.width,
 		&m_viewport.height
 	);
+
+	// initialize sound system
+	createSoundSystem("sound");
+
+	// load game library
+	createGameLib("game");
+
+	// create level
+	m_level = new Level();
+}
+
+//////////////////////////////////////////////////////////////////////
+// Kirill:	TODO: Make hRenderDeviceLib, hSoundSystemLib, hGameLib
+//			as global variables or rewrite to SDL dyn libs loading
+//
+//			TODO FUTURE: Linking full engine as static library to main
+//////////////////////////////////////////////////////////////////////
+void Engine::createRenderDevice(const char* devicename)
+{
+	IRenderDevice* pRenderDevice = nullptr;
+	
+	char buff[_MAX_PATH];
+	snprintf(buff, sizeof(buff), "%s.dll", devicename);
+
+	Msg("Loading DLL %s", buff);
+
+	HMODULE hRenderDeviceLib = LoadLibraryA(buff);
+	if (hRenderDeviceLib != NULL)
+	{
+		createRenderDevice_t createRenderDeviceProc =
+			(createRenderDevice_t)GetProcAddress(hRenderDeviceLib, "createRenderDevice");
+
+		if (createRenderDeviceProc != NULL)
+		{
+			pRenderDevice = createRenderDeviceProc();
+		}
+
+		//CloseHandle(hRenderDeviceLib);
+	}
+
+	ASSERT(pRenderDevice && "Failed to load render device lib");
+	m_render_device = pRenderDevice;
+}
+
+void Engine::createSoundSystem(const char* soundname)
+{
+	ISoundSystem* pSoundSystem = NULL;
+	char buff[_MAX_PATH]; snprintf(buff, sizeof(buff), "%s.dll", soundname);
+	Msg("Loading DLL %s", buff);
+	HMODULE hSoundSystemLib = LoadLibrary(buff);
+	if (hSoundSystemLib != NULL)
+	{
+		createSoundSystem_t createSoundSystemProc = (createSoundSystem_t)GetProcAddress(hSoundSystemLib, "createSoundSystem");
+		if (createSoundSystemProc != NULL)
+		{
+			pSoundSystem = createSoundSystemProc();
+		}
+		// Dima : Do we need to close it? 
+		// Kirill: No
+		//CloseHandle(hSoundSystemLib);
+	}
+
+	ASSERT(pSoundSystem && "Failed to load sound sys. Missing dll or OpenAL installation");
+	g_pSoundSystem = pSoundSystem;
+}
+
+static gameLibShutdown_t s_gameLibShutdownPfn = NULL;
+
+void Engine::createGameLib(const char* custompath)
+{
+	char buff[_MAX_PATH];
+	snprintf(buff, sizeof(buff), "%s.dll", custompath);
+	
+	Msg("Loading DLL %s", buff);
+
+	HMODULE hGameLib = LoadLibraryA(buff);
+	if (hGameLib != NULL)
+	{
+		gameLibInit_t gameLibInitPfn = 
+			(gameLibInit_t)GetProcAddress(hGameLib, "gameLibInit");
+		
+		gameLibShutdown_t gameLibShutdownPfn = 
+			(gameLibShutdown_t)GetProcAddress(hGameLib, "gameLibShutdown");
+
+		if (gameLibInitPfn != NULL && gameLibShutdownPfn != NULL)
+		{
+			gameLibInitPfn();
+
+			// make shutdown function as global variable
+			s_gameLibShutdownPfn = gameLibShutdownPfn;
+		}
+	}
+
+	ASSERT(s_gameLibShutdownPfn && "Missing exports from game library");
 }
 
 void Engine::update()

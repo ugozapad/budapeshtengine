@@ -8,7 +8,7 @@ class Player;
 class Weapon;
 
 //! Base entity class.
-class Entity : public TypedObject {
+class ENGINE_API Entity : public TypedObject {
 public:
 	OBJECT_IMPLEMENT(Entity, TypedObject);
 

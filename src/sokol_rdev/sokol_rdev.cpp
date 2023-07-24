@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "engine/engine_api.h"
 #include "engine/debug.h"
 #include "engine/allocator.h"
 #include "engine/logger.h"

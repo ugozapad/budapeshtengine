@@ -12,7 +12,7 @@ public:
 };
 
 static DefaultAllocator s_default_allocator_impl;
-IAllocator* g_allocator = (IAllocator*)&s_default_allocator_impl;
+ENGINE_API IAllocator* g_allocator = (IAllocator*)&s_default_allocator_impl;
 
 void* DefaultAllocator::allocate(size_t size, size_t align) {
 	return _aligned_malloc(size, align);

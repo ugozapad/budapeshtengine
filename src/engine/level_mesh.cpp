@@ -229,7 +229,7 @@ void LevelMesh::render() {
 	render_device->setVSConstant(CONSTANT_MVP_MATRIX, &mvp[0], MATRIX4_SIZE);
 
 	render_device->beginBinding();
-	render_device->setTexture(0, g_material_system.GetNoTexture()->getTextureIndex());
+	render_device->setTexture(0, m_diffuse_texture->getTextureIndex());
 	render_device->setTexture(1, m_lightmap_texture->getTextureIndex());
 	render_device->setVertexBuffer(m_vertex_buffer);
 	render_device->setIndexBuffer(m_index_buffer);

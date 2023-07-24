@@ -19,6 +19,7 @@
 #include <glm/glm.hpp>
 
 // Own Headers
+#include "engine/engine_api.h"
 #include "engine/allocator.h"
 #include "engine/debug.h"
 #include "engine/array.h"

@@ -6,7 +6,7 @@
 typedef void* typeId_t;
 
 //! Base class for run-time type info.
-class TypedObject {
+class ENGINE_API TypedObject {
 public:
 	virtual ~TypedObject() {}
 

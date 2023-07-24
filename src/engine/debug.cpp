@@ -23,7 +23,7 @@ void assertBackend(const char* expression, const char* file, int line, const cha
 			"Function: %s\n"
 			"\n"
 			"Message: %s\n",
-			"<no expression>",
+			expression,
 			file,
 			line,
 			function,
@@ -38,7 +38,7 @@ void assertBackend(const char* expression, const char* file, int line, const cha
 			"File: %s\n"
 			"Line: %d\n"
 			"Function: %s\n",
-			"<no expression>",
+			expression,
 			file,
 			line,
 			function
