@@ -21,8 +21,15 @@ public:
 	virtual Player* castPlayer();
 	virtual Weapon* castWeapon();
 
+	inline bool canBeDestroyed() const { return (m_bCanBeDestroyed); }
+	inline void	setCanBeDestroyed() { m_bCanBeDestroyed = true; }
+
 protected:
 	glm::vec3 m_position;
+  
+private:
+	bool m_bCanBeDestroyed;
+  
 };
 
 #endif

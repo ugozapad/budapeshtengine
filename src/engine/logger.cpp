@@ -23,7 +23,7 @@ void CalculateBuildNumber()
 	sscanf(buf, "%s %d %d", mon, &dnum, &ynum);
 	for (int i = 0; i < 12; i++) {
 #ifdef WIN32
-		if (stricmp(g_month[i], mon) == 0) {
+		if (_stricmp(g_month[i], mon) == 0) {
 #else
 		if (strcasecmp(g_month[i], mon) == 0) {
 #endif // WIN32
