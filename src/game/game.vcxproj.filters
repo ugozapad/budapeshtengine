@@ -5,11 +5,13 @@
     <ClCompile Include="worldspawn.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="player.cpp" />
+    <ClCompile Include="gamepersistent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gamelib.h" />
     <ClInclude Include="worldspawn.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="gamepersistent.h" />
   </ItemGroup>
 </Project>

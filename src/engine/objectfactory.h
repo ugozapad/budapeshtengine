@@ -14,6 +14,7 @@ T* createObjectTemplated() {
 
 struct objectCreationInfo_t {
 	typeId_t id;
+	const char* classname;
 	pfnCreateObject_t create_proc;
 };
 
@@ -23,10 +24,12 @@ public:
 	~ObjectFactory();
 
 	template <typename T>
-	void registerObject();
+	void registerObject(const char* classname);
 
 	template <typename T>
 	T* createObject();
+
+	TypedObject* createByName(const char* classname);
 
 private:
 	Array<objectCreationInfo_t> m_objectCreationInfos;
@@ -35,13 +38,14 @@ private:
 extern ENGINE_API ObjectFactory* g_object_factory;
 
 template<typename T>
-inline void ObjectFactory::registerObject() {
+inline void ObjectFactory::registerObject(const char* classname) {
 
 	pfnCreateObject_t create_object_pfn = (pfnCreateObject_t)createObjectTemplated<T>;
-	objectCreationInfo_t object_creation_info = {};
-	object_creation_info.create_proc = create_object_pfn;
-	object_creation_info.id = get_type_id<T>();
-	m_objectCreationInfos.push_back(object_creation_info);
+	objectCreationInfo_t oci = {};
+	oci.create_proc = create_object_pfn;
+	oci.id = get_type_id<T>();
+	oci.classname = classname;
+	m_objectCreationInfos.push_back(oci);
 }
 
 template<typename T>
@@ -57,5 +61,8 @@ inline T* ObjectFactory::createObject()
 	
 	return NULL;
 }
+
+#define CREATE_OBJECT(CLASS, NAME) \
+	(CLASS*)g_object_factory->createByName(NAME)
 
 #endif // !OBJECTFACTORY_H

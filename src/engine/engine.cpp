@@ -3,6 +3,7 @@
 #include "engine/engine.h"
 #include "engine/iosdriver.h"
 #include "engine/filesystem.h"
+#include "engine/varmanager.h"
 #include "engine/logger.h"
 #include "engine/input_system.h"
 #include "engine/objectfactory.h"
@@ -12,6 +13,7 @@
 #include "engine/camera.h"
 #include "engine/material_system.h"
 #include "engine/sound_system.h"
+#include "engine/igamepersistent.h"
 
 #include "game/gamelib.h"
 
@@ -23,10 +25,20 @@
 
 ENGINE_API Engine* g_engine = nullptr;
 
+static Var developer("developer", "0", "", VARFLAG_NOSAVE | VARFLAG_SERVER_PROTECT);
+static Var vid_mode("vid_mode", "1024x768", "", VARFLAG_NONE);
+
+void registerEngineVars()
+{
+	g_VarManager.RegisterVar(&developer);
+	g_VarManager.RegisterVar(&vid_mode);
+}
+
 void registerEngineStuff()
 {
-	g_object_factory->registerObject<Entity>();
-	g_object_factory->registerObject<LevelMesh>();
+	g_object_factory->registerObject<Entity>("entity");
+	g_object_factory->registerObject<LevelMesh>("level_mesh");
+	g_object_factory->registerObject<DynamicMeshEntity>("dynamic_mesh");
 }
 
 Engine::Engine() :
@@ -50,16 +62,12 @@ void Engine::init(int width, int height, bool fullscreen)
 		Msg("Failed to initialize SDL2. Error core: %s\n", SDL_GetError());
 	}
 
+	registerEngineVars();
+
 	// Initialize OS Driver
 	IOsDriver::getInstance()->init();
 
 	// create filesystem
-//#ifdef ENABLE_PHYSFS
-//	g_file_system = IFileSystem::createPhysFS();
-//#else
-//	g_file_system = IFileSystem::create();
-//#endif // ENABLE_PHYSFS
-
 	g_file_system = IFileSystem::create();
 
 	// Create logger
@@ -115,11 +123,15 @@ void Engine::init(int width, int height, bool fullscreen)
 	// initialize sound system
 	createSoundSystem("sound");
 
+	// create level
+	m_level = new Level();
+
 	// load game library
 	createGameLib("game");
 
-	// create level
-	m_level = new Level();
+	// create game persistent
+	ASSERT(!g_pGamePersistent);
+	g_pGamePersistent = CREATE_OBJECT(IGamePersistent, CLSID_GAMEPERSISTENT);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -228,6 +240,10 @@ void Engine::update()
 
 void Engine::shutdown()
 {
+	if (g_pGamePersistent) {
+		SAFE_DELETE(g_pGamePersistent);
+	}
+
 	g_material_system.Shutdown();
 	
 	if (m_render_device) {
@@ -280,6 +296,11 @@ Level* Engine::getLevel()
 IRenderDevice* Engine::getRenderDevice()
 {
 	return m_render_device;
+}
+
+viewport_t Engine::getViewport()
+{
+	return m_viewport;
 }
 
 void Engine::onWindowSizeChanged(uint32_t w, uint32_t h)

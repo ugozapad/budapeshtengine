@@ -7,7 +7,7 @@
 #include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/norm.hpp>
 
-class Camera {
+class ENGINE_API Camera {
 public:
 	Camera();
 	~Camera();
@@ -33,6 +33,6 @@ public:
 	float m_pitch;
 };
 
-extern Camera g_camera;
+extern ENGINE_API Camera g_camera;
 
 #endif // !CAMERA_H

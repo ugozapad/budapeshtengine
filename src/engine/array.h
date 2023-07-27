@@ -4,6 +4,8 @@
 #include "engine/debug.h"
 #include "engine/allocator.h"
 
+#include <initializer_list>
+
 template <typename T>
 class Array {
 public:

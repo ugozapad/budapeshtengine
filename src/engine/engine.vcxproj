@@ -187,18 +187,21 @@
     <ClInclude Include="engine_api.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="filesystem.h" />
+    <ClInclude Include="igamepersistent.h" />
     <ClInclude Include="input_system.h" />
     <ClInclude Include="iosdriver.h" />
     <ClInclude Include="level.h" />
     <ClInclude Include="level_mesh.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="material_system.h" />
+    <ClInclude Include="mesh.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="objectfactory.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="shader_engine.h" />
     <ClInclude Include="sound_system.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="varmanager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -208,11 +211,13 @@
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="filesystem_physfs.cpp" />
+    <ClCompile Include="igamepersistent.cpp" />
     <ClCompile Include="input_system.cpp" />
     <ClCompile Include="level.cpp" />
     <ClCompile Include="level_mesh.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="material_system.cpp" />
+    <ClCompile Include="mesh.cpp" />
     <ClCompile Include="objectfactory.cpp" />
     <ClCompile Include="osdriver_win32.cpp" />
     <ClCompile Include="pch.cpp">
@@ -224,6 +229,7 @@
     <ClCompile Include="shader_engine.cpp" />
     <ClCompile Include="sound_system.cpp" />
     <ClCompile Include="texture.cpp" />
+    <ClCompile Include="varmanager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

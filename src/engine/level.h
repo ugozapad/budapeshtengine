@@ -22,6 +22,8 @@ public:
 
 	void render();
 
+	Array<Entity*>& getEntities() { return m_entities; }
+
 private:
 	bool			m_bBusy;
 	bool			m_bNeedToDestroyEnt;

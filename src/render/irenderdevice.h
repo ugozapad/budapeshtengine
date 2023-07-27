@@ -14,6 +14,8 @@ const shaderIndex_t		INVALID_SHADER_INDEX = -1;
 const pipelineIndex_t	INVALID_PIPELINE_INDEX = -1;
 const textureIndex_t	INVALID_TEXTURE_INDEX = -1;
 
+const int SHADERUNIFORM_MAX_COUNT = 16;
+
 //! Shader uniform size of (in bytes)
 const int VECTOR3_SIZE = 12;
 const int VECTOR4_SIZE = 16;
@@ -81,6 +83,16 @@ enum shaderSemantic_t {
 	SHADERSEMANTIC_MAX
 };
 
+enum shaderUniformType_t {
+	SHADERUNIFORM_FLOAT,
+	SHADERUNIFORM_VEC2,
+	SHADERUNIFORM_VEC3,
+	SHADERUNIFORM_VEC4,
+	SHADERUNIFORM_MAT4,
+
+	SHADERUNIFORM_MAX
+};
+
 enum passClearFlags_t {
 	PASSCLEAR_COLOR = 1 << 1,
 	PASSCLEAR_DEPTH = 1 << 2,
@@ -119,17 +131,31 @@ struct inputLayoutDesc_t {
 	shaderSemantic_t semantic;
 };
 
+struct shaderUniformDesc_t {
+	shaderUniformType_t type;
+	const char* name;
+	size_t size;
+};
+
+struct shaderSamplerDesc_t {
+
+};
+
 struct shaderDesc_t {
 	const char* vertex_shader_data;
 	const char* fragment_shader_data;
 	size_t vertex_shader_size;
 	size_t fragment_shader_size;
+
+	shaderUniformDesc_t uniform_desc[SHADERUNIFORM_MAX];
+	size_t uniform_count;
 };
 
 struct pipelineDesc_t {
 	inputLayoutDesc_t layouts[INPUT_LAYOUT_MAX];
 	size_t layout_count;
 	shaderIndex_t shader;
+	bool indexed_draw;
 };
 
 struct textureDesc_t {
@@ -173,6 +199,7 @@ public:
 	virtual void deleteShader(shaderIndex_t shader) = 0;
 
 	virtual void setVSConstant(int ub_index, const void* data, size_t size) = 0;
+	virtual void setPSConstant(int ub_index, const void* data, size_t size) = 0;
 
 	// Pipeline API
 

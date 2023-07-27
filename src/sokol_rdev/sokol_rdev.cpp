@@ -20,6 +20,9 @@ extern "C" {
 #define SOKOL_LOG_IMPL
 #include "sokol_log.h"
 
+#define SOKOL_DEBUGTEXT_IMPL
+#include "util/sokol_debugtext.h"
+
 #include "SDL.h"
 
 class SokolRenderDevice : public IRenderDevice {
@@ -48,6 +51,7 @@ public:
 	shaderIndex_t createShader(const shaderDesc_t& shader_desc) override;
 	void deleteShader(shaderIndex_t shader) override;
 	void setVSConstant(int ub_index, const void* data, size_t size) override;
+	void setPSConstant(int ub_index, const void* data, size_t size) override;
 
 	pipelineIndex_t createPipeline(const pipelineDesc_t& pipeline_desc) override;
 	void deletePipeline(pipelineIndex_t pipeline) override;
@@ -283,26 +287,28 @@ sg_shader getShaderFromIndex(shaderIndex_t index) {
 	return sg_shader{ 0 };
 }
 
-void fillVSParams(sg_shader_desc& shader_desc) {
-	sg_shader_uniform_block_desc& uniform_block1 = shader_desc.vs.uniform_blocks[0];
-	uniform_block1.size = sizeof(float[4][4]);
-	uniform_block1.uniforms[0].name = "u_model_matrix";
-	uniform_block1.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+static sg_uniform_type s_sokol_uniform_type[] =
+{
+	SG_UNIFORMTYPE_FLOAT,
+	SG_UNIFORMTYPE_FLOAT2,
+	SG_UNIFORMTYPE_FLOAT3,
+	SG_UNIFORMTYPE_FLOAT4,
+	SG_UNIFORMTYPE_MAT4
+};
 
-	sg_shader_uniform_block_desc& uniform_block2 = shader_desc.vs.uniform_blocks[1];
-	uniform_block2.size = sizeof(float[4][4]);
-	uniform_block2.uniforms[0].name = "u_view_matrix";
-	uniform_block2.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+void fillVSParams(const shaderDesc_t& shader_desc, sg_shader_desc& shader_backend_desc)
+{
+	ASSERT(shader_desc.uniform_count <= SHADERUNIFORM_MAX_COUNT);
 
-	sg_shader_uniform_block_desc& uniform_block3 = shader_desc.vs.uniform_blocks[2];
-	uniform_block3.size = sizeof(float[4][4]);
-	uniform_block3.uniforms[0].name = "u_proj_matrix";
-	uniform_block3.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+	for (int i = 0; i < shader_desc.uniform_count; i++)
+	{
+		const shaderUniformDesc_t& uniform_desc = shader_desc.uniform_desc[i];
 
-	sg_shader_uniform_block_desc& uniform_block4 = shader_desc.vs.uniform_blocks[3];
-	uniform_block4.size = sizeof(float[4][4]);
-	uniform_block4.uniforms[0].name = "u_model_view_projection";
-	uniform_block4.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+		sg_shader_uniform_block_desc& uniform_block = shader_backend_desc.vs.uniform_blocks[i];
+		uniform_block.size = uniform_desc.size;
+		uniform_block.uniforms[0].name = uniform_desc.name;
+		uniform_block.uniforms[0].type = s_sokol_uniform_type[uniform_desc.type];
+	}
 }
 
 void fillFSParams(sg_shader_desc& shader_desc) {
@@ -319,7 +325,7 @@ shaderIndex_t SokolRenderDevice::createShader(const shaderDesc_t& shader_desc) {
 	sg_shader_desc shader_backend_desc = {0};
 	shader_backend_desc.vs.source = shader_desc.vertex_shader_data;
 
-	fillVSParams(shader_backend_desc);
+	fillVSParams(shader_desc, shader_backend_desc);
 	fillFSParams(shader_backend_desc);
 
 	shader_backend_desc.fs.source = shader_desc.fragment_shader_data;
@@ -353,6 +359,14 @@ void SokolRenderDevice::setVSConstant(int ub_index, const void* data, size_t siz
 	vs_param_range.ptr = data;
 	vs_param_range.size = size;
 	sg_apply_uniforms(SG_SHADERSTAGE_VS, ub_index, vs_param_range);
+}
+
+void SokolRenderDevice::setPSConstant(int ub_index, const void * data, size_t size)
+{
+	sg_range ps_param_range = {};
+	ps_param_range.ptr = data;
+	ps_param_range.size = size;
+	sg_apply_uniforms(SG_SHADERSTAGE_FS, ub_index, ps_param_range);
 }
 
 #define MAX_PIPELINE 128
@@ -423,7 +437,7 @@ pipelineIndex_t SokolRenderDevice::createPipeline(const pipelineDesc_t& pipeline
 	sg_pipeline_desc pipeline_backend_desc = {};
 	
 	// force indices to uint16
-	pipeline_backend_desc.index_type = SG_INDEXTYPE_UINT16;
+	pipeline_backend_desc.index_type = pipeline_desc.indexed_draw ? SG_INDEXTYPE_UINT16 : SG_INDEXTYPE_NONE;
 
 	pipeline_backend_desc.depth.write_enabled = true;
 	pipeline_backend_desc.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;

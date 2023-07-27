@@ -8,6 +8,7 @@
 #include "engine/shader_engine.h"
 #include "engine/level_mesh.h"
 #include "engine/texture.h"
+#include "engine/igamepersistent.h"
 
 Level::Level()
 	: m_bBusy(false)
@@ -20,6 +21,8 @@ Level::~Level()
 
 void Level::load(const char* levelname)
 {
+	Msg("loading level %s", levelname);
+
 	IReader* reader;
 	char levelpath[512];
 	snprintf(levelpath, 512, "data/levels/%s/", levelname);
@@ -34,6 +37,8 @@ void Level::load(const char* levelname)
 	// reader = g_file_system->openRead(levelpath);
 	// loadSomeFile(reader);
 	// etc.
+
+	g_pGamePersistent->onGameStart();
 }
 
 void Level::loadLMF(IReader* reader)
@@ -81,6 +86,8 @@ void Level::addEntity(Entity* entity)
 	size_t entity_count = m_entities.size();
 	for (size_t i = 0; i < entity_count; i++)
 	{
+		//Msg("entity %i %s", i, m_entities[i]->getClassName());
+
 		if (m_entities[i] == entity) {
 			FATAL("Level::addEntity: entity (classname=%s ptr=0x%p) already exists", entity->getClassName(), entity);
 		}
@@ -144,9 +151,14 @@ void Level::render()
 	for (Array<Entity*>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 	{
 		Entity* entity = (*it);
-		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(entity))
-		{
+
+		entity->update(0.003f);
+
+		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(entity))	{
 			level_mesh->render();
+		}
+		else if (DynamicMeshEntity* dynamic_entity = dynamicCast<DynamicMeshEntity>(entity)) {
+			dynamic_entity->render();
 		}
 	}
 	m_bBusy = false;
