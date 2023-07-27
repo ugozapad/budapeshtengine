@@ -4,6 +4,8 @@
 #include "engine/debug.h"
 #include "engine/allocator.h"
 
+#include <initializer_list>
+
 template <typename T>
 class Array {
 public:
@@ -16,6 +18,10 @@ public:
 
 public:
 	Array();
+
+	// Initializer list constructor
+	Array(std::initializer_list<value_type> initializer_list);
+
 	~Array();
 
 	iterator insert(const_iterator pos, const_reference value)
@@ -121,6 +127,17 @@ inline Array<T>::Array() :
 ,	m_size(0)
 ,	m_capacity(0)
 {
+}
+
+template<typename T>
+inline Array<T>::Array(std::initializer_list<value_type> initializer_list) :
+	m_memory(nullptr)
+,	m_size(0)
+,	m_capacity(0)
+{
+	for (auto it : initializer_list) {
+		push_back(it);
+	}
 }
 
 template <typename T>

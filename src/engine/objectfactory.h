@@ -62,4 +62,7 @@ inline T* ObjectFactory::createObject()
 	return NULL;
 }
 
+#define CREATE_OBJECT(CLASS, NAME) \
+	(CLASS*)g_object_factory->createByName(NAME)
+
 #endif // !OBJECTFACTORY_H

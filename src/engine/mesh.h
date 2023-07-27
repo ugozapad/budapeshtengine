@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 
 class Texture;
+class IReader;
 
 struct Vector2
 {
@@ -51,6 +52,27 @@ struct SkeletonMeshVertex
 	Vector4 weights;
 };
 
+typedef struct {
+	Vector3 min;
+	Vector3 max;
+} boundingBox_t;
+
+class IRenderable {
+public:
+	virtual ~IRenderable();
+
+	// Kirill: to think, Entity::isActive?
+	/*virtual void setEnable(bool value) = 0;
+	virtual bool getEnable() = 0;*/
+
+	virtual void getBoundingBox(boundingBox_t& bounding_box) = 0;
+	virtual void getWorldBoundingBox(boundingBox_t& bounding_box) = 0;
+};
+
+inline IRenderable::~IRenderable()
+{
+}
+
 struct renderContext_t
 {
 	glm::mat4 projection_matrix;
@@ -64,16 +86,16 @@ struct renderContext_t
 	}
 };
 
-class StaticMesh
+class StaticLevelMesh
 {
 public:
-	StaticMesh(Array<LevelMeshVertex_LM>& vertices, 
+	StaticLevelMesh(Array<LevelMeshVertex_LM>& vertices, 
 		Array<uint16_t>& indices, 
 		const char* material_name, 
 		const char* texture_name, 
 		const char* lm_name);
 
-	~StaticMesh();
+	~StaticLevelMesh();
 
 	void draw(const glm::mat4& model_matrix, const renderContext_t& render_context);
 
@@ -102,7 +124,12 @@ private:
 class DynamicMesh
 {
 public:
-	DynamicMesh(Array<DynamicMeshVertex>& vertices, const char* texture_name);
+	static DynamicMesh* createFromStream(IReader* reader);
+
+public:
+	DynamicMesh(Array<LevelMeshVertex_LM>& vertices,
+		Array<uint16_t>& indices,
+		const char* texture_name);
 	~DynamicMesh();
 
 	void draw(const glm::mat4& model_matrix, const renderContext_t& render_context);
@@ -113,7 +140,10 @@ private:
 	pipelineIndex_t m_pipelineIndex;
 
 	bufferIndex_t m_vertexBuffer;
+	bufferIndex_t m_index_buffer;
+
 	uint32_t m_verticesCount;
+	uint32_t m_indices_count;
 
 };
 

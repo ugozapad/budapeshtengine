@@ -27,6 +27,6 @@ void ENGINE_API assertBackend(const char* expression, const char* file, int line
 #endif // ENABLE_ASSERTS
 
 #define FATAL(MSG, ...) assertBackend("<no expression>", __FILE__, __LINE__, __FUNCTION__, NULL, MSG, __VA_ARGS__);
-
+#define FATAL_MSG(MSG, ...)
 
 #endif // !DEBUG_H

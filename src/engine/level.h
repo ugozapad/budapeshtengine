@@ -21,6 +21,8 @@ public:
 
 	void render();
 
+	Array<Entity*>& getEntities() { return m_entities; }
+
 private:
 	Array<Entity*> m_entities;
 };

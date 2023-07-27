@@ -1,23 +1,33 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="microui_render.c" />
     <ClCompile Include="sokol_rdev.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="..\..\thirdparty\microui\src\microui.c">
       <Filter>MicroUI - TODO REMOVE</Filter>
     </ClCompile>
+    <ClCompile Include="microui_render.c">
+      <Filter>Render - Shared</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="microui_render.h" />
     <ClInclude Include="..\..\thirdparty\microui\src\microui.h">
       <Filter>MicroUI - TODO REMOVE</Filter>
     </ClInclude>
-    <ClInclude Include="..\render\irenderdevice.h" />
+    <ClInclude Include="..\render\microui_render.h">
+      <Filter>Render - Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render\irenderdevice.h">
+      <Filter>Render - Shared</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MicroUI - TODO REMOVE">
       <UniqueIdentifier>{a323580b-be5e-4127-9f83-253e448a27ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render - Shared">
+      <UniqueIdentifier>{affea5c3-0c98-438f-a2ea-1416f0645662}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

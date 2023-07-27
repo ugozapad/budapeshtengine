@@ -22,6 +22,8 @@
     <ClInclude Include="logger.h" />
     <ClInclude Include="engine_api.h" />
     <ClInclude Include="igamepersistent.h" />
+    <ClInclude Include="varmanager.h" />
+    <ClInclude Include="mesh.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -44,5 +46,6 @@
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="igamepersistent.cpp" />
+    <ClCompile Include="varmanager.cpp" />
   </ItemGroup>
 </Project>

@@ -24,6 +24,8 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 	SHADERS_MAP::iterator it = m_shaders.find(shaderName);
 	if (it == m_shaders.end())
 	{
+		Msg("! Compiling pipeline and shader %s", shaderName);
+
 		char shaderPath[MAX_PATH];
 
 		snprintf(shaderPath, sizeof(shaderPath), "%s/%s.vs", m_shadersFolder.c_str(), shaderName);
@@ -62,6 +64,13 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 		// Kirill: Little hack
 		if (strcmp(shaderName, "lightmapped_generic") == 0)
 		{
+			// Kirill: TODO: Array constuctor with std::initializer_list argument
+			//Array<shaderUniformDesc_t> shader_uniforms =
+			//{
+			//	{ SHADERUNIFORM_MAT4,"u_model_matrix", MATRIX4_SIZE  },
+
+			//};
+
 			shader_desc.uniform_desc[0].type = SHADERUNIFORM_MAT4;
 			shader_desc.uniform_desc[0].name = "u_model_matrix";
 			shader_desc.uniform_desc[0].size = MATRIX4_SIZE;
@@ -81,7 +90,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 			shader_desc.uniform_count = 4;
 
 		}
-		else if (strcmp(shaderName, "model_test"))
+		else if (strcmp(shaderName, "model_test") == 0)
 		{
 			shader_desc.uniform_desc[0].type = SHADERUNIFORM_MAT4;
 			shader_desc.uniform_desc[0].name = "u_model_matrix";
@@ -121,14 +130,16 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 			pipeline_desc.layouts[1] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD0 };
 			pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD1 };
 			pipeline_desc.layout_count = 3;
+			pipeline_desc.indexed_draw = true;
 		}
-		else if (strcmp(shaderName, "model_test"))
+		else if (strcmp(shaderName, "model_test") == 0)
 		{
 			pipeline_desc.shader = sd.shaderIndex;
 			pipeline_desc.layouts[0] = { VERTEXATTR_VEC3, SHADERSEMANTIC_POSITION };
-			pipeline_desc.layouts[1] = { VERTEXATTR_VEC3, SHADERSEMANTIC_NORMAL };
-			pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD0 };
+			pipeline_desc.layouts[1] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD0 };
+			pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD1 };
 			pipeline_desc.layout_count = 3;
+			pipeline_desc.indexed_draw = true;
 		}
 
 		sd.pipelineIndex = g_engine->getRenderDevice()->createPipeline(pipeline_desc);

@@ -4,8 +4,9 @@
 #include "engine/shader_engine.h"
 #include "engine/texture.h"
 #include "engine/material_system.h"
+#include "engine/filesystem.h"
 
-StaticMesh::StaticMesh(Array<LevelMeshVertex_LM>& vertices, 
+StaticLevelMesh::StaticLevelMesh(Array<LevelMeshVertex_LM>& vertices, 
 	Array<uint16_t>& indices, 
 	const char* material_name,
 	const char* texture_name, 
@@ -27,12 +28,12 @@ StaticMesh::StaticMesh(Array<LevelMeshVertex_LM>& vertices,
 	createGpu_Material(material_name, texture_name, lm_name);
 }
 
-StaticMesh::~StaticMesh()
+StaticLevelMesh::~StaticLevelMesh()
 {
 	destroyGpu();
 }
 
-void StaticMesh::createGpu_Vertex(Array<LevelMeshVertex_LM>& vertices)
+void StaticLevelMesh::createGpu_Vertex(Array<LevelMeshVertex_LM>& vertices)
 {
 	bufferDesc_t vertex_buffer_desc = {};
 	vertex_buffer_desc.type = BUFFERTYPE_VERTEX;
@@ -42,7 +43,7 @@ void StaticMesh::createGpu_Vertex(Array<LevelMeshVertex_LM>& vertices)
 	m_vertex_buffer = g_engine->getRenderDevice()->createBuffer(vertex_buffer_desc);
 }
 
-void StaticMesh::createGpu_Indices(Array<uint16_t>& indices)
+void StaticLevelMesh::createGpu_Indices(Array<uint16_t>& indices)
 {
 	bufferDesc_t index_buffer_desc = {};
 	index_buffer_desc.type = BUFFERTYPE_INDEX;
@@ -52,18 +53,18 @@ void StaticMesh::createGpu_Indices(Array<uint16_t>& indices)
 	m_index_buffer = g_engine->getRenderDevice()->createBuffer(index_buffer_desc);
 }
 
-void StaticMesh::createGpu_Material(const char* material_name, const char* texture_name, const char* lm_name)
+void StaticLevelMesh::createGpu_Material(const char* material_name, const char* texture_name, const char* lm_name)
 {
 	const ShaderData shaderData = g_pShaderEngine->loadShader("lightmapped_generic");
 	ASSERT(shaderData.pipelineIndex != INVALID_PIPELINE_INDEX);
 
 	m_pipeline = shaderData.pipelineIndex;
 
-	m_diffuse_texture = g_material_system.LoadTexture(texture_name);
-	m_lightmap_texture = g_material_system.LoadTexture(lm_name);
+	m_diffuse_texture = g_material_system.LoadTexture(texture_name, true);
+	m_lightmap_texture = g_material_system.LoadTexture(lm_name, true);
 }
 
-void StaticMesh::destroyGpu()
+void StaticLevelMesh::destroyGpu()
 {
 	if (m_index_buffer != INVALID_BUFFER_INDEX) {
 		g_engine->getRenderDevice()->deleteBuffer(m_index_buffer);
@@ -76,7 +77,7 @@ void StaticMesh::destroyGpu()
 	}
 }
 
-void StaticMesh::draw(const glm::mat4& model_matrix, const renderContext_t& render_context)
+void StaticLevelMesh::draw(const glm::mat4& model_matrix, const renderContext_t& render_context)
 {
 	IRenderDevice* render_device = g_engine->getRenderDevice();
 
@@ -105,25 +106,125 @@ void StaticMesh::draw(const glm::mat4& model_matrix, const renderContext_t& rend
 // Dynamic mesh //
 //////////////////
 
-DynamicMesh::DynamicMesh(Array<DynamicMeshVertex>& vertices, const char* texture_name)
+DynamicMesh* DynamicMesh::createFromStream(IReader* reader)
+{
+	ASSERT(reader);
+
+	// Load LevelMeshMaterial
+	uint32_t diffuse_texture_len = 0;
+	reader->read(&diffuse_texture_len, sizeof(diffuse_texture_len));
+	char* diffuse_texture_path = mem_tcalloc<char>(diffuse_texture_len + 1);
+	reader->read(diffuse_texture_path, diffuse_texture_len);
+
+	diffuse_texture_path[diffuse_texture_len] = '\0';
+
+	for (uint32_t i = 0; i < diffuse_texture_len; i++) {
+		if (diffuse_texture_path[i] == '\\')
+			diffuse_texture_path[i] = '/';
+	}
+
+	char* path_to_texture = strstr(diffuse_texture_path, "/temp/") + strlen("/temp/");
+
+	char buffer1[_MAX_PATH];
+	snprintf(buffer1, sizeof(buffer1), "data/textures/temp/%s", path_to_texture);
+
+	uint32_t lightmap_texture_len = 0;
+	reader->read(&lightmap_texture_len, sizeof(lightmap_texture_len));
+	char* lightmap_texture_path = mem_tcalloc<char>(lightmap_texture_len + 1);
+	reader->read(lightmap_texture_path, lightmap_texture_len);
+
+	lightmap_texture_path[lightmap_texture_len] = '\0';
+
+	for (uint32_t i = 0; i < lightmap_texture_len; i++) {
+		if (lightmap_texture_path[i] == '\\')
+			lightmap_texture_path[i] = '/';
+	}
+
+	char buffer2[260];
+	snprintf(buffer2, sizeof(buffer2), "data/levels/%s/%s", "test_baking", lightmap_texture_path);
+
+	// Load LevelMesh
+	uint32_t mesh_name_len = 0;
+	reader->read(&mesh_name_len, sizeof(mesh_name_len));
+	char* mesh_name = mem_tcalloc<char>(mesh_name_len + 1);
+	reader->read(mesh_name, mesh_name_len);
+
+	mesh_name[mesh_name_len] = '\0';
+
+	mem_free(mesh_name);
+
+	uint32_t vertices_count = 0;
+	reader->read(&vertices_count, sizeof(vertices_count));
+
+	Array<LevelMeshVertex_LM> tempovertices;
+	tempovertices.resize(vertices_count);
+
+	reader->read(tempovertices.data(), sizeof(LevelMeshVertex_LM) * vertices_count);
+
+	int counter = 0;
+	for (Array<LevelMeshVertex_LM>::iterator it = tempovertices.begin(); it != tempovertices.end(); ++it)
+	{
+		LevelMeshVertex_LM& vertex = (*it);
+		if (isnan(vertex.position.x) || isnan(vertex.position.y) || isnan(vertex.position.z))
+		{
+			Msg("triangle %i reset to zero size", counter);
+			vertex.position.x = 0.0f;
+			vertex.position.y = 0.0f;
+			vertex.position.z = 0.0f;
+		}
+
+		counter++;
+	}
+
+	uint32_t indices_count = 0;
+	reader->read(&indices_count, sizeof(indices_count));
+
+	Array<uint16_t> indices;
+	indices.resize(indices_count);
+
+	reader->read(indices.data(), indices_count * sizeof(uint16_t));
+
+	// Create mesh object
+	DynamicMesh* mesh = new DynamicMesh(tempovertices,
+		indices,
+		buffer1);
+
+	mem_free(lightmap_texture_path);
+	mem_free(diffuse_texture_path);
+
+	return mesh;
+}
+
+DynamicMesh::DynamicMesh(Array<LevelMeshVertex_LM>& vertices,
+	Array<uint16_t>& indices,
+	const char* texture_name)
 {
 	m_verticesCount = vertices.size();
+	m_indices_count = indices.size();
 
 	bufferDesc_t bufferDesc = {};
 	bufferDesc.type = BUFFERTYPE_VERTEX;
 	bufferDesc.access = BUFFERACCESS_STATIC;
 	bufferDesc.data = vertices.data();
-	bufferDesc.size = m_verticesCount * sizeof(DynamicMeshVertex);
+	bufferDesc.size = m_verticesCount * sizeof(LevelMeshVertex_LM);
 
 	m_vertexBuffer = g_engine->getRenderDevice()->createBuffer(bufferDesc);
 	ASSERT(m_vertexBuffer != INVALID_BUFFER_INDEX);
+
+	bufferDesc_t index_buffer_desc = {};
+	index_buffer_desc.type = BUFFERTYPE_INDEX;
+	index_buffer_desc.access = BUFFERACCESS_STATIC;
+	index_buffer_desc.data = &indices[0];
+	index_buffer_desc.size = indices.size() * sizeof(uint16_t);
+	m_index_buffer = g_engine->getRenderDevice()->createBuffer(index_buffer_desc);
+	ASSERT(m_index_buffer != INVALID_BUFFER_INDEX);
 
 	const ShaderData shaderData = g_pShaderEngine->loadShader("model_test");
 	ASSERT(shaderData.pipelineIndex != INVALID_PIPELINE_INDEX);
 
 	m_pipelineIndex = shaderData.pipelineIndex;
 
-	m_tex = g_material_system.LoadTexture(texture_name);
+	m_tex = g_material_system.LoadTexture(texture_name, true);
 }
 
 DynamicMesh::~DynamicMesh()
@@ -151,8 +252,10 @@ void DynamicMesh::draw(const glm::mat4& model_matrix, const renderContext_t& ren
 
 	pRenderDevice->beginBinding();
 	pRenderDevice->setTexture(0, m_tex->getTextureIndex());
+	pRenderDevice->setTexture(1, m_tex->getTextureIndex());
 	pRenderDevice->setVertexBuffer(m_vertexBuffer);
+	pRenderDevice->setIndexBuffer(m_index_buffer);
 	pRenderDevice->endBinding();
 
-	pRenderDevice->draw(0, m_verticesCount, 1);
+	pRenderDevice->draw(0, m_indices_count, 1);
 }

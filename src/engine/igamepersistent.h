@@ -3,6 +3,8 @@
 
 #include "engine/object.h"
 
+#define CLSID_GAMEPERSISTENT "game_persistent"
+
 class ENGINE_API IGamePersistent : public TypedObject
 {
 public:

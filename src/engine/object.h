@@ -44,7 +44,7 @@ typeId_t get_type_id() {
 	virtual bool isKindOf(const typeId_t typeId) const { return getTypeId<CLASS>() == typeId ? true : BASECLASS::isKindOf(typeId);  }
 
 //! Define for easy using isKindOf for subclasses of TypedObject
-#define OBJECT_ISKINDOF(PTR, CLASS) \
+#define ObjectIsKindOf(PTR, CLASS) \
 	PTR->isKindOf(get_type_id<CLASS>())
 
 #endif

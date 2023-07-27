@@ -155,6 +155,7 @@ struct pipelineDesc_t {
 	inputLayoutDesc_t layouts[INPUT_LAYOUT_MAX];
 	size_t layout_count;
 	shaderIndex_t shader;
+	bool indexed_draw;
 };
 
 struct textureDesc_t {
@@ -198,6 +199,7 @@ public:
 	virtual void deleteShader(shaderIndex_t shader) = 0;
 
 	virtual void setVSConstant(int ub_index, const void* data, size_t size) = 0;
+	virtual void setPSConstant(int ub_index, const void* data, size_t size) = 0;
 
 	// Pipeline API
 

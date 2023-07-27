@@ -20,6 +20,9 @@ extern "C" {
 #define SOKOL_LOG_IMPL
 #include "sokol_log.h"
 
+#define SOKOL_DEBUGTEXT_IMPL
+#include "util/sokol_debugtext.h"
+
 #include "SDL.h"
 
 class SokolRenderDevice : public IRenderDevice {
@@ -48,6 +51,7 @@ public:
 	shaderIndex_t createShader(const shaderDesc_t& shader_desc) override;
 	void deleteShader(shaderIndex_t shader) override;
 	void setVSConstant(int ub_index, const void* data, size_t size) override;
+	void setPSConstant(int ub_index, const void* data, size_t size) override;
 
 	pipelineIndex_t createPipeline(const pipelineDesc_t& pipeline_desc) override;
 	void deletePipeline(pipelineIndex_t pipeline) override;
@@ -357,6 +361,14 @@ void SokolRenderDevice::setVSConstant(int ub_index, const void* data, size_t siz
 	sg_apply_uniforms(SG_SHADERSTAGE_VS, ub_index, vs_param_range);
 }
 
+void SokolRenderDevice::setPSConstant(int ub_index, const void * data, size_t size)
+{
+	sg_range ps_param_range = {};
+	ps_param_range.ptr = data;
+	ps_param_range.size = size;
+	sg_apply_uniforms(SG_SHADERSTAGE_FS, ub_index, ps_param_range);
+}
+
 #define MAX_PIPELINE 128
 
 struct pipelineResource_t {
@@ -425,7 +437,7 @@ pipelineIndex_t SokolRenderDevice::createPipeline(const pipelineDesc_t& pipeline
 	sg_pipeline_desc pipeline_backend_desc = {};
 	
 	// force indices to uint16
-	pipeline_backend_desc.index_type = SG_INDEXTYPE_UINT16;
+	pipeline_backend_desc.index_type = pipeline_desc.indexed_draw ? SG_INDEXTYPE_UINT16 : SG_INDEXTYPE_NONE;
 
 	pipeline_backend_desc.depth.write_enabled = true;
 	pipeline_backend_desc.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;

@@ -192,12 +192,14 @@
     <ClInclude Include="level_mesh.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="material_system.h" />
+    <ClInclude Include="mesh.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="objectfactory.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="shader_engine.h" />
     <ClInclude Include="sound_system.h" />
     <ClInclude Include="texture.h" />
+    <ClInclude Include="varmanager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -225,6 +227,7 @@
     <ClCompile Include="shader_engine.cpp" />
     <ClCompile Include="sound_system.cpp" />
     <ClCompile Include="texture.cpp" />
+    <ClCompile Include="varmanager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -24,6 +24,8 @@ Level::~Level()
 
 void Level::load(const char* levelname)
 {
+	Msg("loading level %s", levelname);
+
 	IReader* reader;
 	char levelpath[512];
 	snprintf(levelpath, 512, "data/levels/%s/", levelname);
@@ -93,9 +95,11 @@ void Level::render()
 
 		entity->update(0.003f);
 
-		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(entity))
-		{
+		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(entity))	{
 			level_mesh->render();
+		}
+		else if (DynamicMeshEntity* dynamic_entity = dynamicCast<DynamicMeshEntity>(entity)) {
+			dynamic_entity->render();
 		}
 	}
 }
