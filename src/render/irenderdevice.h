@@ -173,6 +173,15 @@ struct viewport_t {
 	int x, y, width, height;
 };
 
+class IOcclusionQuery {
+public:
+	virtual ~IOcclusionQuery() {}
+
+	virtual void begin() = 0;
+	virtual void end() = 0;
+	virtual bool is_ready() = 0;
+};
+
 //! Interface to renderer
 class IRenderDevice {
 public:
@@ -231,6 +240,8 @@ public:
 	virtual void commit() = 0;
 
 	virtual void present(bool vsync) = 0;
+
+	virtual IOcclusionQuery* createOcclusionQuery() = 0;
 };
 
 #ifndef ENGINE_EXPORTS
