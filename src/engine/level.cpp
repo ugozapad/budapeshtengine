@@ -9,6 +9,7 @@
 #include "engine/level_mesh.h"
 #include "engine/texture.h"
 #include "engine/igamepersistent.h"
+#include "engine/debugrender.h"
 
 Level::Level()
 	: m_bBusy(false)
@@ -146,6 +147,8 @@ void Level::render()
 		);
 		m_bNeedToDestroyEnt = false;
 	}
+
+	g_debugRender->drawAxis(glm::vec3(0.0f));
 
 	m_bBusy = true;
 	for (Array<Entity*>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)

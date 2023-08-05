@@ -110,6 +110,14 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 
 			shader_desc.uniform_count = 4;
 		}
+		else if (strcmp(shaderName, "debug_draw") == 0)
+		{
+			shader_desc.uniform_desc[0].type = SHADERUNIFORM_MAT4;
+			shader_desc.uniform_desc[0].name = "u_mvp";
+			shader_desc.uniform_desc[0].size = MATRIX4_SIZE;
+
+			shader_desc.uniform_count = 1;
+		}
 
 		sd.shaderIndex = g_engine->getRenderDevice()->createShader(shader_desc);
 		if (sd.shaderIndex == INVALID_SHADER_INDEX) {
@@ -140,6 +148,14 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 			pipeline_desc.layouts[2] = { VERTEXATTR_VEC2, SHADERSEMANTIC_TEXCOORD1 };
 			pipeline_desc.layout_count = 3;
 			pipeline_desc.indexed_draw = true;
+		}
+		else if (strcmp(shaderName, "debug_draw") == 0)
+		{
+			pipeline_desc.shader = sd.shaderIndex;
+			pipeline_desc.layouts[0] = { VERTEXATTR_VEC3, SHADERSEMANTIC_POSITION };
+			pipeline_desc.layouts[1] = { VERTEXATTR_VEC3, SHADERSEMANTIC_COLOR };
+			pipeline_desc.layout_count = 2;
+			pipeline_desc.indexed_draw = false;
 		}
 
 		sd.pipelineIndex = g_engine->getRenderDevice()->createPipeline(pipeline_desc);

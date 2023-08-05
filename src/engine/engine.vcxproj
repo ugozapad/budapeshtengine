@@ -183,6 +183,7 @@
     <ClInclude Include="array.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="debug.h" />
+    <ClInclude Include="debugrender.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="engine_api.h" />
     <ClInclude Include="entity.h" />
@@ -207,6 +208,7 @@
     <ClCompile Include="allocator.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="debug.cpp" />
+    <ClCompile Include="debugrender.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="filesystem.cpp" />

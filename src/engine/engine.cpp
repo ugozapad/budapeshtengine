@@ -232,6 +232,8 @@ void Engine::update()
 
 	m_level->render();
 
+	g_material_system.Render();
+
 	m_render_device->endPass();
 	m_render_device->commit();
 

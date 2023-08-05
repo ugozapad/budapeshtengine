@@ -24,6 +24,7 @@
     <ClInclude Include="igamepersistent.h" />
     <ClInclude Include="varmanager.h" />
     <ClInclude Include="mesh.h" />
+    <ClInclude Include="debugrender.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -47,5 +48,6 @@
     <ClCompile Include="mesh.cpp" />
     <ClCompile Include="igamepersistent.cpp" />
     <ClCompile Include="varmanager.cpp" />
+    <ClCompile Include="debugrender.cpp" />
   </ItemGroup>
 </Project>

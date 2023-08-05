@@ -9,6 +9,7 @@
 #include "render/irenderdevice.h"
 #include "engine/shader_engine.h"
 #include "engine/varmanager.h"
+#include "engine/debugrender.h"
 
 enum textureFileFormats_t {
 	TEXEXT_PNG,
@@ -70,10 +71,19 @@ void MaterialSystem::Init()
 
 	// close reader
 	g_file_system->deleteReader(reader);
+
+	// create debug renderer
+	g_debugRender = new DebugRender();
+	g_debugRender->initialize();
 }
 
 void MaterialSystem::Shutdown()
 {
+	if (g_debugRender) {
+		g_debugRender->shutdown();
+		SAFE_DELETE(g_debugRender);
+	}
+
 	if (m_notex)
 	{
 		delete m_notex;
@@ -81,6 +91,11 @@ void MaterialSystem::Shutdown()
 	}
 
 	SAFE_DELETE(g_pShaderEngine);
+}
+
+void MaterialSystem::Render()
+{
+	g_debugRender->renderFrame();
 }
 
 Texture* MaterialSystem::LoadTexture(const char* filename, bool absolutePath /*= false*/)
