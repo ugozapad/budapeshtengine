@@ -156,6 +156,7 @@ struct pipelineDesc_t {
 	size_t layout_count;
 	shaderIndex_t shader;
 	bool indexed_draw;
+	bool lines_Draw;
 };
 
 struct textureDesc_t {

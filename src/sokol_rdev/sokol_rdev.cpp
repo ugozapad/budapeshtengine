@@ -519,6 +519,8 @@ pipelineIndex_t SokolRenderDevice::createPipeline(const pipelineDesc_t& pipeline
 
 	pipeline_backend_desc.cull_mode = SG_CULLMODE_FRONT;
 
+	pipeline_backend_desc.primitive_type = pipeline_desc.lines_Draw ? SG_PRIMITIVETYPE_LINES : SG_PRIMITIVETYPE_TRIANGLES;
+
 	// get backend shader
 	sg_shader shader_backend = getShaderFromIndex(pipeline_desc.shader);
 	pipeline_backend_desc.shader = shader_backend;

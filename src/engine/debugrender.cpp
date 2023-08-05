@@ -116,11 +116,9 @@ void DebugRender::drawLinesInternal()
 		buffer_desc.size = m_lines.size() * sizeof(Line);
 
 		m_verticesBuffer = pRenderDevice->createBuffer(buffer_desc);
-		pRenderDevice->updateBuffer(m_verticesBuffer, m_lines.data(), m_lines.size() * sizeof(Line));
-
-	} else {
-		pRenderDevice->updateBuffer(m_verticesBuffer, m_lines.data(), m_lines.size() * sizeof(Line));
 	}
+
+	pRenderDevice->updateBuffer(m_verticesBuffer, m_lines.data(), m_lines.size() * sizeof(Line));
 
 	// bind our shader
 	pRenderDevice->setPipeline(m_shaderProgram);

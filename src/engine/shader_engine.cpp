@@ -156,6 +156,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 			pipeline_desc.layouts[1] = { VERTEXATTR_VEC3, SHADERSEMANTIC_COLOR };
 			pipeline_desc.layout_count = 2;
 			pipeline_desc.indexed_draw = false;
+			pipeline_desc.lines_Draw = true;
 		}
 
 		sd.pipelineIndex = g_engine->getRenderDevice()->createPipeline(pipeline_desc);
