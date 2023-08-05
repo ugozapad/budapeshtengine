@@ -27,11 +27,13 @@ ENGINE_API Engine* g_engine = nullptr;
 
 static Var developer("developer", "0", "", VARFLAG_NOSAVE | VARFLAG_SERVER_PROTECT);
 static Var vid_mode("vid_mode", "1024x768", "", VARFLAG_NONE);
+static Var creator("creator", "Kirill", "", VARFLAG_NONE);
 
 void registerEngineVars()
 {
 	g_VarManager.RegisterVar(&developer);
 	g_VarManager.RegisterVar(&vid_mode);
+	g_VarManager.RegisterVar(&creator);
 }
 
 void registerEngineStuff()
@@ -132,6 +134,8 @@ void Engine::init(int width, int height, bool fullscreen)
 	// create game persistent
 	ASSERT(!g_pGamePersistent);
 	g_pGamePersistent = CREATE_OBJECT(IGamePersistent, CLSID_GAMEPERSISTENT);
+
+	g_VarManager.Save("data/default.cfg");
 }
 
 //////////////////////////////////////////////////////////////////////
