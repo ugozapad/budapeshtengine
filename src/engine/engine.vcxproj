@@ -199,6 +199,7 @@
     <ClInclude Include="object.h" />
     <ClInclude Include="objectfactory.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="render.h" />
     <ClInclude Include="shader_engine.h" />
     <ClInclude Include="sound_system.h" />
     <ClInclude Include="texture.h" />
@@ -228,6 +229,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="render.cpp" />
     <ClCompile Include="shader_engine.cpp" />
     <ClCompile Include="sound_system.cpp" />
     <ClCompile Include="texture.cpp" />

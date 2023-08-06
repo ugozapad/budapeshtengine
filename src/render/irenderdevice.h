@@ -1,5 +1,5 @@
-#ifndef RENDER_H
-#define RENDER_H
+#ifndef IRENDERDEVICE_H
+#define IRENDERDEVICE_H
 
 struct SDL_Window;
 

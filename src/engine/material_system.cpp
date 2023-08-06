@@ -71,19 +71,10 @@ void MaterialSystem::Init()
 
 	// close reader
 	g_file_system->deleteReader(reader);
-
-	// create debug renderer
-	g_debugRender = new DebugRender();
-	g_debugRender->initialize();
 }
 
 void MaterialSystem::Shutdown()
 {
-	if (g_debugRender) {
-		g_debugRender->shutdown();
-		SAFE_DELETE(g_debugRender);
-	}
-
 	if (m_notex)
 	{
 		delete m_notex;

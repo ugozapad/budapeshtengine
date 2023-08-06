@@ -12,6 +12,7 @@
 #include "engine/level_mesh.h"
 #include "engine/camera.h"
 #include "engine/material_system.h"
+#include "engine/render.h"
 #include "engine/sound_system.h"
 #include "engine/igamepersistent.h"
 
@@ -111,7 +112,7 @@ void Engine::init(int width, int height, bool fullscreen)
 	createRenderDevice("sokol_rdev");
 	m_render_device->init(m_render_window);
 
-	g_material_system.Init();
+	g_render.init();
 
 	// init viewport
 	m_viewport.x = 0;
@@ -250,7 +251,7 @@ void Engine::shutdown()
 		SAFE_DELETE(g_pGamePersistent);
 	}
 
-	g_material_system.Shutdown();
+	g_render.shutdown();
 	
 	if (m_render_device) {
 		m_render_device->shutdown();
