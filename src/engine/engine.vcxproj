@@ -188,6 +188,7 @@
     <ClInclude Include="engine_api.h" />
     <ClInclude Include="entity.h" />
     <ClInclude Include="filesystem.h" />
+    <ClInclude Include="fontsystem.h" />
     <ClInclude Include="igamepersistent.h" />
     <ClInclude Include="input_system.h" />
     <ClInclude Include="iosdriver.h" />
@@ -214,6 +215,7 @@
     <ClCompile Include="entity.cpp" />
     <ClCompile Include="filesystem.cpp" />
     <ClCompile Include="filesystem_physfs.cpp" />
+    <ClCompile Include="fontsystem.cpp" />
     <ClCompile Include="igamepersistent.cpp" />
     <ClCompile Include="input_system.cpp" />
     <ClCompile Include="level.cpp" />
