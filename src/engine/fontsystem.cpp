@@ -129,8 +129,72 @@ Font* FontSystem::loadFont(const char* name)
 	return pFont;
 }
 
-void FontSystem::drawText(Font* font, const char* text, float x, float y, uint32_t color)
+void FontSystem::drawText(Font* font, const char* text, float x, float y, Fcolor color)
 {
+	IRenderDevice* pRenderDevice = g_engine->getRenderDevice();
+
+	int buffer_size = strlen(text) * sizeof(FontVertex);
+
+	// grow buffer
+	static int last_capacity = 0;
+	if (last_capacity < buffer_size) {
+	
+		pRenderDevice->deleteBuffer(m_vertexBuffer);
+
+		bufferDesc_t buffer_desc = {};
+		buffer_desc.type = BUFFERTYPE_VERTEX;
+		buffer_desc.access = BUFFERACCESS_DYNAMIC;
+		buffer_desc.size = buffer_size;
+
+		m_vertexBuffer = pRenderDevice->createBuffer(buffer_desc);
+	}
+
+#if 0
+	glm::vec2 const orig_pos(x, y);
+	glm::vec2		draw_pos(orig_pos);
+	const float fSymbolHeight = font->SymbolHeight();
+	const float fTextureScale = 1.0f;
+	uint32_t verticesCount = 0;
+
+	FontVertex* vertices = (FontVertex*)mem_alloc(buffer_size, alignof(FontVertex));
+
+	// fill vertex buffer
+	for (int i = 0; i < strlen(text); i++) {
+		uint8_t const c = *text;
+		if (c == '\r') continue;
+		if (c == '\n')
+		{
+			draw_pos.x = orig_pos.x;
+			draw_pos.y += fSymbolHeight;
+			continue;
+		}
+
+		Fbox2 const& fbCoords = font->GetCoord(c);
+		const float fW = (fbCoords.max.x - fbCoords.min.x) * (font->TextureWidth() / fTextureScale);
+		const float fH = (fbCoords.max.y - fbCoords.min.y) * (font->TextureHeight() / fTextureScale);
+		if (c != ' ')
+		{
+			*vertices++ = { { draw_pos.x + 0.f - 0.5f	, draw_pos.y + fH - 0.5f	, 0.f }, { fbCoords.min.x, -fbCoords.min.y }, vxColor };
+			*vertices++ = { { draw_pos.x + 0.f - 0.5f	, draw_pos.y + 0.f - 0.5f	, 0.f }, { fbCoords.min.x, -fbCoords.max.y }, vxColor };
+			*vertices++ = { { draw_pos.x + fW - 0.5f	, draw_pos.y + fH - 0.5f	, 0.f }, { fbCoords.max.x, -fbCoords.min.y }, vxColor };
+			*vertices++ = { { draw_pos.x + fW - 0.5f	, draw_pos.y + 0.f - 0.5f	, 0.f }, { fbCoords.max.x, -fbCoords.max.y }, vxColor };
+			*vertices++ = { { draw_pos.x + fW - 0.5f	, draw_pos.y + fH - 0.5f	, 0.f }, { fbCoords.max.x, -fbCoords.min.y }, vxColor };
+			*vertices++ = { { draw_pos.x + 0.f - 0.5f	, draw_pos.y + 0.f - 0.5f	, 0.f }, { fbCoords.min.x, -fbCoords.max.y }, vxColor };
+			verticesCount += 2;
+
+			if ((verticesCount * 3) > (MAX_FONT_VBO_SIZE - 6))
+			{
+				m_vertexBuffer->unmapBuffer();
+				drawVertices(m_vertexBuffer, verticesCount * 3, font->GetMaterial());
+				vertices = static_cast<FontVertex*>(m_vertexBuffer->mapBuffer(BufferAccess::WRITE_ONLY));
+				verticesCount = 0;
+			}
+		}
+
+		draw_pos.x += fW;
+	}
+#endif
+
 #if 0
 	//////////////////////////////////////////
 	// view stuff

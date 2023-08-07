@@ -36,12 +36,12 @@ const char* Var::GetStringValue()
 
 float Var::GetFloatValue()
 {
-	return atof(m_value.data());
+	return atof(GetStringValue());
 }
 
 int Var::GetIntValue()
 {
-	return atoi(m_value.data());
+	return atoi(GetStringValue());
 }
 
 void Var::SetStringValue(const char* str)

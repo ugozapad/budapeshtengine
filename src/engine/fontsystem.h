@@ -2,6 +2,26 @@
 #ifndef FONTSYSTEM_H
 #define FONTSYSTEM_H
 
+#include <map>
+
+template <typename T>
+struct _color {
+	union 
+	{
+		struct
+		{
+			T r;
+			T g;
+			T b;
+			T a;
+		};
+
+		uint32_t rgba;
+	};
+};
+
+typedef _color<float> Fcolor;
+
 class ENGINE_API Font
 {
 public:
@@ -21,7 +41,7 @@ public:
 
 	Font*		loadFont(const char* name);
 
-	void		drawText(Font* font, const char* text, float x, float y, uint32_t color = BasicColor::eWhite);
+	void		drawText(Font* font, const char* text, float x, float y, Fcolor color);
 
 private:
 	bufferIndex_t	m_vertexBuffer;
