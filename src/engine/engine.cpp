@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "engine/allocator.h"
+#include "engine/timer.h"
 #include "engine/engine.h"
 #include "engine/iosdriver.h"
 #include "engine/filesystem.h"
@@ -66,6 +67,9 @@ void Engine::init(int width, int height, bool fullscreen)
 	}
 
 	registerEngineVars();
+
+	// Create timer
+	getSystemTimer()->init();
 
 	// Initialize OS Driver
 	IOsDriver::getInstance()->init();
@@ -226,12 +230,18 @@ void Engine::createGameLib(const char* custompath)
 
 void Engine::update()
 {
+	getSystemTimer()->update();
+
+	float fDeltaTime = getSystemTimer()->getDelta();
+
 	g_camera.updateLook(
 		m_viewport.width,
 		m_viewport.height
 	);
 
-	g_pSoundSystem->update(0.0f);
+	g_pSoundSystem->update(fDeltaTime);
+
+	m_level->update(fDeltaTime);
 
 	m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
 

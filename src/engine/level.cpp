@@ -121,7 +121,7 @@ void Level::destroyEntity(Entity* entity)
 	}
 }
 
-void Level::render()
+void Level::update(float fDeltaTime)
 {
 	if (m_bNeedToDestroyEnt)
 	{
@@ -148,21 +148,30 @@ void Level::render()
 		m_bNeedToDestroyEnt = false;
 	}
 
-	g_debugRender->drawAxis(glm::vec3(0.0f));
-
 	m_bBusy = true;
-	for (Array<Entity*>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+	
+	for (auto it : m_entities)
 	{
-		Entity* entity = (*it);
+		it->update(fDeltaTime);
+	}
 
-		entity->update(0.003f);
+	m_bBusy = false;
+}
 
-		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(entity))	{
+void Level::render()
+{
+	m_bBusy = true;
+
+	for (auto it : m_entities)
+	{
+		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(it)) {
 			level_mesh->render();
 		}
-		else if (DynamicMeshEntity* dynamic_entity = dynamicCast<DynamicMeshEntity>(entity)) {
+		else if (DynamicMeshEntity* dynamic_entity = dynamicCast<DynamicMeshEntity>(it)) {
 			dynamic_entity->render();
 		}
+	
 	}
+
 	m_bBusy = false;
 }
