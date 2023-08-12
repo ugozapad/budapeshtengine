@@ -23,3 +23,8 @@ intermediate/
 
 data/log.txt
 *.log
+
+# Ignore user configuration files
+user_data/user.cfg
+user_data/default.cfg
+data/default.cfg

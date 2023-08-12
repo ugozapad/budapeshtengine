@@ -24,6 +24,79 @@ extern "C" {
 #include "util/sokol_debugtext.h"
 
 #include "SDL.h"
+#include "SDL_opengl_glext.h"
+
+static PFNGLGENQUERIESARBPROC				glGenQueriesARB = nullptr;
+static PFNGLDELETEQUERIESARBPROC	     	glDeleteQueriesARB = nullptr;
+static PFNGLISQUERYARBPROC			     	glIsQueryARB = nullptr;
+static PFNGLBEGINQUERYARBPROC		     	glBeginQueryARB = nullptr;
+static PFNGLENDQUERYARBPROC		     		glEndQueryARB = nullptr;
+static PFNGLGETQUERYIVARBPROC		     	glGetQueryivARB = nullptr;
+static PFNGLGETQUERYOBJECTIVARBPROC     	glGetQueryObjectivARB = nullptr;
+static PFNGLGETQUERYOBJECTUIVARBPROC     	glGetQueryObjectuivARB = nullptr;
+
+class GLOcclusionQuery : public IOcclusionQuery {
+public:
+	GLOcclusionQuery();
+	~GLOcclusionQuery();
+
+	void begin() override;
+	void end() override;
+	bool is_ready() override;
+
+private:
+	GLuint m_id;
+};
+
+static void gl_load_ARB_occlusion_query()
+{
+	static bool is_loaded = false;
+	if (!is_loaded)
+	{
+		Msg("GL: Loading ARB_occlusion_query");
+
+		glGenQueriesARB = (PFNGLGENQUERIESARBPROC)SDL_GL_GetProcAddress("glGenQueriesARB");
+		glDeleteQueriesARB = (PFNGLDELETEQUERIESARBPROC)SDL_GL_GetProcAddress("glDeleteQueriesARB");
+		glIsQueryARB = (PFNGLISQUERYARBPROC)SDL_GL_GetProcAddress("glIsQueryARB");
+		glBeginQueryARB = (PFNGLBEGINQUERYARBPROC)SDL_GL_GetProcAddress("glBeginQueryARB");
+		glEndQueryARB = (PFNGLENDQUERYARBPROC)SDL_GL_GetProcAddress("glEndQueryARB");
+		glGetQueryivARB = (PFNGLGETQUERYIVARBPROC)SDL_GL_GetProcAddress("glGetQueryivARB");
+		glGetQueryObjectivARB = (PFNGLGETQUERYOBJECTIVARBPROC)SDL_GL_GetProcAddress("glGetQueryObjectivARB");
+		glGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC)SDL_GL_GetProcAddress("glGetQueryObjectuivARB");
+
+		is_loaded = true;
+	}
+}
+
+GLOcclusionQuery::GLOcclusionQuery()
+{
+	gl_load_ARB_occlusion_query();
+
+	glGenQueriesARB(1, &m_id);
+}
+
+GLOcclusionQuery::~GLOcclusionQuery()
+{
+	glDeleteQueriesARB(1, &m_id);
+}
+
+void GLOcclusionQuery::begin()
+{
+	glBeginQueryARB(GL_SAMPLES_PASSED_ARB, m_id);
+}
+
+void GLOcclusionQuery::end()
+{
+	glEndQueryARB(m_id);
+}
+
+bool GLOcclusionQuery::is_ready()
+{
+	GLint ready;
+	glGetQueryObjectivARB(m_id, GL_QUERY_RESULT_AVAILABLE_ARB, &ready);
+
+	return ready;
+}
 
 class SokolRenderDevice : public IRenderDevice {
 public:
@@ -70,6 +143,8 @@ public:
 	void endPass() override;
 	void commit() override;
 	void present(bool vsync) override;
+
+	IOcclusionQuery* createOcclusionQuery() override;
 
 private:
 	IAllocator* m_allocator;
@@ -444,6 +519,8 @@ pipelineIndex_t SokolRenderDevice::createPipeline(const pipelineDesc_t& pipeline
 
 	pipeline_backend_desc.cull_mode = SG_CULLMODE_FRONT;
 
+	pipeline_backend_desc.primitive_type = pipeline_desc.lines_Draw ? SG_PRIMITIVETYPE_LINES : SG_PRIMITIVETYPE_TRIANGLES;
+
 	// get backend shader
 	sg_shader shader_backend = getShaderFromIndex(pipeline_desc.shader);
 	pipeline_backend_desc.shader = shader_backend;
@@ -662,4 +739,9 @@ void SokolRenderDevice::present(bool vsync) {
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 	SDL_GL_SwapWindow(m_render_window);
 #endif // SOKOL_GLCORE33
+}
+
+IOcclusionQuery* SokolRenderDevice::createOcclusionQuery()
+{
+	return new GLOcclusionQuery();
 }

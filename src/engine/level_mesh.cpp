@@ -118,20 +118,7 @@ void LevelMesh::load(IReader* reader) {
 
 static glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
 
-void LevelMesh::render() {
-
-	// calculate aspect ratio
-	viewport_t viewport = g_engine->getViewport();
-	float aspectRatio = (float)viewport.width / (float)viewport.height;
-
-	// calculate projection matrix
-	glm::mat4 proj = s_mat4_idenitity;
-	proj = glm::perspective(glm::radians(75.0f), aspectRatio, 0.1f, 1000.0f);
-
-	renderContext_t render_context = {};
-	render_context.view_matrix = g_camera.getViewMatrix();
-	render_context.projection_matrix = proj;
-
+void LevelMesh::render(const renderContext_t& render_context) {
 	m_mesh->draw(s_mat4_idenitity, render_context);
 }
 
@@ -164,24 +151,12 @@ void DynamicMeshEntity::loadModel(const char* filename)
 	}
 }
 
-void DynamicMeshEntity::render()
+void DynamicMeshEntity::render(const renderContext_t& render_context)
 {
 	// Kirill: todo world translation + model translation
 	glm::mat4 world_translation = s_mat4_idenitity;
 	world_translation = glm::translate(world_translation, glm::vec3(2.0f, 10.0f, 2.0f));
 	world_translation = glm::scale(world_translation, glm::vec3(10.0f));
-
-	// calculate aspect ratio
-	viewport_t viewport = g_engine->getViewport();
-	float aspectRatio = (float)viewport.width / (float)viewport.height;
-
-	// calculate projection matrix
-	glm::mat4 proj = s_mat4_idenitity;
-	proj = glm::perspective(glm::radians(75.0f), aspectRatio, 0.1f, 1000.0f);
-
-	renderContext_t render_context = {};
-	render_context.view_matrix = g_camera.getViewMatrix();
-	render_context.projection_matrix = proj;
 
 	for (auto it : m_meshes) {
 		it->draw(world_translation, render_context);

@@ -31,6 +31,8 @@ public:
 
 	TypedObject* createByName(const char* classname);
 
+	void getObjectCreationInfos(Array<objectCreationInfo_t>& creationInfos);
+
 private:
 	Array<objectCreationInfo_t> m_objectCreationInfos;
 };
