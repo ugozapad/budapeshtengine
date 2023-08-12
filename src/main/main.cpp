@@ -58,7 +58,7 @@ int Main::init(int argc, char* argv[]) {
 	}
 
 	m_engine = new Engine();
-	m_engine->init(1024, 768, fullscreen);
+	m_engine->create(1024, 768, fullscreen);
 
 	m_engine->getLevel()->load("test_baking");
 

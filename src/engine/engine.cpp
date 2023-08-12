@@ -19,6 +19,8 @@
 
 #include "game/gamelib.h"
 
+#include "editor/ieditorsystem.h"
+
 #ifndef NDEBUG
 #define DBG_STR " Dbg"
 #else
@@ -50,6 +52,7 @@ Engine::Engine() :
 	m_render_window(nullptr),
 	m_level(nullptr),
 	m_render_device(nullptr),
+	m_editor_system(nullptr),
 	m_viewport{0}
 {
 	g_engine = this;
@@ -59,7 +62,7 @@ Engine::~Engine() {
 	g_engine = nullptr;
 }
 
-void Engine::init(int width, int height, bool fullscreen)
+void Engine::create(int width, int height, bool fullscreen)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING ^ SDL_INIT_SENSOR) != 0)
 	{
@@ -140,7 +143,12 @@ void Engine::init(int width, int height, bool fullscreen)
 	ASSERT(!g_pGamePersistent);
 	g_pGamePersistent = CREATE_OBJECT(IGamePersistent, CLSID_GAMEPERSISTENT);
 
-	g_VarManager.Save("data/default.cfg");
+	bool is_editor_mode = strstr(GetCommandLineA(), "-editor");
+	if (is_editor_mode)
+		createEditor();
+
+	if (!is_editor_mode)
+		g_VarManager.Save("data/default.cfg");
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -228,6 +236,28 @@ void Engine::createGameLib(const char* custompath)
 	ASSERT(s_gameLibShutdownPfn && "Missing exports from game library");
 }
 
+void Engine::createEditor()
+{
+	char buff[_MAX_PATH];
+	snprintf(buff, sizeof(buff), "%s.dll", "editor");
+
+	Msg("Loading DLL %s", buff);
+
+	HMODULE hEditorLib = LoadLibraryA(buff);
+	if (hEditorLib != NULL)
+	{
+		createEditorSystem_t createEditorSystemProc = (createEditorSystem_t)GetProcAddress(hEditorLib, "createEditorSystem");
+		if (createEditorSystemProc != NULL)
+		{
+			m_editor_system = createEditorSystemProc();
+		}
+	}
+
+	ASSERT_MSG(m_editor_system, "Failed to create editor. Missing dll or exports?");
+
+	m_editor_system->init();
+}
+
 void Engine::update()
 {
 	getSystemTimer()->update();
@@ -260,6 +290,13 @@ void Engine::update()
 
 void Engine::shutdown()
 {
+	if (m_editor_system) {
+		m_editor_system->shutdown();
+
+		// destructor will clear g_pEditorSystem
+		SAFE_DELETE(m_editor_system);
+	}
+
 	if (g_pGamePersistent) {
 		SAFE_DELETE(g_pGamePersistent);
 	}
@@ -316,6 +353,11 @@ Level* Engine::getLevel()
 IRenderDevice* Engine::getRenderDevice()
 {
 	return m_render_device;
+}
+
+IEditorSystem* Engine::getEditorSystem()
+{
+	return m_editor_system;
 }
 
 viewport_t Engine::getViewport()
