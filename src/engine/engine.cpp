@@ -243,9 +243,12 @@ void Engine::update()
 
 	m_level->update(fDeltaTime);
 
+	//////////////////////////////////////////////////////////////////////////
+	// Render Scene
+
 	m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
 
-	m_level->render();
+	g_render.renderScene();
 
 	g_material_system.Render();
 

@@ -162,6 +162,7 @@ void Level::render()
 {
 	m_bBusy = true;
 
+#if 0
 	for (auto it : m_entities)
 	{
 		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(it)) {
@@ -172,6 +173,7 @@ void Level::render()
 		}
 	
 	}
+#endif
 
 	m_bBusy = false;
 }
