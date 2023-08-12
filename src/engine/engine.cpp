@@ -264,11 +264,16 @@ void Engine::update()
 
 	float fDeltaTime = getSystemTimer()->getDelta();
 
-	g_camera.updateLook(
-		m_viewport.width,
-		m_viewport.height
-	);
-
+	if (m_editor_system)
+		m_editor_system->update(fDeltaTime);
+	else
+	{
+		g_camera.updateLook(
+			m_viewport.width,
+			m_viewport.height
+		);
+	}
+	
 	g_pSoundSystem->update(fDeltaTime);
 
 	m_level->update(fDeltaTime);
@@ -284,6 +289,9 @@ void Engine::update()
 
 	m_render_device->endPass();
 	m_render_device->commit();
+
+	if (m_editor_system)
+		m_editor_system->render();
 
 	m_render_device->present(false);
 }

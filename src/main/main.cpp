@@ -9,6 +9,8 @@
 #include "engine/camera.h"
 #include "engine/texture.h"
 
+#include "editor/ieditorsystem.h"
+
 extern "C" {
 #include "render/microui_render.h"
 }
@@ -79,6 +81,9 @@ void Main::update() {
 
 void Main::onEvent(SDL_Event& event)
 {
+	if (m_engine->getEditorSystem())
+		m_engine->getEditorSystem()->pollEvents(event);
+
 	switch (event.type)
 	{
 	case SDL_QUIT: m_engine->requestExit(); break;
