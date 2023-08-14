@@ -133,10 +133,10 @@ void FontSystem::drawText(Font* font, const char* text, float x, float y, Fcolor
 {
 	IRenderDevice* pRenderDevice = g_engine->getRenderDevice();
 
-	int buffer_size = strlen(text) * sizeof(FontVertex);
+	size_t buffer_size = strlen(text) * sizeof(FontVertex);
 
 	// grow buffer
-	static int last_capacity = 0;
+	static size_t last_capacity = 0;
 	if (last_capacity < buffer_size) {
 	
 		pRenderDevice->deleteBuffer(m_vertexBuffer);
