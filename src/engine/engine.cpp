@@ -147,8 +147,6 @@ void Engine::createRenderDevice(const char* devicename)
 		{
 			pRenderDevice = createRenderDeviceProc();
 		}
-
-		//CloseHandle(hRenderDeviceLib);
 	}
 
 	ASSERT(pRenderDevice && "Failed to load render device lib");
@@ -168,9 +166,6 @@ void Engine::createSoundSystem(const char* soundname)
 		{
 			pSoundSystem = createSoundSystemProc();
 		}
-		// Dima : Do we need to close it? 
-		// Kirill: No
-		//CloseHandle(hSoundSystemLib);
 	}
 
 	ASSERT(pSoundSystem && "Failed to load sound sys. Missing dll or OpenAL installation");
