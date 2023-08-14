@@ -20,7 +20,83 @@ extern "C" {
 #define SOKOL_LOG_IMPL
 #include "sokol_log.h"
 
+#define SOKOL_DEBUGTEXT_IMPL
+#include "util/sokol_debugtext.h"
+
 #include "SDL.h"
+#include "SDL_opengl_glext.h"
+
+static PFNGLGENQUERIESARBPROC				glGenQueriesARB = nullptr;
+static PFNGLDELETEQUERIESARBPROC	     	glDeleteQueriesARB = nullptr;
+static PFNGLISQUERYARBPROC			     	glIsQueryARB = nullptr;
+static PFNGLBEGINQUERYARBPROC		     	glBeginQueryARB = nullptr;
+static PFNGLENDQUERYARBPROC		     		glEndQueryARB = nullptr;
+static PFNGLGETQUERYIVARBPROC		     	glGetQueryivARB = nullptr;
+static PFNGLGETQUERYOBJECTIVARBPROC     	glGetQueryObjectivARB = nullptr;
+static PFNGLGETQUERYOBJECTUIVARBPROC     	glGetQueryObjectuivARB = nullptr;
+
+class GLOcclusionQuery : public IOcclusionQuery {
+public:
+	GLOcclusionQuery();
+	~GLOcclusionQuery();
+
+	void begin() override;
+	void end() override;
+	bool is_ready() override;
+
+private:
+	GLuint m_id;
+};
+
+static void gl_load_ARB_occlusion_query()
+{
+	static bool is_loaded = false;
+	if (!is_loaded)
+	{
+		Msg("GL: Loading ARB_occlusion_query");
+
+		glGenQueriesARB = (PFNGLGENQUERIESARBPROC)SDL_GL_GetProcAddress("glGenQueriesARB");
+		glDeleteQueriesARB = (PFNGLDELETEQUERIESARBPROC)SDL_GL_GetProcAddress("glDeleteQueriesARB");
+		glIsQueryARB = (PFNGLISQUERYARBPROC)SDL_GL_GetProcAddress("glIsQueryARB");
+		glBeginQueryARB = (PFNGLBEGINQUERYARBPROC)SDL_GL_GetProcAddress("glBeginQueryARB");
+		glEndQueryARB = (PFNGLENDQUERYARBPROC)SDL_GL_GetProcAddress("glEndQueryARB");
+		glGetQueryivARB = (PFNGLGETQUERYIVARBPROC)SDL_GL_GetProcAddress("glGetQueryivARB");
+		glGetQueryObjectivARB = (PFNGLGETQUERYOBJECTIVARBPROC)SDL_GL_GetProcAddress("glGetQueryObjectivARB");
+		glGetQueryObjectuivARB = (PFNGLGETQUERYOBJECTUIVARBPROC)SDL_GL_GetProcAddress("glGetQueryObjectuivARB");
+
+		is_loaded = true;
+	}
+}
+
+GLOcclusionQuery::GLOcclusionQuery()
+{
+	gl_load_ARB_occlusion_query();
+
+	glGenQueriesARB(1, &m_id);
+}
+
+GLOcclusionQuery::~GLOcclusionQuery()
+{
+	glDeleteQueriesARB(1, &m_id);
+}
+
+void GLOcclusionQuery::begin()
+{
+	glBeginQueryARB(GL_SAMPLES_PASSED_ARB, m_id);
+}
+
+void GLOcclusionQuery::end()
+{
+	glEndQueryARB(m_id);
+}
+
+bool GLOcclusionQuery::is_ready()
+{
+	GLint ready;
+	glGetQueryObjectivARB(m_id, GL_QUERY_RESULT_AVAILABLE_ARB, &ready);
+
+	return ready;
+}
 
 class SokolRenderDevice : public IRenderDevice {
 public:
@@ -48,6 +124,7 @@ public:
 	shaderIndex_t createShader(const shaderDesc_t& shader_desc) override;
 	void deleteShader(shaderIndex_t shader) override;
 	void setVSConstant(int ub_index, const void* data, size_t size) override;
+	void setPSConstant(int ub_index, const void* data, size_t size) override;
 
 	pipelineIndex_t createPipeline(const pipelineDesc_t& pipeline_desc) override;
 	void deletePipeline(pipelineIndex_t pipeline) override;
@@ -66,6 +143,8 @@ public:
 	void endPass() override;
 	void commit() override;
 	void present(bool vsync) override;
+
+	IOcclusionQuery* createOcclusionQuery() override;
 
 private:
 	IAllocator* m_allocator;
@@ -283,26 +362,28 @@ sg_shader getShaderFromIndex(shaderIndex_t index) {
 	return sg_shader{ 0 };
 }
 
-void fillVSParams(sg_shader_desc& shader_desc) {
-	sg_shader_uniform_block_desc& uniform_block1 = shader_desc.vs.uniform_blocks[0];
-	uniform_block1.size = sizeof(float[4][4]);
-	uniform_block1.uniforms[0].name = "u_model_matrix";
-	uniform_block1.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+static sg_uniform_type s_sokol_uniform_type[] =
+{
+	SG_UNIFORMTYPE_FLOAT,
+	SG_UNIFORMTYPE_FLOAT2,
+	SG_UNIFORMTYPE_FLOAT3,
+	SG_UNIFORMTYPE_FLOAT4,
+	SG_UNIFORMTYPE_MAT4
+};
 
-	sg_shader_uniform_block_desc& uniform_block2 = shader_desc.vs.uniform_blocks[1];
-	uniform_block2.size = sizeof(float[4][4]);
-	uniform_block2.uniforms[0].name = "u_view_matrix";
-	uniform_block2.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+void fillVSParams(const shaderDesc_t& shader_desc, sg_shader_desc& shader_backend_desc)
+{
+	ASSERT(shader_desc.uniform_count <= SHADERUNIFORM_MAX_COUNT);
 
-	sg_shader_uniform_block_desc& uniform_block3 = shader_desc.vs.uniform_blocks[2];
-	uniform_block3.size = sizeof(float[4][4]);
-	uniform_block3.uniforms[0].name = "u_proj_matrix";
-	uniform_block3.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+	for (int i = 0; i < shader_desc.uniform_count; i++)
+	{
+		const shaderUniformDesc_t& uniform_desc = shader_desc.uniform_desc[i];
 
-	sg_shader_uniform_block_desc& uniform_block4 = shader_desc.vs.uniform_blocks[3];
-	uniform_block4.size = sizeof(float[4][4]);
-	uniform_block4.uniforms[0].name = "u_model_view_projection";
-	uniform_block4.uniforms[0].type = SG_UNIFORMTYPE_MAT4;
+		sg_shader_uniform_block_desc& uniform_block = shader_backend_desc.vs.uniform_blocks[i];
+		uniform_block.size = uniform_desc.size;
+		uniform_block.uniforms[0].name = uniform_desc.name;
+		uniform_block.uniforms[0].type = s_sokol_uniform_type[uniform_desc.type];
+	}
 }
 
 void fillFSParams(sg_shader_desc& shader_desc) {
@@ -319,7 +400,7 @@ shaderIndex_t SokolRenderDevice::createShader(const shaderDesc_t& shader_desc) {
 	sg_shader_desc shader_backend_desc = {0};
 	shader_backend_desc.vs.source = shader_desc.vertex_shader_data;
 
-	fillVSParams(shader_backend_desc);
+	fillVSParams(shader_desc, shader_backend_desc);
 	fillFSParams(shader_backend_desc);
 
 	shader_backend_desc.fs.source = shader_desc.fragment_shader_data;
@@ -353,6 +434,14 @@ void SokolRenderDevice::setVSConstant(int ub_index, const void* data, size_t siz
 	vs_param_range.ptr = data;
 	vs_param_range.size = size;
 	sg_apply_uniforms(SG_SHADERSTAGE_VS, ub_index, vs_param_range);
+}
+
+void SokolRenderDevice::setPSConstant(int ub_index, const void * data, size_t size)
+{
+	sg_range ps_param_range = {};
+	ps_param_range.ptr = data;
+	ps_param_range.size = size;
+	sg_apply_uniforms(SG_SHADERSTAGE_FS, ub_index, ps_param_range);
 }
 
 #define MAX_PIPELINE 128
@@ -423,12 +512,14 @@ pipelineIndex_t SokolRenderDevice::createPipeline(const pipelineDesc_t& pipeline
 	sg_pipeline_desc pipeline_backend_desc = {};
 	
 	// force indices to uint16
-	pipeline_backend_desc.index_type = SG_INDEXTYPE_UINT16;
+	pipeline_backend_desc.index_type = pipeline_desc.indexed_draw ? SG_INDEXTYPE_UINT16 : SG_INDEXTYPE_NONE;
 
 	pipeline_backend_desc.depth.write_enabled = true;
 	pipeline_backend_desc.depth.compare = SG_COMPAREFUNC_LESS_EQUAL;
 
 	pipeline_backend_desc.cull_mode = SG_CULLMODE_FRONT;
+
+	pipeline_backend_desc.primitive_type = pipeline_desc.lines_Draw ? SG_PRIMITIVETYPE_LINES : SG_PRIMITIVETYPE_TRIANGLES;
 
 	// get backend shader
 	sg_shader shader_backend = getShaderFromIndex(pipeline_desc.shader);
@@ -648,4 +739,9 @@ void SokolRenderDevice::present(bool vsync) {
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 	SDL_GL_SwapWindow(m_render_window);
 #endif // SOKOL_GLCORE33
+}
+
+IOcclusionQuery* SokolRenderDevice::createOcclusionQuery()
+{
+	return new GLOcclusionQuery();
 }

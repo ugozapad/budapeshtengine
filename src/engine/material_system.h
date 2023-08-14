@@ -11,6 +11,8 @@ public:
 	void Init();
 	void Shutdown();
 
+	void Render();
+
 	Texture* LoadTexture(const char* filename, bool absolutePath = false);
 
 	Texture* GetNoTexture();

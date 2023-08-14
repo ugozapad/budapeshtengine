@@ -199,7 +199,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\thirdparty\microui\src\microui.h" />
     <ClInclude Include="..\render\irenderdevice.h" />
-    <ClInclude Include="microui_render.h" />
+    <ClInclude Include="..\render\microui_render.h" />
+    <ClInclude Include="pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

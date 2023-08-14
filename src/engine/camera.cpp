@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "engine/camera.h"
 
-Camera g_camera;
+ENGINE_API Camera g_camera;
 
 Camera::Camera()
 {

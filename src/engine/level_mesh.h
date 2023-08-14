@@ -37,7 +37,7 @@ struct LevelMeshHeader
 //
 ///////////////////////////////////////////////
 
-class LevelMesh : public Entity {
+class ENGINE_API LevelMesh : public Entity {
 public:
 	OBJECT_IMPLEMENT(LevelMesh, Entity);
 
@@ -46,23 +46,27 @@ public:
 
 	void load(IReader* reader);
 
-	void render();
-
-private:
-	void createGpu_Vertex(Array<LevelMeshVertex_LM>& vertices);
-	void createGpu_Indices(Array<uint16_t>& indices);
+	void render(const renderContext_t& render_context);
 
 private:
 	char* m_mesh_name;
-
-	Texture* m_diffuse_texture;
-	Texture* m_lightmap_texture;
-
-	bufferIndex_t m_vertex_buffer;
-	bufferIndex_t m_index_buffer;
-	uint32_t m_vertices_count;
-	uint32_t m_indices_count;
+	StaticLevelMesh* m_mesh;
 };
 
+// Kirill: TEMP WAY PLEASE REMOVE ASAP
+class ENGINE_API DynamicMeshEntity : public Entity {
+public:
+	OBJECT_IMPLEMENT(DynamicMeshEntity, Entity);
+
+	DynamicMeshEntity();
+	~DynamicMeshEntity();
+
+	void loadModel(const char* filename);
+
+	void render(const renderContext_t& render_context);
+
+private:
+	Array<DynamicMesh*> m_meshes;
+};
 
 #endif // !LEVEL_MESH_H

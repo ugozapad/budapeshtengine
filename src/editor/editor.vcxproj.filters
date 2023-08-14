@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="ieditorsystem.h" />
+    <ClInclude Include="editor_shared.h" />
+    <ClInclude Include="..\..\thirdparty\imgui-docking\imconfig.h">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imgui-docking\imgui.h">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imgui-docking\imgui_internal.h">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imgui-docking\imstb_rectpack.h">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imgui-docking\imstb_textedit.h">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imgui-docking\imstb_truetype.h">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imgui-docking\backends\imgui_impl_opengl3.h">
+      <Filter>ImGui - TODO REMOVE\GL Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imgui-docking\backends\imgui_impl_opengl3_loader.h">
+      <Filter>ImGui - TODO REMOVE\GL Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\thirdparty\imgui-docking\backends\imgui_impl_sdl2.h">
+      <Filter>ImGui - TODO REMOVE\GL Backend</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="editorsystem.cpp" />
+    <ClCompile Include="editor_shared.cpp" />
+    <ClCompile Include="..\..\thirdparty\imgui-docking\imgui.cpp">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thirdparty\imgui-docking\imgui_demo.cpp">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thirdparty\imgui-docking\imgui_draw.cpp">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thirdparty\imgui-docking\imgui_tables.cpp">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thirdparty\imgui-docking\imgui_widgets.cpp">
+      <Filter>ImGui - TODO REMOVE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thirdparty\imgui-docking\backends\imgui_impl_opengl3.cpp">
+      <Filter>ImGui - TODO REMOVE\GL Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\thirdparty\imgui-docking\backends\imgui_impl_sdl2.cpp">
+      <Filter>ImGui - TODO REMOVE\GL Backend</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="ImGui - TODO REMOVE">
+      <UniqueIdentifier>{ca782ca4-9d46-4d61-9521-538bf79beeda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImGui - TODO REMOVE\GL Backend">
+      <UniqueIdentifier>{367ffe1f-cb59-4f77-8cad-efad5dce11c4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

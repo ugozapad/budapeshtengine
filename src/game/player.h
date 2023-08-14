@@ -10,6 +10,8 @@ public:
 	Player();
 	~Player();
 
+	void update(float dt) override;
+
 	Player* castPlayer() override { return this; }
 };
 
