@@ -46,7 +46,7 @@ public:
 
 	void load(IReader* reader);
 
-	void render();
+	void render(const renderContext_t& render_context);
 
 private:
 	char* m_mesh_name;
@@ -63,11 +63,10 @@ public:
 
 	void loadModel(const char* filename);
 
-	void render();
+	void render(const renderContext_t& render_context);
 
 private:
 	Array<DynamicMesh*> m_meshes;
 };
-
 
 #endif // !LEVEL_MESH_H

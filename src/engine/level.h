@@ -20,6 +20,7 @@ public:
 	void addEntity(Entity* entity); // TODO : Dima to Kirill : Why to give ability to add some random objects to Level?
 	void destroyEntity(Entity* entity);
 
+	void update(float fDeltaTime);
 	void render();
 
 	Array<Entity*>& getEntities() { return m_entities; }

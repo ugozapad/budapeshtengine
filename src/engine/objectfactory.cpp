@@ -21,3 +21,15 @@ TypedObject* ObjectFactory::createByName(const char* classname)
 
 	return nullptr;
 }
+
+void ObjectFactory::getObjectCreationInfos(Array<objectCreationInfo_t>& creationInfos)
+{
+	creationInfos.resize(m_objectCreationInfos.size());
+
+	std::transform(m_objectCreationInfos.begin(), m_objectCreationInfos.end(), creationInfos.begin(),
+		[](auto i) {
+		return i;
+	});
+
+	//creationInfos = m_objectCreationInfos;
+}

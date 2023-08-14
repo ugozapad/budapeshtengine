@@ -47,6 +47,8 @@ public:
 
 	Var* GetVar(const char* name);
 
+	void Save(const char* filename);
+
 private:
 	void SortVars();
 

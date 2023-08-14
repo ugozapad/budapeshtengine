@@ -9,6 +9,8 @@
 #include "engine/camera.h"
 #include "engine/texture.h"
 
+#include "editor/ieditorsystem.h"
+
 extern "C" {
 #include "render/microui_render.h"
 }
@@ -58,7 +60,7 @@ int Main::init(int argc, char* argv[]) {
 	}
 
 	m_engine = new Engine();
-	m_engine->init(1024, 768, fullscreen);
+	m_engine->create(1024, 768, fullscreen);
 
 	m_engine->getLevel()->load("test_baking");
 
@@ -79,6 +81,9 @@ void Main::update() {
 
 void Main::onEvent(SDL_Event& event)
 {
+	if (m_engine->getEditorSystem())
+		m_engine->getEditorSystem()->pollEvents(event);
+
 	switch (event.type)
 	{
 	case SDL_QUIT: m_engine->requestExit(); break;

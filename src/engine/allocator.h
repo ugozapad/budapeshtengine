@@ -42,7 +42,7 @@ template<typename T>
 inline void mem_free(T*& ptr)
 {
 	g_allocator->deallocate(ptr);
-	ptr = NULL;
+	ptr = nullptr;
 }
 
 template<typename T>

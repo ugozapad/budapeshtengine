@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "varmanager.h"
+#include "filesystem.h"
 
 #include <algorithm>
 
@@ -35,12 +36,12 @@ const char* Var::GetStringValue()
 
 float Var::GetFloatValue()
 {
-	return atof(m_value.data());
+	return float(atof(GetStringValue()));
 }
 
 int Var::GetIntValue()
 {
-	return atoi(m_value.data());
+	return atoi(GetStringValue());
 }
 
 void Var::SetStringValue(const char* str)
@@ -85,12 +86,30 @@ Var* VarManager::GetVar(const char* name)
 	return nullptr;
 }
 
+void VarManager::Save(const char* filename)
+{
+	IWriter* writer = g_file_system->openWrite(filename);
+	for (size_t I = 0; I < m_vars.size(); ++I)
+	{
+		Var* var = m_vars[I];
+		if (var && !(var->m_flags & VARFLAG_NOSAVE))
+		{
+			char buffer[256];
+			int len = sprintf(buffer, "set %-30s   %s\n", var->GetName(), var->GetStringValue());
+
+			writer->write(buffer, len);
+		}
+	}
+
+	g_file_system->deleteWriter(writer);
+}
+
 void VarManager::SortVars()
 {
 	std::sort(m_vars.begin(), m_vars.end(), 
 		[](Var* lhs, Var* rhs)
 		{
-			return strlen(lhs->GetName()) > strlen(rhs->GetName());
+			return strlen(lhs->GetName()) < strlen(rhs->GetName());
 		}
 	);
 }
