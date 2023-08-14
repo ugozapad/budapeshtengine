@@ -20,8 +20,8 @@ StaticLevelMesh::StaticLevelMesh(Array<LevelMeshVertex_LM>& vertices,
 	ASSERT(!vertices.empty());
 	ASSERT(!indices.empty());
 
-	m_vertices_count = vertices.size();
-	m_indices_count = indices.size();
+	m_vertices_count = uint32_t(vertices.size());
+	m_indices_count = uint32_t(indices.size());
 
 	createGpu_Vertex(vertices);
 	createGpu_Indices(indices);
@@ -199,8 +199,8 @@ DynamicMesh::DynamicMesh(Array<LevelMeshVertex_LM>& vertices,
 	Array<uint16_t>& indices,
 	const char* texture_name)
 {
-	m_verticesCount = vertices.size();
-	m_indices_count = indices.size();
+	m_verticesCount = uint32_t(vertices.size());
+	m_indices_count = uint32_t(indices.size());
 
 	bufferDesc_t bufferDesc = {};
 	bufferDesc.type = BUFFERTYPE_VERTEX;

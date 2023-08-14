@@ -36,7 +36,7 @@ const char* Var::GetStringValue()
 
 float Var::GetFloatValue()
 {
-	return atof(GetStringValue());
+	return float(atof(GetStringValue()));
 }
 
 int Var::GetIntValue()
