@@ -23,11 +23,14 @@ void GamePersistent::onGameStart()
 
 	Msg("Create player");
 
-	Entity* pPlayer = g_object_factory->createObject<Player>();
-	g_engine->getLevel()->addEntity(pPlayer);
+	Entity* p_Player = g_object_factory->createObject<Player>();
+	g_engine->getLevel()->addEntity(p_Player);
 
 	// create mesh
 	DynamicMeshEntity* meshEntity = (DynamicMeshEntity*)g_object_factory->createByName("dynamic_mesh");
 	meshEntity->loadModel("data/levels/test_baking/test_baking.lmf");
 	g_engine->getLevel()->addEntity(meshEntity);
+
+	// activate camera
+	static_cast<Player*>(p_Player)->activateCamera();
 }
