@@ -65,3 +65,14 @@ void Camera::lookAt(glm::vec3& dir)
 
 }
 
+ENGINE_API CameraManager g_CameraManager;
+
+void CameraManager::setActiveCamera(Camera* p_camera)
+{
+	mp_active_camera = p_camera;
+}
+
+Camera* CameraManager::getActiveCamera()
+{
+	return mp_active_camera;
+}

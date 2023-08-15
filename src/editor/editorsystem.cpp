@@ -1,5 +1,10 @@
 #include <stdint.h>
 
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#include <commdlg.h>
+#include <shobjidl.h>
+
 #include "engine/engine_api.h"
 #include "engine/allocator.h"
 #include "engine/engine.h"
@@ -26,6 +31,8 @@ public:
 	void render();
 
 	void renderMenu();
+
+	void openLevelDialog();
 
 private:
 	// Windows
@@ -135,17 +142,16 @@ void EditorSystem::render()
 
 void EditorSystem::renderMenu()
 {
-
 	if (ImGui::BeginMainMenuBar())
 	{
 		if (ImGui::BeginMenu("File"))
 		{
 			ImGui::MenuItem("New");
-			ImGui::MenuItem("Open...");
+			if (ImGui::MenuItem("Open...")) openLevelDialog();
 			ImGui::MenuItem("Save");
 			ImGui::MenuItem("Save As...");
 			ImGui::Separator();
-			ImGui::MenuItem("Exit");
+			if (ImGui::MenuItem("Exit")) g_engine->requestExit();
 			ImGui::EndMenu();
 		}
 
@@ -283,6 +289,49 @@ void EditorSystem::renderMenu()
 		else tmp[0] = '\0';
 	}
 #endif
+}
+
+void EditorSystem::openLevelDialog()
+{
+	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED |
+		COINIT_DISABLE_OLE1DDE);
+	if (SUCCEEDED(hr))
+	{
+		IFileOpenDialog *pFileOpen;
+
+		// Create the FileOpenDialog object.
+		hr = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL,
+			IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileOpen));
+
+		if (SUCCEEDED(hr))
+		{
+			// Show the Open dialog box.
+			hr = pFileOpen->Show(NULL);
+
+			// Get the file name from the dialog box.
+			if (SUCCEEDED(hr))
+			{
+				IShellItem *pItem;
+				hr = pFileOpen->GetResult(&pItem);
+				if (SUCCEEDED(hr))
+				{
+					PWSTR pszFilePath;
+					hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+
+					// Display the file name to the user.
+					if (SUCCEEDED(hr))
+					{
+						MessageBoxW(NULL, pszFilePath, L"File Path", MB_OK);
+						CoTaskMemFree(pszFilePath);
+					}
+					pItem->Release();
+				}
+			}
+			pFileOpen->Release();
+		}
+
+		CoUninitialize();
+	}
 }
 
 // Internal singleton

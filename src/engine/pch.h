@@ -19,6 +19,7 @@
 #include <SDL_scancode.h>
 
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 // Own Headers
 #include "engine/engine_api.h"

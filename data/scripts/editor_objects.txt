@@ -1,0 +1,14 @@
+{
+	entityname "DynamicObject"
+	classname "dynamic_mesh"
+	description "Dynamic model object"
+	
+	inputs
+	{
+		// Inherit all base "Entity" class properties
+		{
+			propertyname "model_file"
+			propertytype "string" 
+		}
+	}
+}

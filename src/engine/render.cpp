@@ -38,8 +38,10 @@ void Render::renderScene()
 	glm::mat4 proj = glm::mat4(1.0f);
 	proj = glm::perspective(glm::radians(75.0f), aspectRatio, 0.1f, 1000.0f);
 
+	Camera* camera = g_CameraManager.getActiveCamera();
+
 	renderContext_t render_context = {};
-	render_context.view_matrix = g_camera.getViewMatrix();
+	render_context.view_matrix = camera ? camera->getViewMatrix() : glm::mat4(1.0f);
 	render_context.projection_matrix = proj;
 
 	// Render static scene

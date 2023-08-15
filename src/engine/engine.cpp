@@ -157,6 +157,12 @@ void Engine::create(int width, int height, bool fullscreen)
 //
 //			TODO FUTURE: Linking full engine as static library to main
 //////////////////////////////////////////////////////////////////////
+
+HMODULE g_hRenderDeviceLib = NULL;
+HMODULE g_hSoundSystemLib = NULL;
+HMODULE g_hGameLib = NULL;
+HMODULE g_hEditorLib = NULL;
+
 void Engine::createRenderDevice(const char* devicename)
 {
 	IRenderDevice* pRenderDevice = nullptr;
@@ -166,11 +172,11 @@ void Engine::createRenderDevice(const char* devicename)
 
 	Msg("Loading DLL %s", buff);
 
-	HMODULE hRenderDeviceLib = LoadLibraryA(buff);
-	if (hRenderDeviceLib != NULL)
+	g_hRenderDeviceLib = LoadLibraryA(buff);
+	if (g_hRenderDeviceLib != NULL)
 	{
 		createRenderDevice_t createRenderDeviceProc =
-			(createRenderDevice_t)GetProcAddress(hRenderDeviceLib, "createRenderDevice");
+			(createRenderDevice_t)GetProcAddress(g_hRenderDeviceLib, "createRenderDevice");
 
 		if (createRenderDeviceProc != NULL)
 		{
@@ -187,10 +193,10 @@ void Engine::createSoundSystem(const char* soundname)
 	ISoundSystem* pSoundSystem = NULL;
 	char buff[_MAX_PATH]; snprintf(buff, sizeof(buff), "%s.dll", soundname);
 	Msg("Loading DLL %s", buff);
-	HMODULE hSoundSystemLib = LoadLibrary(buff);
-	if (hSoundSystemLib != NULL)
+	g_hSoundSystemLib = LoadLibrary(buff);
+	if (g_hSoundSystemLib != NULL)
 	{
-		createSoundSystem_t createSoundSystemProc = (createSoundSystem_t)GetProcAddress(hSoundSystemLib, "createSoundSystem");
+		createSoundSystem_t createSoundSystemProc = (createSoundSystem_t)GetProcAddress(g_hSoundSystemLib, "createSoundSystem");
 		if (createSoundSystemProc != NULL)
 		{
 			pSoundSystem = createSoundSystemProc();
@@ -210,14 +216,14 @@ void Engine::createGameLib(const char* custompath)
 	
 	Msg("Loading DLL %s", buff);
 
-	HMODULE hGameLib = LoadLibraryA(buff);
-	if (hGameLib != NULL)
+	g_hGameLib = LoadLibraryA(buff);
+	if (g_hGameLib != NULL)
 	{
 		gameLibInit_t gameLibInitPfn = 
-			(gameLibInit_t)GetProcAddress(hGameLib, "gameLibInit");
+			(gameLibInit_t)GetProcAddress(g_hGameLib, "gameLibInit");
 		
 		gameLibShutdown_t gameLibShutdownPfn = 
-			(gameLibShutdown_t)GetProcAddress(hGameLib, "gameLibShutdown");
+			(gameLibShutdown_t)GetProcAddress(g_hGameLib, "gameLibShutdown");
 
 		if (gameLibInitPfn != NULL && gameLibShutdownPfn != NULL)
 		{
@@ -238,10 +244,10 @@ void Engine::createEditor()
 
 	Msg("Loading DLL %s", buff);
 
-	HMODULE hEditorLib = LoadLibraryA(buff);
-	if (hEditorLib != NULL)
+	g_hEditorLib = LoadLibraryA(buff);
+	if (g_hEditorLib != NULL)
 	{
-		createEditorSystem_t createEditorSystemProc = (createEditorSystem_t)GetProcAddress(hEditorLib, "createEditorSystem");
+		createEditorSystem_t createEditorSystemProc = (createEditorSystem_t)GetProcAddress(g_hEditorLib, "createEditorSystem");
 		if (createEditorSystemProc != NULL)
 		{
 			m_editor_system = createEditorSystemProc();
@@ -261,13 +267,6 @@ void Engine::update()
 
 	if (m_editor_system)
 		m_editor_system->update(fDeltaTime);
-	else
-	{
-		g_camera.updateLook(
-			m_viewport.width,
-			m_viewport.height
-		);
-	}
 	
 	g_pSoundSystem->update(fDeltaTime);
 
@@ -298,11 +297,16 @@ void Engine::shutdown()
 
 		// destructor will clear g_pEditorSystem
 		SAFE_DELETE(m_editor_system);
+
+		FreeLibrary(g_hEditorLib);
 	}
 
 	if (g_pGamePersistent) {
 		SAFE_DELETE(g_pGamePersistent);
 	}
+
+	s_gameLibShutdownPfn();
+	FreeLibrary(g_hGameLib);
 
 	g_render.shutdown();
 	
@@ -310,6 +314,8 @@ void Engine::shutdown()
 		m_render_device->shutdown();
 		SAFE_DELETE(m_render_device);
 	}
+
+	FreeLibrary(g_hRenderDeviceLib);
 
 	if (m_level) {
 		SAFE_DELETE(m_level);
@@ -327,6 +333,8 @@ void Engine::shutdown()
 	if (g_pSoundSystem) {
 		SAFE_DELETE(g_pSoundSystem);
 	}
+
+	FreeLibrary(g_hSoundSystemLib);
 
 	if (m_render_window) {
 		SDL_DestroyWindow(m_render_window);
