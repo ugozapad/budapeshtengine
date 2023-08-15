@@ -35,4 +35,16 @@ public:
 
 extern ENGINE_API Camera g_camera;
 
+class ENGINE_API CameraManager
+{
+public:
+	void setActiveCamera(Camera* p_camera);
+	Camera* getActiveCamera();
+
+private:
+	Camera* mp_active_camera;
+};
+
+extern ENGINE_API CameraManager g_CameraManager;
+
 #endif // !CAMERA_H

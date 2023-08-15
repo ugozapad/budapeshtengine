@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include "engine/entity.h"
+#include "engine/camera.h"
 
 class Player : public Entity {
 public:
@@ -13,6 +14,12 @@ public:
 	void update(float dt) override;
 
 	Player* castPlayer() override { return this; }
+
+	void activateCamera();
+
+private:
+	Camera m_camera;
+
 };
 
 #endif // !PLAYER_H

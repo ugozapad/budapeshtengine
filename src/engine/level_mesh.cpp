@@ -119,7 +119,7 @@ void LevelMesh::load(IReader* reader) {
 static glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
 
 void LevelMesh::render(const renderContext_t& render_context) {
-	m_mesh->draw(s_mat4_idenitity, render_context);
+	m_mesh->draw(getTranslationMatrix(), render_context);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -153,12 +153,7 @@ void DynamicMeshEntity::loadModel(const char* filename)
 
 void DynamicMeshEntity::render(const renderContext_t& render_context)
 {
-	// Kirill: todo world translation + model translation
-	glm::mat4 world_translation = s_mat4_idenitity;
-	world_translation = glm::translate(world_translation, glm::vec3(2.0f, 10.0f, 2.0f));
-	world_translation = glm::scale(world_translation, glm::vec3(10.0f));
-
 	for (auto it : m_meshes) {
-		it->draw(world_translation, render_context);
+		it->draw(getTranslationMatrix(), render_context);
 	}
 }
