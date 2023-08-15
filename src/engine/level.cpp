@@ -12,12 +12,18 @@
 #include "engine/debugrender.h"
 
 Level::Level()
-	: m_bBusy(false)
+	: m_bBusy(false), m_physicsWorld(nullptr)
 {
+	m_physicsWorld = new PhysicsWorld();
 }
 
 Level::~Level()
 {
+	if (m_physicsWorld)
+	{
+		delete m_physicsWorld;
+		m_physicsWorld = nullptr;
+	}
 }
 
 void Level::load(const char* levelname)
@@ -150,6 +156,8 @@ void Level::update(float fDeltaTime)
 
 	m_bBusy = true;
 	
+	m_physicsWorld->update(fDeltaTime);
+
 	for (auto it : m_entities)
 	{
 		it->update(fDeltaTime);
@@ -176,4 +184,9 @@ void Level::render()
 #endif
 
 	m_bBusy = false;
+}
+
+PhysicsWorld* Level::getPhysicsWorld()
+{
+	return m_physicsWorld;
 }

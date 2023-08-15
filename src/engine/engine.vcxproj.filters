@@ -28,6 +28,8 @@
     <ClInclude Include="render.h" />
     <ClInclude Include="fontsystem.h" />
     <ClInclude Include="timer.h" />
+    <ClInclude Include="physics_world.h" />
+    <ClInclude Include="physics_render.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -55,5 +57,7 @@
     <ClCompile Include="render.cpp" />
     <ClCompile Include="fontsystem.cpp" />
     <ClCompile Include="timer.cpp" />
+    <ClCompile Include="physics_world.cpp" />
+    <ClCompile Include="physics_render.cpp" />
   </ItemGroup>
 </Project>

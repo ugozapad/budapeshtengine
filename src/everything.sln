@@ -24,6 +24,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "engine", "engine\engine.vcxproj", "{F7CFC49D-543F-491D-B3D8-F9B9F688D574}"
 	ProjectSection(ProjectDependencies) = postProject
 		{81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68} = {81CE8DAF-EBB2-4761-8E45-B71ABCCA8C68}
+		{1FC6E1F0-7694-4AB8-B24D-67BCB6471855} = {1FC6E1F0-7694-4AB8-B24D-67BCB6471855}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sokol_rdev", "sokol_rdev\sokol_rdev.vcxproj", "{4ECD756E-E657-472D-BE59-24B7541915AF}"
@@ -59,6 +60,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "editor", "editor\editor.vcx
 	ProjectSection(ProjectDependencies) = postProject
 		{F7CFC49D-543F-491D-B3D8-F9B9F688D574} = {F7CFC49D-543F-491D-B3D8-F9B9F688D574}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "bullet", "..\thirdparty\bullet\msvc\bullet.vcxproj", "{1FC6E1F0-7694-4AB8-B24D-67BCB6471855}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -172,6 +175,14 @@ Global
 		{65AA9B5A-CF25-4CF9-9C38-0DF02A44E841}.Release|x64.Build.0 = Release|x64
 		{65AA9B5A-CF25-4CF9-9C38-0DF02A44E841}.Release|x86.ActiveCfg = Release|Win32
 		{65AA9B5A-CF25-4CF9-9C38-0DF02A44E841}.Release|x86.Build.0 = Release|Win32
+		{1FC6E1F0-7694-4AB8-B24D-67BCB6471855}.Debug|x64.ActiveCfg = Debug|x64
+		{1FC6E1F0-7694-4AB8-B24D-67BCB6471855}.Debug|x64.Build.0 = Debug|x64
+		{1FC6E1F0-7694-4AB8-B24D-67BCB6471855}.Debug|x86.ActiveCfg = Debug|Win32
+		{1FC6E1F0-7694-4AB8-B24D-67BCB6471855}.Debug|x86.Build.0 = Debug|Win32
+		{1FC6E1F0-7694-4AB8-B24D-67BCB6471855}.Release|x64.ActiveCfg = Release|x64
+		{1FC6E1F0-7694-4AB8-B24D-67BCB6471855}.Release|x64.Build.0 = Release|x64
+		{1FC6E1F0-7694-4AB8-B24D-67BCB6471855}.Release|x86.ActiveCfg = Release|Win32
+		{1FC6E1F0-7694-4AB8-B24D-67BCB6471855}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -184,6 +195,7 @@ Global
 		{7E180A66-2AA9-457F-8BA1-EDFF61548FA3} = {DC841BF8-5353-4731-9BFF-FAC850544E84}
 		{9E476E51-50F3-4666-B58A-4A73FE552D8F} = {A8983DB9-DCEE-4AA9-9081-F91519A27E94}
 		{927E18E2-A169-49FF-87B1-7661B7A86F25} = {A8983DB9-DCEE-4AA9-9081-F91519A27E94}
+		{1FC6E1F0-7694-4AB8-B24D-67BCB6471855} = {A8983DB9-DCEE-4AA9-9081-F91519A27E94}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {53D35084-6323-4E2A-A2DB-FB8204ED0F19}

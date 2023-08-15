@@ -15,6 +15,7 @@
 #include "engine/material_system.h"
 #include "engine/render.h"
 #include "engine/sound_system.h"
+#include "engine/physics_world.h"
 #include "engine/igamepersistent.h"
 
 #include "game/gamelib.h"
@@ -133,6 +134,9 @@ void Engine::create(int width, int height, bool fullscreen)
 	// initialize sound system
 	createSoundSystem("sound");
 
+	// Initialize physics world
+	PhysicsWorld::staticInit();
+
 	// create level
 	m_level = new Level();
 
@@ -149,6 +153,8 @@ void Engine::create(int width, int height, bool fullscreen)
 
 	if (!is_editor_mode)
 		g_VarManager.Save("data/default.cfg");
+
+	getLevel()->load("test_baking");
 }
 
 //////////////////////////////////////////////////////////////////////

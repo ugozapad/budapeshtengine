@@ -4,6 +4,7 @@
 #include "engine/allocator.h"
 #include "engine/array.h"
 #include "engine/entity.h"
+#include "engine/physics_world.h"
 
 class IReader;
 
@@ -24,11 +25,13 @@ public:
 	void render();
 
 	Array<Entity*>& getEntities() { return m_entities; }
+	PhysicsWorld* getPhysicsWorld();
 
 private:
 	bool			m_bBusy;
 	bool			m_bNeedToDestroyEnt;
 	Array<Entity*>	m_entities;
+	PhysicsWorld*	m_physicsWorld;
 };
 
 #endif // !LEVEL_H

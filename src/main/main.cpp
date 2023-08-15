@@ -5,9 +5,6 @@
 #include "engine/filesystem.h"
 #include "engine/input_system.h"
 #include "engine/engine.h"
-#include "engine/level.h"
-#include "engine/camera.h"
-#include "engine/texture.h"
 
 #include "editor/ieditorsystem.h"
 
@@ -61,8 +58,6 @@ int Main::init(int argc, char* argv[]) {
 
 	m_engine = new Engine();
 	m_engine->create(1024, 768, fullscreen);
-
-	m_engine->getLevel()->load("test_baking");
 
 	return 0;
 }
