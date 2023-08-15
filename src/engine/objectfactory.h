@@ -57,7 +57,7 @@ inline T* ObjectFactory::createObject()
 	{
 		if (it.id == get_type_id<T>())
 		{
-			return (T*)it.create_proc();
+			return dynamic_cast<T*>(it.create_proc());
 		}
 	}
 	

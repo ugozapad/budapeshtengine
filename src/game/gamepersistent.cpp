@@ -23,11 +23,11 @@ void GamePersistent::onGameStart()
 
 	Msg("Create player");
 
-	Entity* pPlayer = g_object_factory->createObject<Player>();
+	Entity* pPlayer = g_object_factory->createObject<Player>(); ASSERT(pPlayer);
 	g_engine->getLevel()->addEntity(pPlayer);
 
 	// create mesh
-	DynamicMeshEntity* meshEntity = (DynamicMeshEntity*)g_object_factory->createByName("dynamic_mesh");
+	DynamicMeshEntity* meshEntity = dynamic_cast<DynamicMeshEntity*>(g_object_factory->createByName("dynamic_mesh")); ASSERT(meshEntity);
 	meshEntity->loadModel("data/levels/test_baking/test_baking.lmf");
 	g_engine->getLevel()->addEntity(meshEntity);
 }
