@@ -28,6 +28,10 @@ static bool fbxconv_process_geometry(FILE* pOutFile, Geometry const* pGeom, Conv
 		print("      ERROR: Mesh have no UV!");
 		return (false);
 	}
+	if (dwVertCount != dwIndicesCount)
+	{
+		print("      WARNING: Mesh is not/incorrectly triangulated, UV's might be invalid!");
+	}
 
 #ifndef TEST_NO_OUTPUT
 	fwrite(&dwVertCount, sizeof(dwVertCount), 1, pOutFile);
@@ -96,47 +100,75 @@ static bool fbxconv_process_geometry(FILE* pOutFile, Geometry const* pGeom, Conv
 	return (true);
 }
 
+static bool fbxconv_process_lightmap(FILE* pOutFile, Mesh const* pMesh, Material const* pMat, ConversionOptions options)
+{
+#ifndef TEST_NO_OUTPUT
+	char texturePath[MAX_PATH];
+	uint32_t dwTexturePathLen;
+	// lightmap texture
+	strcpy_s(texturePath, pMesh->name);
+	strcat_s(texturePath, TEXTURE_EXTENSION);
+	dwTexturePathLen = uint32_t(strlen(texturePath));
+	fwrite(&dwTexturePathLen, sizeof(dwTexturePathLen), 1, pOutFile);
+	fwrite(texturePath, dwTexturePathLen, 1, pOutFile);
+#endif
+	return (true);
+}
+
+static bool fbxconv_process_diffuse(FILE* pOutFile, Mesh const* pMesh, Material const* pMat, ConversionOptions options)
+{
+#ifndef TEST_NO_OUTPUT
+	char texturePath[MAX_PATH];
+	uint32_t dwTexturePathLen;
+#endif
+	if (Texture const* pDiffuse = pMat->getTexture(Texture::DIFFUSE))
+	{
+#ifndef TEST_NO_OUTPUT
+		pDiffuse->getFileName().toString(texturePath);
+		dwTexturePathLen = uint32_t(strlen(texturePath));
+#endif
+	}
+	else
+	{
+		print("    WARNING: Material[%s] do not have diffuse texture!", pMat->name);
+#ifndef TEST_NO_OUTPUT
+		strcpy_s(texturePath, DEFAULT_NO_TEXTURE);
+		dwTexturePathLen = sizeof(DEFAULT_NO_TEXTURE) - 1;
+#endif
+	}
+
+#ifndef TEST_NO_OUTPUT
+	// diffuse texture
+	fwrite(&dwTexturePathLen, sizeof(dwTexturePathLen), 1, pOutFile);
+	fwrite(texturePath, dwTexturePathLen, 1, pOutFile);
+#endif
+	return (true);
+}
+
+static bool fbxconv_process_material(FILE* pOutFile, Mesh const* pMesh, Material const* pMat, ConversionOptions options)
+{
+	dbg_print("    DEBUG: ... %s" NL, pMat->name);
+	if (fbxconv_process_diffuse(pOutFile, pMesh, pMat, options))
+		return (fbxconv_process_lightmap(pOutFile, pMesh, pMat, options));
+	return (false);
+}
+
 static bool fbxconv_process_materials(FILE* pOutFile, Mesh const* pMesh, ConversionOptions options)
 {
 	print("  INFO: Processing materials..." NL);
 	uint32_t const dwMatCount = pMesh->getMaterialCount();
-	for (uint32_t J = 0; J < dwMatCount; ++J)
+	if (dwMatCount == 0)
 	{
-		Material const* pMat = pMesh->getMaterial(J);
-		dbg_print("    DEBUG: ... %s" NL, pMat->name);
-#ifndef TEST_NO_OUTPUT
-		char texturePath[MAX_PATH];
-		uint32_t dwTexturePathLen;
-#endif
-		if (Texture const* pDiffuse	= pMat->getTexture(Texture::DIFFUSE))
-		{
-#ifndef TEST_NO_OUTPUT
-			pDiffuse->getFileName().toString(texturePath);
-			dwTexturePathLen = uint32_t(strlen(texturePath));
-#endif
-		}
-		else
-		{
-			print("    WARNING: Material[%s] do not have diffuse texture!", pMat->name);
-#ifndef TEST_NO_OUTPUT
-			strcpy_s(texturePath, DEFAULT_NO_TEXTURE);
-			dwTexturePathLen = sizeof(DEFAULT_NO_TEXTURE) - 1;
-#endif
-		}
-
-#ifndef TEST_NO_OUTPUT
-		// diffuse texture
-		fwrite(&dwTexturePathLen, sizeof(dwTexturePathLen), 1, pOutFile);
-		fwrite(texturePath, dwTexturePathLen, 1, pOutFile);
-		// lightmap texture
-		strcpy_s(texturePath, pMesh->name);
-		strcat_s(texturePath, TEXTURE_EXTENSION);
-		dwTexturePathLen = uint32_t(strlen(texturePath));
-		fwrite(&dwTexturePathLen, sizeof(dwTexturePathLen), 1, pOutFile);
-		fwrite(texturePath, dwTexturePathLen, 1, pOutFile);
-#endif
+		print("    ERROR: Mesh[%s] has no materials!", pMesh->name);
+		return (false);
 	}
-	return (true);
+	Material const* pMat = pMesh->getMaterial(0);
+	if (dwMatCount > 1)
+	{
+		print("    WARNING: Mesh[%s] has more than one material!", pMesh->name);
+		print("             Material[%s] will be used as main!", pMat->name);
+	}
+	return (fbxconv_process_material(pOutFile, pMesh, pMat, options));
 }
 
 static bool fbxconv_process_mesh(FILE* pOutFile, Mesh const* pMesh, ConversionOptions options)
