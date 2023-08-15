@@ -28,6 +28,8 @@ void GamePersistent::onGameStart()
 
 	// create mesh
 	DynamicMeshEntity* meshEntity = (DynamicMeshEntity*)g_object_factory->createByName("dynamic_mesh");
+	meshEntity->setPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+	meshEntity->setScale(glm::vec3(20.0f));
 	meshEntity->loadModel("data/levels/test_baking/test_baking.lmf");
 	g_engine->getLevel()->addEntity(meshEntity);
 

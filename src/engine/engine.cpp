@@ -298,7 +298,7 @@ void Engine::shutdown()
 		// destructor will clear g_pEditorSystem
 		SAFE_DELETE(m_editor_system);
 
-		CloseHandle(g_hEditorLib);
+		FreeLibrary(g_hEditorLib);
 	}
 
 	if (g_pGamePersistent) {
@@ -306,7 +306,7 @@ void Engine::shutdown()
 	}
 
 	s_gameLibShutdownPfn();
-	CloseHandle(g_hGameLib);
+	FreeLibrary(g_hGameLib);
 
 	g_render.shutdown();
 	
@@ -315,7 +315,7 @@ void Engine::shutdown()
 		SAFE_DELETE(m_render_device);
 	}
 
-	CloseHandle(g_hRenderDeviceLib);
+	FreeLibrary(g_hRenderDeviceLib);
 
 	if (m_level) {
 		SAFE_DELETE(m_level);
@@ -334,7 +334,7 @@ void Engine::shutdown()
 		SAFE_DELETE(g_pSoundSystem);
 	}
 
-	CloseHandle(g_hSoundSystemLib);
+	FreeLibrary(g_hSoundSystemLib);
 
 	if (m_render_window) {
 		SDL_DestroyWindow(m_render_window);

@@ -24,8 +24,21 @@ public:
 	inline bool canBeDestroyed() const { return (m_bCanBeDestroyed); }
 	inline void	setCanBeDestroyed() { m_bCanBeDestroyed = true; }
 
+	void setPosition(const glm::vec3& pos);
+	glm::vec3 getPosition();
+
+	void setRotation(const glm::vec3& rot);
+	glm::vec3 getRotation();
+
+	void setScale(const glm::vec3& scale);
+	glm::vec3 getScale();
+
+	glm::mat4 getTranslationMatrix();
+
 protected:
 	glm::vec3 m_position;
+	glm::vec3 m_rotation;
+	glm::vec3 m_scale;
   
 private:
 	bool m_bCanBeDestroyed;
