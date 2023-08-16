@@ -25,17 +25,17 @@ public:
 	SDLInputSystem();
 	~SDLInputSystem();
 
-	void init() override;
-	void shutdown() override;
+	void Init() override;
+	void Shutdown() override;
 
-	void onKeyDown		(scanCode_t scancode) override;
-	void onKeyUp		(scanCode_t scancode) override;
-	void onMouseKeyDown	(mouseButton_t mousebutton) override;
-	void onMouseKeyUp	(mouseButton_t mousebutton) override;
-	void onMouseMove	(int32_t x, int32_t y) override;
-	void onMouseWheel	(int32_t x, int32_t y) override;
+	void OnKeyDown		(scanCode_t scancode) override;
+	void OnKeyUp		(scanCode_t scancode) override;
+	void OnMouseKeyDown	(mouseButton_t mousebutton) override;
+	void OnMouseKeyUp	(mouseButton_t mousebutton) override;
+	void OnMouseMove	(int32_t x, int32_t y) override;
+	void OnMouseWheel	(int32_t x, int32_t y) override;
 
-	bool isKeyPressed	(scanCode_t scancode) const override;
+	bool IsKeyPressed	(scanCode_t scancode) const override;
 
 private:
 	IAllocator*					m_allocator;
@@ -46,7 +46,7 @@ private:
 	Point						m_wheelPosition;
 };
 
-IInputSystem* IInputSystem::create(IAllocator* allocator)
+IInputSystem* IInputSystem::Create()
 {
 	return new SDLInputSystem();
 }
@@ -62,16 +62,16 @@ SDLInputSystem::SDLInputSystem() :
 SDLInputSystem::~SDLInputSystem() {
 }
 
-void SDLInputSystem::init() {
+void SDLInputSystem::Init() {
 }
 
-void SDLInputSystem::shutdown() {
+void SDLInputSystem::Shutdown() {
 }
 
 #define getScanCodeStateIndex(scanCode) uint32_t(floorf(float(scanCode / KEYSTATES_SIZE)))
 #define getScanCodeMask(scanCode, stateIndex) (1U << (scanCode - (BITS_IN_KEYSTATE * stateIndex)))
 
-void SDLInputSystem::onKeyDown(scanCode_t scancode)
+void SDLInputSystem::OnKeyDown(scanCode_t scancode)
 {
 	if (scancode < SUPPORTED_SCANCODES_NUM)
 	{
@@ -82,7 +82,7 @@ void SDLInputSystem::onKeyDown(scanCode_t scancode)
 	}
 }
 
-void SDLInputSystem::onKeyUp(scanCode_t scancode)
+void SDLInputSystem::OnKeyUp(scanCode_t scancode)
 {
 	if (scancode < SUPPORTED_SCANCODES_NUM)
 	{
@@ -93,31 +93,31 @@ void SDLInputSystem::onKeyUp(scanCode_t scancode)
 	}
 }
 
-void SDLInputSystem::onMouseKeyDown(mouseButton_t mousebutton)
+void SDLInputSystem::OnMouseKeyDown(mouseButton_t mousebutton)
 {
 	if (mousebutton < SUPPORTED_MOUSEBUTTONS_NUM)
 		m_mouseButtonBitfield |= (1U << mousebutton);
 }
 
-void SDLInputSystem::onMouseKeyUp(mouseButton_t mousebutton)
+void SDLInputSystem::OnMouseKeyUp(mouseButton_t mousebutton)
 {
 	if (mousebutton < SUPPORTED_MOUSEBUTTONS_NUM)
 		m_mouseButtonBitfield &= ~(1U << mousebutton);
 }
 
-void SDLInputSystem::onMouseMove(int32_t x, int32_t y)
+void SDLInputSystem::OnMouseMove(int32_t x, int32_t y)
 {
 	m_mousePosition.x = x;
 	m_mousePosition.y = y;
 }
 
-void SDLInputSystem::onMouseWheel(int32_t x, int32_t y)
+void SDLInputSystem::OnMouseWheel(int32_t x, int32_t y)
 {
 	m_wheelPosition.x = x;
 	m_wheelPosition.y = y;
 }
 
-bool SDLInputSystem::isKeyPressed(scanCode_t scancode) const {
+bool SDLInputSystem::IsKeyPressed(scanCode_t scancode) const {
 	uint32_t keyStateIdx = getScanCodeStateIndex(scancode);
 	return (m_keyState[keyStateIdx] & getScanCodeMask(scancode, keyStateIdx));
 }

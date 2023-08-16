@@ -4,10 +4,10 @@
 class Render
 {
 public:
-	void init();
-	void shutdown();
+	void Init();
+	void Shutdown();
 
-	void renderScene();
+	void RenderScene();
 };
 
 extern Render g_render;

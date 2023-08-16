@@ -17,17 +17,17 @@ Texture::Texture(IRenderDevice& render_device) :
 }
 
 Texture::~Texture() {
-	destroy();
+	Destroy();
 }
 
-void Texture::destroy() {
+void Texture::Destroy() {
 	if (m_textureIndex != INVALID_TEXTURE_INDEX) {
 		m_render_device->deleteTexture(m_textureIndex);
 		m_textureIndex = INVALID_TEXTURE_INDEX;
 	}
 }
 
-void Texture::load(IReader* reader, bool repeat) {
+void Texture::Load(IReader* reader, bool repeat) {
 	reader->seek(SeekWay::End, 0);
 	size_t length = reader->tell();
 	reader->seek(SeekWay::Begin, 0);
@@ -75,10 +75,10 @@ static void stbiWriteFunc(void* context, void* data, int size) {
 	writer->write(data, size);
 }
 
-void Texture::saveTGA(IWriter* writer) {
+void Texture::SaveTGA(IWriter* writer) {
 	stbi_write_tga_to_func(stbiWriteFunc, writer, 128, 128, 128, nullptr);
 }
 
-void Texture::saveJPEG(IWriter* writer) {
+void Texture::SaveJPEG(IWriter* writer) {
 	stbi_write_jpg_to_func(stbiWriteFunc, writer, 128, 128, 128, nullptr, 80);
 }

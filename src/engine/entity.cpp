@@ -10,49 +10,49 @@ Entity::Entity() :
 Entity::~Entity() {
 }
 
-void Entity::update(float dt) {
+void Entity::Update(float dt) {
 }
 
-Player* Entity::castPlayer() {
+Player* Entity::CastPlayer() {
 	return nullptr;
 }
 
-Weapon* Entity::castWeapon() {
+Weapon* Entity::CastWeapon() {
 	return nullptr;
 }
 
-void Entity::setPosition(const glm::vec3& pos)
+void Entity::SetPosition(const glm::vec3& pos)
 {
 	m_position = pos;
 }
 
-glm::vec3 Entity::getPosition()
+glm::vec3 Entity::GetPosition()
 {
 	return m_position;
 }
 
-void Entity::setRotation(const glm::vec3& rot)
+void Entity::SetRotation(const glm::vec3& rot)
 {
 	m_rotation = rot;
 }
 
-glm::vec3 Entity::getRotation()
+glm::vec3 Entity::GetRotation()
 {
 	return m_rotation;
 }
 
-void Entity::setScale(const glm::vec3& scale)
+void Entity::SetScale(const glm::vec3& scale)
 {
 	m_scale = scale;
 }
 
-glm::vec3 Entity::getScale()
+glm::vec3 Entity::GetScale()
 {
 	return m_scale;
 }
 
 // Kirill: #TODO update matrix if it's dirty
-glm::mat4 Entity::getTranslationMatrix()
+glm::mat4 Entity::GetTranslationMatrix()
 {
 	glm::mat4 trans = glm::mat4(1.0f);
 	trans = glm::translate(trans, m_position);

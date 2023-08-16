@@ -38,16 +38,16 @@ void DebugRender::initialize()
 	buffer_desc.access = BUFFERACCESS_DYNAMIC;
 	buffer_desc.size = sizeof(points);
 
-	m_verticesBuffer = g_engine->getRenderDevice()->createBuffer(buffer_desc);
+	m_verticesBuffer = g_engine->GetRenderDevice()->createBuffer(buffer_desc);
 
-	ShaderData shader = g_pShaderEngine->loadShader("debug_draw");
+	ShaderData shader = g_pShaderEngine->LoadShader("debug_draw");
 	m_shaderProgram = shader.pipelineIndex;
 }
 
 void DebugRender::shutdown()
 {
 	if (m_verticesBuffer != INVALID_BUFFER_INDEX) {
-		g_engine->getRenderDevice()->deleteBuffer(m_verticesBuffer);
+		g_engine->GetRenderDevice()->deleteBuffer(m_verticesBuffer);
 	}
 }
 
@@ -103,7 +103,7 @@ void DebugRender::drawLinesInternal()
 
 	static int last_capacity = 0;
 
-	IRenderDevice* pRenderDevice = g_engine->getRenderDevice();
+	IRenderDevice* pRenderDevice = g_engine->GetRenderDevice();
 
 	// grow buffer is that is nessecary
 	if (last_capacity < m_lines.size()) {
@@ -127,7 +127,7 @@ void DebugRender::drawLinesInternal()
 	//View view = g_render->topView();
 	//view.proj[2][3] -= 0.0001f;
 
-	viewport_t viewport = g_engine->getViewport();
+	viewport_t viewport = g_engine->GetViewport();
 	float aspectRatio = (float)viewport.width / (float)viewport.height;
 
 	// calculate projection matrix
@@ -135,8 +135,10 @@ void DebugRender::drawLinesInternal()
 	proj = glm::perspective(glm::radians(75.0f), aspectRatio, 0.1f, 1000.0f);
 	proj[2][3] -= 0.0001f; // #TODO: Fix stupid bug, when we get very far from wireframe and lines can start cliping
 
+	Camera* camera = g_CameraManager.GetActiveCamera();
+
 	glm::mat4 mvp = glm::identity<glm::mat4>();
-	mvp = proj * g_camera.getViewMatrix() * glm::identity<glm::mat4>();
+	mvp = proj * (camera ? camera->GetViewMatrix() : glm::identity<glm::mat4>()) * glm::identity<glm::mat4>();
 	pRenderDevice->setVSConstant(0, &mvp[0], MATRIX4_SIZE);
 
 	// BINDINGS
@@ -144,8 +146,8 @@ void DebugRender::drawLinesInternal()
 	pRenderDevice->setVertexBuffer(m_verticesBuffer);
 
 	// SHUT THE FUCK UP
-	pRenderDevice->setTexture(0, g_material_system.GetNoTexture()->getTextureIndex());
-	pRenderDevice->setTexture(1, g_material_system.GetNoTexture()->getTextureIndex());
+	pRenderDevice->setTexture(0, g_material_system.GetNoTexture()->GetTextureIndex());
+	pRenderDevice->setTexture(1, g_material_system.GetNoTexture()->GetTextureIndex());
 
 	pRenderDevice->endBinding();
 

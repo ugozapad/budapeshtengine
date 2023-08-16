@@ -14,18 +14,18 @@ public:
 	Level();
 	~Level();
 
-	void load(const char* levelname);
-	void loadLMF(IReader* reader);
+	void Load(const char* levelname);
+	void LoadLMF(IReader* reader);
 
-	Entity* createEntity();
-	void addEntity(Entity* entity); // TODO : Dima to Kirill : Why to give ability to add some random objects to Level?
-	void destroyEntity(Entity* entity);
+	Entity* CreateEntity();
+	void AddEntity(Entity* entity);
+	void DestroyEntity(Entity* entity);
 
-	void update(float fDeltaTime);
-	void render();
+	void Update(float fDeltaTime);
+	void Render();
 
-	Array<Entity*>& getEntities() { return m_entities; }
-	PhysicsWorld* getPhysicsWorld();
+	Array<Entity*>& GetEntities() { return m_entities; }
+	PhysicsWorld* GetPhysicsWorld();
 
 private:
 	bool			m_bBusy;

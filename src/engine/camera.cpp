@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "engine/camera.h"
 
-ENGINE_API Camera g_camera;
-
 Camera::Camera()
 {
 	m_pos = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -17,7 +15,7 @@ Camera::~Camera()
 
 }
 
-void Camera::updateLook(int width, int height)
+void Camera::UpdateLook(int width, int height)
 {
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
@@ -55,24 +53,24 @@ void Camera::updateLook(int width, int height)
 	m_front = glm::normalize(m_dir);
 }
 
-glm::mat4 Camera::getViewMatrix()
+glm::mat4 Camera::GetViewMatrix()
 {
 	return glm::lookAt(m_pos, m_pos + m_front, m_up);
 }
 
-void Camera::lookAt(glm::vec3& dir)
+void Camera::LookAt(glm::vec3& dir)
 {
 
 }
 
 ENGINE_API CameraManager g_CameraManager;
 
-void CameraManager::setActiveCamera(Camera* p_camera)
+void CameraManager::SetActiveCamera(Camera* p_camera)
 {
 	mp_active_camera = p_camera;
 }
 
-Camera* CameraManager::getActiveCamera()
+Camera* CameraManager::GetActiveCamera()
 {
 	return mp_active_camera;
 }

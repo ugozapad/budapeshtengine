@@ -9,12 +9,12 @@ public:
 	OsDriverWin32();
 	~OsDriverWin32();
 
-	void init() override;
-	void shutdown() override;
+	void Init() override;
+	void Shutdown() override;
 
-	const char* getCurrentDirectory() override;
+	const char* GetCurrentAppDirectory() override;
 
-	bool isDirectoryExist(const char* path) override;
+	bool IsDirectoryExist(const char* path) override;
 
 private:
 	char m_current_directory[256];
@@ -37,16 +37,16 @@ OsDriverWin32::~OsDriverWin32()
 {
 }
 
-void OsDriverWin32::init()
+void OsDriverWin32::Init()
 {
 	
 }
 
-void OsDriverWin32::shutdown()
+void OsDriverWin32::Shutdown()
 {
 }
 
-const char* OsDriverWin32::getCurrentDirectory()
+const char* OsDriverWin32::GetCurrentAppDirectory()
 {
 	if (GetCurrentDirectoryA(sizeof(m_current_directory), m_current_directory))
 		return m_current_directory;
@@ -54,7 +54,7 @@ const char* OsDriverWin32::getCurrentDirectory()
 	return nullptr;
 }
 
-bool OsDriverWin32::isDirectoryExist(const char* path)
+bool OsDriverWin32::IsDirectoryExist(const char* path)
 {
 	DWORD dw_attribute = GetFileAttributesA(path);
 	if (dw_attribute == INVALID_FILE_ATTRIBUTES)

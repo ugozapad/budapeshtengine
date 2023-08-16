@@ -29,7 +29,7 @@ LevelMesh::~LevelMesh() {
 
 }
 
-void LevelMesh::load(IReader* reader) {
+void LevelMesh::Load(IReader* reader) {
 
 	// Load LevelMeshMaterial
 	uint32_t diffuse_texture_len = 0;
@@ -118,8 +118,8 @@ void LevelMesh::load(IReader* reader) {
 
 static glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
 
-void LevelMesh::render(const renderContext_t& render_context) {
-	m_mesh->draw(getTranslationMatrix(), render_context);
+void LevelMesh::Render(const renderContext_t& render_context) {
+	m_mesh->Draw(GetTranslationMatrix(), render_context);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -135,7 +135,7 @@ DynamicMeshEntity::~DynamicMeshEntity()
 	}
 }
 
-void DynamicMeshEntity::loadModel(const char* filename)
+void DynamicMeshEntity::LoadModel(const char* filename)
 {
 	IReader* reader = g_file_system->openRead(filename);
 	ASSERT(reader);
@@ -146,14 +146,14 @@ void DynamicMeshEntity::loadModel(const char* filename)
 
 	for (uint16_t i = 0; i < header.mesh_count; i++)
 	{
-		DynamicMesh* dynamic_mesh = DynamicMesh::createFromStream(reader);
+		DynamicMesh* dynamic_mesh = DynamicMesh::CreateFromStream(reader);
 		m_meshes.push_back(dynamic_mesh);
 	}
 }
 
-void DynamicMeshEntity::render(const renderContext_t& render_context)
+void DynamicMeshEntity::Render(const renderContext_t& render_context)
 {
 	for (auto it : m_meshes) {
-		it->draw(getTranslationMatrix(), render_context);
+		it->Draw(GetTranslationMatrix(), render_context);
 	}
 }

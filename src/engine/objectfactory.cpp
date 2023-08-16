@@ -11,7 +11,7 @@ ObjectFactory::~ObjectFactory()
 {
 }
 
-TypedObject* ObjectFactory::createByName(const char* classname)
+TypedObject* ObjectFactory::CreateObjectByName(const char* classname)
 {
 	for (auto it : m_objectCreationInfos)
 	{
@@ -22,7 +22,7 @@ TypedObject* ObjectFactory::createByName(const char* classname)
 	return nullptr;
 }
 
-void ObjectFactory::getObjectCreationInfos(Array<objectCreationInfo_t>& creationInfos)
+void ObjectFactory::GetObjectCreationInfos(Array<objectCreationInfo_t>& creationInfos)
 {
 	creationInfos.resize(m_objectCreationInfos.size());
 

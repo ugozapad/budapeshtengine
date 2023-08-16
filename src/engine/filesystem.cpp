@@ -117,7 +117,7 @@ bool FileSystem::fileExist(const char* filename)
 	ASSERT(length != 0);
 
 	if (filename && length > 0 && filename[length - 1] == '/')
-		return IOsDriver::getInstance()->isDirectoryExist(filename);
+		return IOsDriver::getInstance()->IsDirectoryExist(filename);
 
 	FILE* f = fopen(filename, "rb");
 	if (f) {

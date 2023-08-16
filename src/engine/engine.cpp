@@ -43,9 +43,9 @@ void registerEngineVars()
 
 void registerEngineStuff()
 {
-	g_object_factory->registerObject<Entity>("entity");
-	g_object_factory->registerObject<LevelMesh>("level_mesh");
-	g_object_factory->registerObject<DynamicMeshEntity>("dynamic_mesh");
+	g_object_factory->RegisterObject<Entity>("entity");
+	g_object_factory->RegisterObject<LevelMesh>("level_mesh");
+	g_object_factory->RegisterObject<DynamicMeshEntity>("dynamic_mesh");
 }
 
 Engine::Engine() :
@@ -63,7 +63,7 @@ Engine::~Engine() {
 	g_engine = nullptr;
 }
 
-void Engine::create(int width, int height, bool fullscreen)
+void Engine::Create(int width, int height, bool fullscreen)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING ^ SDL_INIT_SENSOR) != 0)
 	{
@@ -73,16 +73,16 @@ void Engine::create(int width, int height, bool fullscreen)
 	registerEngineVars();
 
 	// Create timer
-	getSystemTimer()->init();
+	GetSystemTimer()->Init();
 
 	// Initialize OS Driver
-	IOsDriver::getInstance()->init();
+	IOsDriver::getInstance()->Init();
 
 	// create filesystem
 	g_file_system = IFileSystem::create();
 
 	// Create logger
-	logOpen("engine");
+	LogOpen("engine");
 
 	if (!g_file_system->fileExist("data/")) {
 		FATAL("ERROR: Not found game data folder.");
@@ -106,8 +106,8 @@ void Engine::create(int width, int height, bool fullscreen)
 	}
 
 	// initialize input system
-	g_input_system = IInputSystem::create(g_allocator);
-	g_input_system->init();
+	g_input_system = IInputSystem::Create();
+	g_input_system->Init();
 
 	// initialize object factory
 	g_object_factory = new ObjectFactory();
@@ -117,10 +117,10 @@ void Engine::create(int width, int height, bool fullscreen)
 
 	// create renderer
 	Msg("Creating render device");
-	createRenderDevice("sokol_rdev");
+	CreateRenderDevice("sokol_rdev");
 	m_render_device->init(m_render_window);
 
-	g_render.init();
+	g_render.Init();
 
 	// init viewport
 	m_viewport.x = 0;
@@ -132,16 +132,16 @@ void Engine::create(int width, int height, bool fullscreen)
 	);
 
 	// initialize sound system
-	createSoundSystem("sound");
+	CreateSoundSystem("sound");
 
 	// Initialize physics world
-	PhysicsWorld::staticInit();
+	PhysicsWorld::StaticInit();
 
 	// create level
 	m_level = new Level();
 
 	// load game library
-	createGameLib("game");
+	CreateGameLib("game");
 
 	// create game persistent
 	ASSERT(!g_pGamePersistent);
@@ -149,12 +149,12 @@ void Engine::create(int width, int height, bool fullscreen)
 
 	bool is_editor_mode = strstr(GetCommandLineA(), "-editor");
 	if (is_editor_mode)
-		createEditor();
+		CreateEditor();
 
 	if (!is_editor_mode)
 		g_VarManager.Save("data/default.cfg");
 
-	getLevel()->load("test_baking");
+	GetLevel()->Load("test_baking");
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -169,7 +169,7 @@ HMODULE g_hSoundSystemLib = NULL;
 HMODULE g_hGameLib = NULL;
 HMODULE g_hEditorLib = NULL;
 
-void Engine::createRenderDevice(const char* devicename)
+void Engine::CreateRenderDevice(const char* devicename)
 {
 	IRenderDevice* pRenderDevice = nullptr;
 	
@@ -194,7 +194,7 @@ void Engine::createRenderDevice(const char* devicename)
 	m_render_device = pRenderDevice;
 }
 
-void Engine::createSoundSystem(const char* soundname)
+void Engine::CreateSoundSystem(const char* soundname)
 {
 	ISoundSystem* pSoundSystem = NULL;
 	char buff[_MAX_PATH]; snprintf(buff, sizeof(buff), "%s.dll", soundname);
@@ -215,7 +215,7 @@ void Engine::createSoundSystem(const char* soundname)
 
 static gameLibShutdown_t s_gameLibShutdownPfn = NULL;
 
-void Engine::createGameLib(const char* custompath)
+void Engine::CreateGameLib(const char* custompath)
 {
 	char buff[_MAX_PATH];
 	snprintf(buff, sizeof(buff), "%s.dll", custompath);
@@ -243,7 +243,7 @@ void Engine::createGameLib(const char* custompath)
 	ASSERT(s_gameLibShutdownPfn && "Missing exports from game library");
 }
 
-void Engine::createEditor()
+void Engine::CreateEditor()
 {
 	char buff[_MAX_PATH];
 	snprintf(buff, sizeof(buff), "%s.dll", "editor");
@@ -262,28 +262,28 @@ void Engine::createEditor()
 
 	ASSERT_MSG(m_editor_system, "Failed to create editor. Missing dll or exports?");
 
-	m_editor_system->init();
+	m_editor_system->Init();
 }
 
-void Engine::update()
+void Engine::Update()
 {
-	getSystemTimer()->update();
+	GetSystemTimer()->Update();
 
-	float fDeltaTime = getSystemTimer()->getDelta();
+	float fDeltaTime = GetSystemTimer()->GetDelta();
 
 	if (m_editor_system)
-		m_editor_system->update(fDeltaTime);
+		m_editor_system->Update(fDeltaTime);
 	
-	g_pSoundSystem->update(fDeltaTime);
+	g_pSoundSystem->Update(fDeltaTime);
 
-	m_level->update(fDeltaTime);
+	m_level->Update(fDeltaTime);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Render Scene
 
 	m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
 
-	g_render.renderScene();
+	g_render.RenderScene();
 
 	g_material_system.Render();
 
@@ -291,15 +291,15 @@ void Engine::update()
 	m_render_device->commit();
 
 	if (m_editor_system)
-		m_editor_system->render();
+		m_editor_system->Render();
 
 	m_render_device->present(false);
 }
 
-void Engine::shutdown()
+void Engine::Shutdown()
 {
 	if (m_editor_system) {
-		m_editor_system->shutdown();
+		m_editor_system->Shutdown();
 
 		// destructor will clear g_pEditorSystem
 		SAFE_DELETE(m_editor_system);
@@ -314,7 +314,7 @@ void Engine::shutdown()
 	s_gameLibShutdownPfn();
 	FreeLibrary(g_hGameLib);
 
-	g_render.shutdown();
+	g_render.Shutdown();
 	
 	if (m_render_device) {
 		m_render_device->shutdown();
@@ -332,7 +332,7 @@ void Engine::shutdown()
 	}
 
 	if (g_input_system) {
-		g_input_system->shutdown();
+		g_input_system->Shutdown();
 		SAFE_DELETE(g_input_system);
 	}
 
@@ -347,42 +347,42 @@ void Engine::shutdown()
 		m_render_window = nullptr;
 	}
 
-	logClose();
+	LogClose();
 
 	IFileSystem::destroy(g_file_system);
 
 	SDL_Quit();
 }
 
-SDL_Window* Engine::getRenderWindow() {
+SDL_Window* Engine::GetRenderWindow() {
 	return m_render_window;
 }
 
-IInputSystem* Engine::getInputSystem() {
+IInputSystem* Engine::GetInputSystem() {
 	return g_input_system;
 }
 
-Level* Engine::getLevel()
+Level* Engine::GetLevel()
 {
 	return m_level;
 }
 
-IRenderDevice* Engine::getRenderDevice()
+IRenderDevice* Engine::GetRenderDevice()
 {
 	return m_render_device;
 }
 
-IEditorSystem* Engine::getEditorSystem()
+IEditorSystem* Engine::GetEditorSystem()
 {
 	return m_editor_system;
 }
 
-viewport_t Engine::getViewport()
+viewport_t Engine::GetViewport()
 {
 	return m_viewport;
 }
 
-void Engine::onWindowSizeChanged(uint32_t w, uint32_t h)
+void Engine::OnWindowSizeChanged(uint32_t w, uint32_t h)
 {
 	m_viewport.width	= w;
 	m_viewport.height	= h;

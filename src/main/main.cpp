@@ -19,22 +19,20 @@ public:
 	{
 	}
 
-	int init(int argc, char* argv[]);
-	void shutdown();
+	int Init(int argc, char* argv[]);
+	void Shutdown();
 
-	void update();
-	void onEvent(SDL_Event& event);
+	void Update();
+	void OnEvent(SDL_Event& event);
 
-	Engine* getEngine() { return m_engine; }
+	Engine* GetEngine() { return m_engine; }
 
 private:
 	Engine* m_engine;
+	HANDLE m_locker_mutex;
 };
 
-static Main s_main;
-static HANDLE s_locker_mutex;
-
-int Main::init(int argc, char* argv[]) {
+int Main::Init(int argc, char* argv[]) {
 
 	bool createLockerMutex = true;
 	bool fullscreen = false;
@@ -47,65 +45,67 @@ int Main::init(int argc, char* argv[]) {
 	}
 
 	if (createLockerMutex) {
-		s_locker_mutex = OpenMutexA(READ_CONTROL, FALSE, "execution_locker_mutex");
-		if (s_locker_mutex) {
+		m_locker_mutex = OpenMutexA(READ_CONTROL, FALSE, "execution_locker_mutex");
+		if (m_locker_mutex) {
 			MessageBoxA(nullptr, "Failed to open second instance.", "Error", MB_OK | MB_ICONERROR);
 			return 2;
 		} else {
-			s_locker_mutex = CreateMutexA(NULL, FALSE, "execution_locker_mutex");
+			m_locker_mutex = CreateMutexA(NULL, FALSE, "execution_locker_mutex");
 		}
 	}
 
 	m_engine = new Engine();
-	m_engine->create(1024, 768, fullscreen);
+	m_engine->Create(1024, 768, fullscreen);
 
 	return 0;
 }
 
-void Main::shutdown() {
-	m_engine->shutdown();
+void Main::Shutdown() {
+	m_engine->Shutdown();
 	SAFE_DELETE(m_engine);
+
+	CloseHandle(m_locker_mutex);
 }
 	
-void Main::update() {
-	if (g_input_system->isKeyPressed(SDL_SCANCODE_ESCAPE))
-		m_engine->requestExit();
+void Main::Update() {
+	if (g_input_system->IsKeyPressed(SDL_SCANCODE_ESCAPE))
+		m_engine->RequestExit();
 	
-	m_engine->update();
+	m_engine->Update();
 }
 
-void Main::onEvent(SDL_Event& event)
+void Main::OnEvent(SDL_Event& event)
 {
-	if (m_engine->getEditorSystem())
-		m_engine->getEditorSystem()->pollEvents(event);
+	if (m_engine->GetEditorSystem())
+		m_engine->GetEditorSystem()->PollEvents(event);
 
 	switch (event.type)
 	{
-	case SDL_QUIT: m_engine->requestExit(); break;
+	case SDL_QUIT: m_engine->RequestExit(); break;
 	case SDL_KEYDOWN:
-		g_input_system->onKeyDown(event.key.keysym.scancode);
+		g_input_system->OnKeyDown(event.key.keysym.scancode);
 		break;
 	case SDL_KEYUP:
-		g_input_system->onKeyUp(event.key.keysym.scancode);
+		g_input_system->OnKeyUp(event.key.keysym.scancode);
 		break;
 	case SDL_MOUSEBUTTONDOWN:
-		g_input_system->onMouseKeyDown(event.button.button);
+		g_input_system->OnMouseKeyDown(event.button.button);
 		break;
 	case SDL_MOUSEBUTTONUP:
-		g_input_system->onMouseKeyUp(event.button.button);
+		g_input_system->OnMouseKeyUp(event.button.button);
 		break;
 	case SDL_MOUSEMOTION:
-		g_input_system->onMouseMove(event.motion.x, event.motion.y);
+		g_input_system->OnMouseMove(event.motion.x, event.motion.y);
 		break;
 	case SDL_MOUSEWHEEL:
-		g_input_system->onMouseWheel(event.wheel.x, event.wheel.y);
+		g_input_system->OnMouseWheel(event.wheel.x, event.wheel.y);
 		break;
 	case SDL_WINDOWEVENT:
 	{
 		switch (event.window.type)
 		{
 		case SDL_WINDOWEVENT_SIZE_CHANGED:
-			m_engine->onWindowSizeChanged(
+			m_engine->OnWindowSizeChanged(
 				event.window.data1,
 				event.window.data2
 			);
@@ -116,19 +116,19 @@ void Main::onEvent(SDL_Event& event)
 }
 
 int main(int argc, char* argv[]) {
+	Main main;
+	int retval = main.Init(argc, argv);
 
-	int retval = s_main.init(argc, argv);
-
-	Engine* pEngine = s_main.getEngine();
-	while (!pEngine->isExitRequested()) {
+	Engine* pEngine = main.GetEngine();
+	while (!pEngine->IsExitRequested()) {
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
-			s_main.onEvent(event);
+			main.OnEvent(event);
 
-		s_main.update();
+		main.Update();
 	}
 
-	s_main.shutdown();
+	main.Shutdown();
 
 	return 0;
 }

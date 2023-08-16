@@ -13,13 +13,13 @@ public:
 	Texture(IRenderDevice& render);
 	~Texture();
 
-	void destroy();
+	void Destroy();
 
-	void load(IReader* reader, bool repeat);
-	void saveTGA(IWriter* writer);
-	void saveJPEG(IWriter* writer);
+	void Load(IReader* reader, bool repeat);
+	void SaveTGA(IWriter* writer);
+	void SaveJPEG(IWriter* writer);
 
-	textureIndex_t getTextureIndex() { return m_textureIndex; }
+	textureIndex_t GetTextureIndex() { return m_textureIndex; }
 
 private:
 	IRenderDevice* m_render_device;

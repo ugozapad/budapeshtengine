@@ -99,13 +99,13 @@ void FontSystem::initialize()
 	buffer_desc.access = BUFFERACCESS_DYNAMIC;
 	buffer_desc.size = MAX_FONT_VBO_SIZE;
 	
-	m_vertexBuffer = g_engine->getRenderDevice()->createBuffer(buffer_desc);
+	m_vertexBuffer = g_engine->GetRenderDevice()->createBuffer(buffer_desc);
 }
 
 void FontSystem::shutdown()
 {
 	if (m_vertexBuffer)	{
-		g_engine->getRenderDevice()->deleteBuffer(m_vertexBuffer);
+		g_engine->GetRenderDevice()->deleteBuffer(m_vertexBuffer);
 		m_vertexBuffer = INVALID_BUFFER_INDEX;
 	}
 
@@ -131,7 +131,7 @@ Font* FontSystem::loadFont(const char* name)
 
 void FontSystem::drawText(Font* font, const char* text, float x, float y, Fcolor color)
 {
-	IRenderDevice* pRenderDevice = g_engine->getRenderDevice();
+	IRenderDevice* pRenderDevice = g_engine->GetRenderDevice();
 
 	size_t buffer_size = strlen(text) * sizeof(FontVertex);
 

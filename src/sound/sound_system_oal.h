@@ -48,7 +48,7 @@ public:
 	ISound* createSound	(const char* sSoundFile) override;
 	void	destroySound(ISound*& pSound) override;
 
-	void	update		(float delta) override;
+	void	Update		(float delta) override;
 
 
 	void	stopAllSounds	() override;

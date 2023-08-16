@@ -5,13 +5,13 @@
 class SystemTimerWin32 : public SystemTimer
 {
 public:
-	void init();
-	void shutdown();
+	void Init();
+	void Shutdown();
 
-	void update();
+	void Update();
 
-	float getTime();
-	float getDelta();
+	float GetTime();
+	float GetDelta();
 
 private:
 	LARGE_INTEGER m_frequency;
@@ -22,7 +22,7 @@ private:
 	float m_deltaTime;
 };
 
-void SystemTimerWin32::init()
+void SystemTimerWin32::Init()
 {
 	QueryPerformanceFrequency(&m_frequency);
 	m_floatFrequency = (float)m_frequency.QuadPart;
@@ -31,30 +31,30 @@ void SystemTimerWin32::init()
 	m_startTime = m_endTime;
 }
 
-void SystemTimerWin32::shutdown()
+void SystemTimerWin32::Shutdown()
 {
 }
 
-void SystemTimerWin32::update()
+void SystemTimerWin32::Update()
 {
 	QueryPerformanceCounter(&m_startTime);
 	m_deltaTime = static_cast<float>(m_startTime.QuadPart - m_endTime.QuadPart) / m_frequency.QuadPart;
 	m_endTime = m_startTime;
 }
 
-float SystemTimerWin32::getTime()
+float SystemTimerWin32::GetTime()
 {
 	LARGE_INTEGER time;
 	QueryPerformanceCounter(&time);
 	return static_cast<float>(time.QuadPart / m_frequency.QuadPart);
 }
 
-float SystemTimerWin32::getDelta()
+float SystemTimerWin32::GetDelta()
 {
 	return m_deltaTime;
 }
 
-SystemTimer* getSystemTimer()
+SystemTimer* GetSystemTimer()
 {
 	static SystemTimerWin32 instance;
 	return &instance;

@@ -11,9 +11,9 @@ public:
 	Player();
 	~Player();
 
-	void update(float dt) override;
+	void Update(float dt) override;
 
-	Player* castPlayer() override { return this; }
+	Player* CastPlayer() override { return this; }
 
 	void activateCamera();
 

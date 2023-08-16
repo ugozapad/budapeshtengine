@@ -24,7 +24,7 @@ public:
 	ShaderEngine(const char* renderName);
 	~ShaderEngine();
 
-	ShaderData loadShader(const char* shaderName);
+	ShaderData LoadShader(const char* shaderName);
 
 private:
 	const char* m_renderName;

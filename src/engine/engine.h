@@ -12,26 +12,26 @@ public:
 	Engine();
 	~Engine();
 
-	void create(int width, int height, bool fullscreen);
-	void createRenderDevice(const char* devicename);
-	void createSoundSystem(const char* soundname);
-	void createGameLib(const char* custompath);
-	void createEditor();
+	void Create(int width, int height, bool fullscreen);
+	void CreateRenderDevice(const char* devicename);
+	void CreateSoundSystem(const char* soundname);
+	void CreateGameLib(const char* custompath);
+	void CreateEditor();
 
-	void update();
-	void shutdown();
+	void Update();
+	void Shutdown();
 
-	SDL_Window* getRenderWindow();
-	IInputSystem* getInputSystem();
-	Level* getLevel();
-	IRenderDevice* getRenderDevice();
-	IEditorSystem* getEditorSystem();
-	viewport_t getViewport();
+	SDL_Window*			GetRenderWindow();
+	IRenderDevice*		GetRenderDevice();
+	IInputSystem*		GetInputSystem();
+	IEditorSystem*		GetEditorSystem();
+	Level*				GetLevel();
+	viewport_t			GetViewport();
 
-	inline void requestExit		() { m_bExitRequested = true; }
-	inline bool isExitRequested	() const { return (m_bExitRequested); }
+	inline void RequestExit		() { m_bExitRequested = true; }
+	inline bool IsExitRequested	() const { return (m_bExitRequested); }
 
-	void		onWindowSizeChanged(uint32_t w, uint32_t h);
+	void		OnWindowSizeChanged(uint32_t w, uint32_t h);
 
 private:
 	bool			m_bExitRequested;

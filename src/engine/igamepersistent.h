@@ -10,7 +10,7 @@ class ENGINE_API IGamePersistent : public TypedObject
 public:
 	virtual ~IGamePersistent();
 
-	virtual void onGameStart() = 0;
+	virtual void OnGameStart() = 0;
 };
 
 inline IGamePersistent::~IGamePersistent()

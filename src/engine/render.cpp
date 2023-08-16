@@ -9,7 +9,7 @@
 
 Render g_render;
 
-void Render::init()
+void Render::Init()
 {
 	g_material_system.Init();
 
@@ -18,7 +18,7 @@ void Render::init()
 	g_debugRender->initialize();
 }
 
-void Render::shutdown()
+void Render::Shutdown()
 {
 	if (g_debugRender) {
 		g_debugRender->shutdown();
@@ -28,29 +28,29 @@ void Render::shutdown()
 	g_material_system.Shutdown();
 }
 
-void Render::renderScene()
+void Render::RenderScene()
 {
 	// calculate aspect ratio
-	viewport_t viewport = g_engine->getViewport();
+	viewport_t viewport = g_engine->GetViewport();
 	float aspectRatio = (float)viewport.width / (float)viewport.height;
 
 	// calculate projection matrix
 	glm::mat4 proj = glm::mat4(1.0f);
 	proj = glm::perspective(glm::radians(75.0f), aspectRatio, 0.1f, 1000.0f);
 
-	Camera* camera = g_CameraManager.getActiveCamera();
+	Camera* camera = g_CameraManager.GetActiveCamera();
 
 	renderContext_t render_context = {};
-	render_context.view_matrix = camera ? camera->getViewMatrix() : glm::mat4(1.0f);
+	render_context.view_matrix = camera ? camera->GetViewMatrix() : glm::mat4(1.0f);
 	render_context.projection_matrix = proj;
 
 	// Render static scene
-	Array<Entity*>& entities = g_engine->getLevel()->getEntities();
+	Array<Entity*>& entities = g_engine->GetLevel()->GetEntities();
 	for (auto it : entities)
 	{
 		if (LevelMesh* level_mesh = dynamicCast<LevelMesh>(it))
 		{
-			level_mesh->render(render_context);
+			level_mesh->Render(render_context);
 		}
 	}
 
@@ -59,7 +59,7 @@ void Render::renderScene()
 	{
 		if (DynamicMeshEntity* dynamic_mesh = dynamicCast<DynamicMeshEntity>(it))
 		{
-			dynamic_mesh->render(render_context);
+			dynamic_mesh->Render(render_context);
 		}
 	}
 }

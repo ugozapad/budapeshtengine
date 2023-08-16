@@ -11,22 +11,22 @@ public:
 	virtual ~TypedObject() {}
 
 	//! Get object class id.
-	template <typename T> static typeId_t getTypeId() { static char typeId; return &typeId; }
+	template <typename T> static typeId_t GetTypeId() { static char typeId; return &typeId; }
 
 	//! Get class name.
-	virtual const char* getClassName() { return "TypedObject"; }
+	virtual const char* GetClassName() { return "TypedObject"; }
 
 	//! Match type with another class.
-	virtual bool isKindOf(const typeId_t typeId) const { return typeId == getTypeId<TypedObject>(); }
+	virtual bool IsTypeOf(const typeId_t typeId) const { return typeId == GetTypeId<TypedObject>(); }
 
 	//! Templated version of isKindOf.
-	template <typename T> bool isKindOf() const { return isKindOf(getTypeId<T>()); }
+	template <typename T> bool IsKindOf() const { return IsTypeOf(GetTypeId<T>()); }
 };
 
 //! Safe dynamic cast for all TypedObject
 template <typename T>
 T* dynamicCast(TypedObject* object) {
-	if (object->isKindOf<T>())
+	if (object->IsKindOf<T>())
 		return (T*)object;
 
 	return nullptr;
@@ -35,16 +35,16 @@ T* dynamicCast(TypedObject* object) {
 //! Get type id from TypedObject
 template <typename T>
 typeId_t get_type_id() {
-	return TypedObject::getTypeId<T>();
+	return TypedObject::GetTypeId<T>();
 }
 
 //! Define for subclass of TypedObject
 #define OBJECT_IMPLEMENT(CLASS, BASECLASS) \
-	virtual const char* getClassName() { return #CLASS; } \
-	virtual bool isKindOf(const typeId_t typeId) const { return getTypeId<CLASS>() == typeId ? true : BASECLASS::isKindOf(typeId);  }
+	virtual const char* GetClassName() { return #CLASS; } \
+	virtual bool IsTypeOf(const typeId_t typeId) const { return GetTypeId<CLASS>() == typeId ? true : BASECLASS::IsTypeOf(typeId);  }
 
 //! Define for easy using isKindOf for subclasses of TypedObject
 #define ObjectIsKindOf(PTR, CLASS) \
-	PTR->isKindOf(get_type_id<CLASS>())
+	PTR->isTypeOf(get_type_id<CLASS>())
 
 #endif

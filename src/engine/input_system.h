@@ -13,26 +13,26 @@ enum mouseButton_
 
 	mouseButton_LastNamed = mouseButton_Right
 };
-#define getNamelessMouseButtonIndex(buttonNum) mouseButton_t(mouseButton_LastNamed + buttonNum)
+#define GetNamelessMouseButtonIndex(buttonNum) mouseButton_t(mouseButton_LastNamed + buttonNum)
 
 class IInputSystem {
 public:
-	ENGINE_API static IInputSystem* create(IAllocator* allocator);
+	ENGINE_API static IInputSystem* Create();
 
 public:
 	virtual ~IInputSystem() {}
 
-	virtual void init() = 0;
-	virtual void shutdown() = 0;
+	virtual void Init() = 0;
+	virtual void Shutdown() = 0;
 
-	virtual void onKeyDown		(scanCode_t scancode) = 0;
-	virtual void onKeyUp		(scanCode_t scancode) = 0;
-	virtual void onMouseKeyDown	(mouseButton_t mousebutton) = 0;
-	virtual void onMouseKeyUp	(mouseButton_t mousebutton) = 0;
-	virtual void onMouseMove	(int32_t x, int32_t y) = 0;
-	virtual void onMouseWheel	(int32_t x, int32_t y) = 0;
+	virtual void OnKeyDown		(scanCode_t scancode) = 0;
+	virtual void OnKeyUp		(scanCode_t scancode) = 0;
+	virtual void OnMouseKeyDown	(mouseButton_t mousebutton) = 0;
+	virtual void OnMouseKeyUp	(mouseButton_t mousebutton) = 0;
+	virtual void OnMouseMove	(int32_t x, int32_t y) = 0;
+	virtual void OnMouseWheel	(int32_t x, int32_t y) = 0;
 
-	virtual bool isKeyPressed	(scanCode_t scancode) const = 0;
+	virtual bool IsKeyPressed	(scanCode_t scancode) const = 0;
 };
 
 extern ENGINE_API IInputSystem* g_input_system;

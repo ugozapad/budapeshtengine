@@ -14,21 +14,21 @@
 Level::Level()
 	: m_bBusy(false), m_physicsWorld(nullptr)
 {
-	m_physicsWorld = new PhysicsWorld();
-	m_physicsWorld->create();
+	//m_physicsWorld = new PhysicsWorld();
+	//m_physicsWorld->Create();
 }
 
 Level::~Level()
 {
-	if (m_physicsWorld)
-	{
-		m_physicsWorld->destroy();
-		delete m_physicsWorld;
-		m_physicsWorld = nullptr;
-	}
+	//if (m_physicsWorld)
+	//{
+	//	m_physicsWorld->Destroy();
+	//	delete m_physicsWorld;
+	//	m_physicsWorld = nullptr;
+	//}
 }
 
-void Level::load(const char* levelname)
+void Level::Load(const char* levelname)
 {
 	Msg("loading level %s", levelname);
 
@@ -39,7 +39,7 @@ void Level::load(const char* levelname)
 	
 	strcpy(levelpath + pathend, "level.lmf");
 	reader = g_file_system->openRead(levelpath);
-	loadLMF(reader);
+	LoadLMF(reader);
 	g_file_system->deleteReader(reader);
 	
 	// strcpy(levelpath + pathend, "level.somefile");
@@ -47,10 +47,10 @@ void Level::load(const char* levelname)
 	// loadSomeFile(reader);
 	// etc.
 
-	g_pGamePersistent->onGameStart();
+	g_pGamePersistent->OnGameStart();
 }
 
-void Level::loadLMF(IReader* reader)
+void Level::LoadLMF(IReader* reader)
 {
 	// read header
 	LevelMeshHeader header;
@@ -59,19 +59,19 @@ void Level::loadLMF(IReader* reader)
 	for (uint16_t i = 0; i < header.mesh_count; i++)
 	{
 		LevelMesh* level_mesh = new LevelMesh();
-		level_mesh->load(reader);
+		level_mesh->Load(reader);
 
 		Entity* level_mesh_entity = level_mesh;
 		m_entities.push_back(level_mesh_entity);
 	}
 }
 
-Entity* Level::createEntity()
+Entity* Level::CreateEntity()
 {
 	if (m_bBusy)
 	{
 #ifdef _DEBUG
-		FATAL("Level::createEntity: level is currently busy");
+		FATAL("Level::CreateEntity: level is currently busy");
 #endif
 		return (NULL);
 	}
@@ -81,15 +81,15 @@ Entity* Level::createEntity()
 	return entity;
 }
 
-void Level::addEntity(Entity* entity)
+void Level::AddEntity(Entity* entity)
 {
 	if (m_bBusy)
 	{
-		FATAL("Level::addEntity: level is currently busy");
+		FATAL("Level::AddEntity: level is currently busy");
 	}
 	if (!entity)
 	{
-		FATAL("Level::addEntity: failed to add null ptr entity");
+		FATAL("Level::AddEntity: failed to add null ptr entity");
 	}
 
 	size_t entity_count = m_entities.size();
@@ -98,14 +98,14 @@ void Level::addEntity(Entity* entity)
 		//Msg("entity %i %s", i, m_entities[i]->getClassName());
 
 		if (m_entities[i] == entity) {
-			FATAL("Level::addEntity: entity (classname=%s ptr=0x%p) already exists", entity->getClassName(), entity);
+			FATAL("Level::AddEntity: entity (classname=%s ptr=0x%p) already exists", entity->GetClassName(), entity);
 		}
 	}
 
 	m_entities.push_back(entity);
 }
 
-void Level::destroyEntity(Entity* entity)
+void Level::DestroyEntity(Entity* entity)
 {
 	if (!entity) return;
 
@@ -118,7 +118,7 @@ void Level::destroyEntity(Entity* entity)
 	{
 		if (m_bBusy)
 		{
-			(*it)->setCanBeDestroyed();
+			(*it)->SetCanBeDestroyed();
 			m_bNeedToDestroyEnt = true;
 		}
 		else
@@ -129,7 +129,7 @@ void Level::destroyEntity(Entity* entity)
 	}
 }
 
-void Level::update(float fDeltaTime)
+void Level::Update(float fDeltaTime)
 {
 	if (m_bNeedToDestroyEnt)
 	{
@@ -137,7 +137,7 @@ void Level::update(float fDeltaTime)
 		{
 			inline bool operator()(Entity* pE) const
 			{
-				if (pE->canBeDestroyed())
+				if (pE->CanBeDestroyed())
 				{
 					delete pE;
 					return (true);
@@ -158,17 +158,17 @@ void Level::update(float fDeltaTime)
 
 	m_bBusy = true;
 	
-	m_physicsWorld->update(fDeltaTime);
+	if (m_physicsWorld) m_physicsWorld->Update(fDeltaTime);
 
 	for (auto it : m_entities)
 	{
-		it->update(fDeltaTime);
+		it->Update(fDeltaTime);
 	}
 
 	m_bBusy = false;
 }
 
-void Level::render()
+void Level::Render()
 {
 	m_bBusy = true;
 
@@ -188,7 +188,7 @@ void Level::render()
 	m_bBusy = false;
 }
 
-PhysicsWorld* Level::getPhysicsWorld()
+PhysicsWorld* Level::GetPhysicsWorld()
 {
 	return m_physicsWorld;
 }

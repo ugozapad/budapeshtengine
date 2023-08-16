@@ -8,14 +8,14 @@ class IEditorSystem
 public:
 	virtual ~IEditorSystem();
 
-	virtual void init() = 0;
-	virtual void shutdown() = 0;
+	virtual void Init() = 0;
+	virtual void Shutdown() = 0;
 
 	// #TODO: Make InputListenter or SystemMessageListener
-	virtual void pollEvents(SDL_Event& event) = 0;
+	virtual void PollEvents(SDL_Event& event) = 0;
 
-	virtual void update(float dt) = 0;
-	virtual void render() = 0;
+	virtual void Update(float dt) = 0;
+	virtual void Render() = 0;
 };
 
 inline IEditorSystem::~IEditorSystem()

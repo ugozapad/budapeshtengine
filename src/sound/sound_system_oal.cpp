@@ -204,7 +204,7 @@ void SoundSystem_OpenAL::destroySound(ISound*& pSound)
 	pSound = NULL;
 }
 
-void SoundSystem_OpenAL::update(float delta)
+void SoundSystem_OpenAL::Update(float delta)
 {
 	size_t const E = m_sounds.size();
 	for (size_t I = 0; I < E; ++I)

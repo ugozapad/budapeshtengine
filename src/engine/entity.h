@@ -15,25 +15,25 @@ public:
 	Entity();
 	virtual ~Entity();
 
-	virtual void update(float dt);
+	virtual void Update(float dt);
 
 	// Inplace cast'ers
-	virtual Player* castPlayer();
-	virtual Weapon* castWeapon();
+	virtual Player* CastPlayer();
+	virtual Weapon* CastWeapon();
 
-	inline bool canBeDestroyed() const { return (m_bCanBeDestroyed); }
-	inline void	setCanBeDestroyed() { m_bCanBeDestroyed = true; }
+	inline bool CanBeDestroyed() const { return (m_bCanBeDestroyed); }
+	inline void	SetCanBeDestroyed() { m_bCanBeDestroyed = true; }
 
-	void setPosition(const glm::vec3& pos);
-	glm::vec3 getPosition();
+	void SetPosition(const glm::vec3& pos);
+	glm::vec3 GetPosition();
 
-	void setRotation(const glm::vec3& rot);
-	glm::vec3 getRotation();
+	void SetRotation(const glm::vec3& rot);
+	glm::vec3 GetRotation();
 
-	void setScale(const glm::vec3& scale);
-	glm::vec3 getScale();
+	void SetScale(const glm::vec3& scale);
+	glm::vec3 GetScale();
 
-	glm::mat4 getTranslationMatrix();
+	glm::mat4 GetTranslationMatrix();
 
 protected:
 	glm::vec3 m_position;

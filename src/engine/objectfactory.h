@@ -8,7 +8,7 @@ class TypedObject;
 typedef TypedObject* (*pfnCreateObject_t)();
 
 template <typename T>
-T* createObjectTemplated() {
+T* CreateObjectTemplated() {
 	return new T();
 }
 
@@ -24,14 +24,14 @@ public:
 	~ObjectFactory();
 
 	template <typename T>
-	void registerObject(const char* classname);
+	void RegisterObject(const char* classname);
 
 	template <typename T>
-	T* createObject();
+	T* CreateObject();
 
-	TypedObject* createByName(const char* classname);
+	TypedObject* CreateObjectByName(const char* classname);
 
-	void getObjectCreationInfos(Array<objectCreationInfo_t>& creationInfos);
+	void GetObjectCreationInfos(Array<objectCreationInfo_t>& creationInfos);
 
 private:
 	Array<objectCreationInfo_t> m_objectCreationInfos;
@@ -40,9 +40,9 @@ private:
 extern ENGINE_API ObjectFactory* g_object_factory;
 
 template<typename T>
-inline void ObjectFactory::registerObject(const char* classname) {
+inline void ObjectFactory::RegisterObject(const char* classname) {
 
-	pfnCreateObject_t create_object_pfn = (pfnCreateObject_t)createObjectTemplated<T>;
+	pfnCreateObject_t create_object_pfn = (pfnCreateObject_t)CreateObjectTemplated<T>;
 	objectCreationInfo_t oci = {};
 	oci.create_proc = create_object_pfn;
 	oci.id = get_type_id<T>();
@@ -51,7 +51,7 @@ inline void ObjectFactory::registerObject(const char* classname) {
 }
 
 template<typename T>
-inline T* ObjectFactory::createObject()
+inline T* ObjectFactory::CreateObject()
 {
 	for (auto it : m_objectCreationInfos)
 	{
@@ -65,6 +65,6 @@ inline T* ObjectFactory::createObject()
 }
 
 #define CREATE_OBJECT(CLASS, NAME) \
-	(CLASS*)g_object_factory->createByName(NAME)
+	(CLASS*)g_object_factory->CreateObjectByName(NAME)
 
 #endif // !OBJECTFACTORY_H

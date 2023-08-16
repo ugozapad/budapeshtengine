@@ -44,9 +44,9 @@ public:
 	LevelMesh();
 	~LevelMesh();
 
-	void load(IReader* reader);
+	void Load(IReader* reader);
 
-	void render(const renderContext_t& render_context);
+	void Render(const renderContext_t& render_context);
 
 private:
 	char* m_mesh_name;
@@ -61,9 +61,9 @@ public:
 	DynamicMeshEntity();
 	~DynamicMeshEntity();
 
-	void loadModel(const char* filename);
+	void LoadModel(const char* filename);
 
-	void render(const renderContext_t& render_context);
+	void Render(const renderContext_t& render_context);
 
 private:
 	Array<DynamicMesh*> m_meshes;

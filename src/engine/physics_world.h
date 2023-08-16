@@ -9,18 +9,18 @@
 class PhysicsWorld
 {
 public:
-	static void staticInit();
+	static void StaticInit();
 
 public:
 	PhysicsWorld();
 	~PhysicsWorld();
 
-	void create();
-	void destroy();
+	void Create();
+	void Destroy();
 
-	void update(float deltaTime);
+	void Update(float deltaTime);
 
-	btDynamicsWorld* getWorld();
+	btDynamicsWorld* GetWorld();
 
 private:
 	btDefaultCollisionConfiguration* m_collisionConfiguration;

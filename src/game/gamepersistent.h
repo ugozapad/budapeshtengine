@@ -11,7 +11,7 @@ public:
 	GamePersistent();
 	~GamePersistent();
 
-	void onGameStart() override;
+	void OnGameStart() override;
 };
 
 #endif // !GAMEPERSISTENT_H

@@ -11,9 +11,9 @@
 
 void gameLibRegisterObjects()
 {
-	g_object_factory->registerObject<GamePersistent>(CLSID_GAMEPERSISTENT);
-	g_object_factory->registerObject<WorldSpawn>("world_spawn");
-	g_object_factory->registerObject<Player>("player");
+	g_object_factory->RegisterObject<GamePersistent>(CLSID_GAMEPERSISTENT);
+	g_object_factory->RegisterObject<WorldSpawn>("world_spawn");
+	g_object_factory->RegisterObject<Player>("player");
 }
 
 void gameLibInit()

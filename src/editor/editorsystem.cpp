@@ -22,13 +22,13 @@ public:
 	EditorSystem();
 	~EditorSystem();
 
-	void init();
-	void shutdown();
+	void Init();
+	void Shutdown();
 
-	void pollEvents(SDL_Event& event);
+	void PollEvents(SDL_Event& event);
 
-	void update(float dt);
-	void render();
+	void Update(float dt);
+	void Render();
 
 	void renderMenu();
 
@@ -61,7 +61,7 @@ EditorSystem::~EditorSystem()
 	g_pEditorSystem = nullptr;
 }
 
-void EditorSystem::init()
+void EditorSystem::Init()
 {
 	// Setup Dear ImGui context
 	IMGUI_CHECKVERSION();
@@ -89,11 +89,11 @@ void EditorSystem::init()
 	const char* glsl_version = "#version 130";
 
 	// Setup Platform/Renderer backends
-	ImGui_ImplSDL2_InitForOpenGL(g_engine->getRenderWindow(), SDL_GL_GetCurrentContext());
+	ImGui_ImplSDL2_InitForOpenGL(g_engine->GetRenderWindow(), SDL_GL_GetCurrentContext());
 	ImGui_ImplOpenGL3_Init(glsl_version);
 }
 
-void EditorSystem::shutdown()
+void EditorSystem::Shutdown()
 {
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();
@@ -101,12 +101,12 @@ void EditorSystem::shutdown()
 	ImGui::DestroyContext();
 }
 
-void EditorSystem::pollEvents(SDL_Event& event)
+void EditorSystem::PollEvents(SDL_Event& event)
 {
 	ImGui_ImplSDL2_ProcessEvent(&event);
 }
 
-void EditorSystem::update(float dt)
+void EditorSystem::Update(float dt)
 {
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -119,7 +119,7 @@ void EditorSystem::update(float dt)
 	//ImGui::ShowDemoWindow((bool*)true);
 }
 
-void EditorSystem::render()
+void EditorSystem::Render()
 {
 	ImGuiIO& io = ImGui::GetIO();
 
@@ -151,7 +151,7 @@ void EditorSystem::renderMenu()
 			ImGui::MenuItem("Save");
 			ImGui::MenuItem("Save As...");
 			ImGui::Separator();
-			if (ImGui::MenuItem("Exit")) g_engine->requestExit();
+			if (ImGui::MenuItem("Exit")) g_engine->RequestExit();
 			ImGui::EndMenu();
 		}
 
@@ -221,8 +221,8 @@ void EditorSystem::renderMenu()
 	{
 		if (ImGui::Begin("Camera Debug", &m_bCameraDebugWindowOpened))
 		{
-			ImGui::InputFloat3("Position", reinterpret_cast<float*>(&g_camera.getPosition()));
-			ImGui::InputFloat3("Direction", reinterpret_cast<float*>(&g_camera.getDirection()));
+		//	ImGui::InputFloat3("Position", reinterpret_cast<float*>(&g_camera.GetPosition()));
+		//	ImGui::InputFloat3("Direction", reinterpret_cast<float*>(&g_camera.GetDirection()));
 		}
 		ImGui::End();
 	}
@@ -232,7 +232,7 @@ void EditorSystem::renderMenu()
 		if (ImGui::Begin("Entity Creation", &m_bEntityCreationWindowOpened))
 		{
 			Array<objectCreationInfo_t> objects;
-			g_object_factory->getObjectCreationInfos(objects);
+			g_object_factory->GetObjectCreationInfos(objects);
 
 			for (auto it : objects)
 			{

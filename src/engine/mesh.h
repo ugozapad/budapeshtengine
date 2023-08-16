@@ -78,7 +78,7 @@ struct renderContext_t
 	glm::mat4 projection_matrix;
 	glm::mat4 view_matrix;
 
-	const glm::mat4 getMVP(const glm::mat4& model_matrix) const
+	const glm::mat4 GetMVP(const glm::mat4& model_matrix) const
 	{
 		glm::mat4 mvp = glm::mat4(1.0f);
 		mvp = projection_matrix * view_matrix * model_matrix;
@@ -97,16 +97,16 @@ public:
 
 	~StaticLevelMesh();
 
-	void draw(const glm::mat4& model_matrix, const renderContext_t& render_context);
+	void Draw(const glm::mat4& model_matrix, const renderContext_t& render_context);
 
 private:
-	void createGpu_Vertex(Array<LevelMeshVertex_LM>& vertices);
-	void createGpu_Indices(Array<uint16_t>& indices);
-	void createGpu_Material(const char* material_name,
+	void CreateGpu_Vertex(Array<LevelMeshVertex_LM>& vertices);
+	void CreateGpu_Indices(Array<uint16_t>& indices);
+	void CreateGpu_Material(const char* material_name,
 		const char* texture_name,
 		const char* lm_name);
 
-	void destroyGpu();
+	void DestroyGpu();
 
 private:
 	Texture* m_diffuse_texture;
@@ -124,7 +124,7 @@ private:
 class DynamicMesh
 {
 public:
-	static DynamicMesh* createFromStream(IReader* reader);
+	static DynamicMesh* CreateFromStream(IReader* reader);
 
 public:
 	DynamicMesh(Array<LevelMeshVertex_LM>& vertices,
@@ -132,7 +132,7 @@ public:
 		const char* texture_name);
 	~DynamicMesh();
 
-	void draw(const glm::mat4& model_matrix, const renderContext_t& render_context);
+	void Draw(const glm::mat4& model_matrix, const renderContext_t& render_context);
 
 private:
 	Texture* m_tex;

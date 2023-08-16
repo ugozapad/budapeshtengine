@@ -15,23 +15,23 @@ GamePersistent::~GamePersistent()
 {
 }
 
-void GamePersistent::onGameStart()
+void GamePersistent::OnGameStart()
 {
 	Msg("Welcome to our Budapesht Engine!");
 
-	ASSERT(g_engine->getLevel());
+	ASSERT(g_engine->GetLevel());
 
 	Msg("Create player");
 
-	Entity* p_Player = g_object_factory->createObject<Player>();
-	g_engine->getLevel()->addEntity(p_Player);
+	Entity* p_Player = g_object_factory->CreateObject<Player>();
+	g_engine->GetLevel()->AddEntity(p_Player);
 
 	// create mesh
-	DynamicMeshEntity* meshEntity = (DynamicMeshEntity*)g_object_factory->createByName("dynamic_mesh");
-	meshEntity->setPosition(glm::vec3(0.0f, 10.0f, 0.0f));
-	meshEntity->setScale(glm::vec3(20.0f));
-	meshEntity->loadModel("data/levels/test_baking/test_baking.lmf");
-	g_engine->getLevel()->addEntity(meshEntity);
+	DynamicMeshEntity* meshEntity = (DynamicMeshEntity*)g_object_factory->CreateObjectByName("dynamic_mesh");
+	meshEntity->SetPosition(glm::vec3(0.0f, 10.0f, 0.0f));
+	meshEntity->SetScale(glm::vec3(20.0f));
+	meshEntity->LoadModel("data/levels/test_baking/test_baking.lmf");
+	g_engine->GetLevel()->AddEntity(meshEntity);
 
 	// activate camera
 	static_cast<Player*>(p_Player)->activateCamera();

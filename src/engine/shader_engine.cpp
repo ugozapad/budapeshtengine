@@ -18,7 +18,7 @@ ShaderEngine::~ShaderEngine()
 	m_shaders.clear();
 }
 
-ShaderData ShaderEngine::loadShader(const char* shaderName)
+ShaderData ShaderEngine::LoadShader(const char* shaderName)
 {
 	ShaderData sd = { INVALID_SHADER_INDEX, INVALID_PIPELINE_INDEX };
 	SHADERS_MAP::iterator it = m_shaders.find(shaderName);
@@ -119,7 +119,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 			shader_desc.uniform_count = 1;
 		}
 
-		sd.shaderIndex = g_engine->getRenderDevice()->createShader(shader_desc);
+		sd.shaderIndex = g_engine->GetRenderDevice()->createShader(shader_desc);
 		if (sd.shaderIndex == INVALID_SHADER_INDEX) {
 			FATAL("!!! %s index is invalid", shaderName);
 		}
@@ -159,7 +159,7 @@ ShaderData ShaderEngine::loadShader(const char* shaderName)
 			pipeline_desc.lines_Draw = true;
 		}
 
-		sd.pipelineIndex = g_engine->getRenderDevice()->createPipeline(pipeline_desc);
+		sd.pipelineIndex = g_engine->GetRenderDevice()->createPipeline(pipeline_desc);
 		if (sd.pipelineIndex == INVALID_PIPELINE_INDEX) {
 			FATAL("!!! %s pipeline is invalid", shaderName);
 		}

@@ -3,7 +3,7 @@
 #include "engine/logger.h"
 #include "engine/filesystem.h"
 
-IWriter* g_logWriter = nullptr;
+IWriter* g_log_writer = nullptr;
 
 static const char* g_month[12] = { "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec" };
 static int g_day_in_month[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -41,7 +41,7 @@ void CalculateBuildNumber()
 		build_id -= g_day_in_month[i];
 }
 
-void logOpen(const char* filename)
+void LogOpen(const char* filename)
 {
 	char username[256];
 	DWORD username_size = sizeof(username);
@@ -52,8 +52,8 @@ void logOpen(const char* filename)
 	char logFilename[256];
 	snprintf(logFilename, sizeof(logFilename), "%s_%s.log", filename, username);
 
-	g_logWriter = g_file_system->openWrite(logFilename);
-	assert(g_logWriter);
+	g_log_writer = g_file_system->openWrite(logFilename);
+	assert(g_log_writer);
 
 	struct tm newtime;
 	__time32_t aclock;
@@ -68,15 +68,15 @@ void logOpen(const char* filename)
 	Msg("'%s' build %d, %s", filename, build_id, __DATE__);
 }
 
-void logClose()
+void LogClose()
 {
-	if (g_logWriter)
+	if (g_log_writer)
 	{
 		// flush log
 		//g_logWriter->flush();
 
-		delete g_logWriter;
-		g_logWriter = nullptr;
+		delete g_log_writer;
+		g_log_writer = nullptr;
 	}
 }
 
@@ -95,6 +95,6 @@ void Msg(const char* msg, ...)
 	// write to console
 	fwrite(buffer, sizeof(char), strlen(buffer), stdout);
 
-	if (g_logWriter)
-		g_logWriter->write(buffer, strlen(buffer));
+	if (g_log_writer)
+		g_log_writer->write(buffer, strlen(buffer));
 }

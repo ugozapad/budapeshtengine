@@ -10,22 +10,22 @@ Player::Player() {
 Player::~Player() {
 }
 
-void Player::update(float dt)
+void Player::Update(float dt)
 {
-	viewport_t viewport = g_engine->getViewport();
-	m_camera.updateLook(viewport.width, viewport.height);
+	viewport_t viewport = g_engine->GetViewport();
+	m_camera.UpdateLook(viewport.width, viewport.height);
 
 	const float fWalkSpeed = 9.0f;
 
 	// calculate player movement
 
-	if (g_input_system->isKeyPressed(SDL_SCANCODE_W))
+	if (g_input_system->IsKeyPressed(SDL_SCANCODE_W))
 		m_position += (fWalkSpeed * dt) * m_camera.m_front;
-	if (g_input_system->isKeyPressed(SDL_SCANCODE_S))
+	if (g_input_system->IsKeyPressed(SDL_SCANCODE_S))
 		m_position -= (fWalkSpeed * dt) * m_camera.m_front;
-	if (g_input_system->isKeyPressed(SDL_SCANCODE_A))
+	if (g_input_system->IsKeyPressed(SDL_SCANCODE_A))
 		m_position -= glm::normalize(glm::cross(m_camera.m_front, m_camera.m_up)) * (fWalkSpeed * dt);
-	if (g_input_system->isKeyPressed(SDL_SCANCODE_D))
+	if (g_input_system->IsKeyPressed(SDL_SCANCODE_D))
 		m_position += glm::normalize(glm::cross(m_camera.m_front, m_camera.m_up)) * (fWalkSpeed * dt);
 
 	glm::vec3 front = glm::vec3(1.0f);
@@ -33,13 +33,13 @@ void Player::update(float dt)
 	front.y = sin(glm::radians(-m_camera.m_pitch));
 	front.z = sin(glm::radians(m_camera.m_yaw)) * cos(glm::radians(-m_camera.m_pitch));
 	front = glm::normalize(front);
-	m_camera.setDirection(front);
+	m_camera.SetDirection(front);
 
 	// set position back to camera for calculation view matrix
-	m_camera.setPosition(m_position);
+	m_camera.SetPosition(m_position);
 }
 
 void Player::activateCamera()
 {
-	g_CameraManager.setActiveCamera(&m_camera);
+	g_CameraManager.SetActiveCamera(&m_camera);
 }

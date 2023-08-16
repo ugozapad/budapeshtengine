@@ -12,17 +12,17 @@ public:
 	Camera();
 	~Camera();
 
-	void updateLook(int width, int height);
+	void UpdateLook(int width, int height);
 
-	glm::mat4 getViewMatrix();
+	glm::mat4 GetViewMatrix();
 
-	void lookAt(glm::vec3& dir);
+	void LookAt(glm::vec3& dir);
 
-	glm::vec3 getPosition() { return m_pos; }
-	void setPosition(glm::vec3& pos) { m_pos = pos; }
+	glm::vec3 GetPosition() { return m_pos; }
+	void SetPosition(glm::vec3& pos) { m_pos = pos; }
 
-	glm::vec3 getDirection() { return m_dir; }
-	void setDirection(glm::vec3& dir) { m_dir = dir; }
+	glm::vec3 GetDirection() { return m_dir; }
+	void SetDirection(glm::vec3& dir) { m_dir = dir; }
 public:
 	glm::vec3 m_pos;
 	glm::vec3 m_front;
@@ -33,13 +33,11 @@ public:
 	float m_pitch;
 };
 
-extern ENGINE_API Camera g_camera;
-
 class ENGINE_API CameraManager
 {
 public:
-	void setActiveCamera(Camera* p_camera);
-	Camera* getActiveCamera();
+	void SetActiveCamera(Camera* p_camera);
+	Camera* GetActiveCamera();
 
 private:
 	Camera* mp_active_camera;

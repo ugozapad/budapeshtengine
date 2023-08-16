@@ -61,13 +61,13 @@ void MaterialSystem::Init()
 		exit(-1);
 	}
 
-	m_notex = new Texture(*g_engine->getRenderDevice());
+	m_notex = new Texture(*g_engine->GetRenderDevice());
 
 	// open reader
 	IReader* reader = g_file_system->openRead(buffer);
 	ASSERT(reader);
 
-	m_notex->load(reader, false);
+	m_notex->Load(reader, false);
 
 	// close reader
 	g_file_system->deleteReader(reader);
@@ -91,7 +91,7 @@ void MaterialSystem::Render()
 
 void MaterialSystem::SetTexture(int slot, Texture* texture)
 {
-	g_engine->getRenderDevice()->setTexture(slot, texture->getTextureIndex());
+	g_engine->GetRenderDevice()->setTexture(slot, texture->GetTextureIndex());
 }
 
 Texture* MaterialSystem::LoadTexture(const char* filename, bool absolutePath /*= false*/)
@@ -120,13 +120,13 @@ Texture* MaterialSystem::LoadTexture(const char* filename, bool absolutePath /*=
 	// Kirill: TODO shit rewrite
 	bool repeat = !strstr(filename, "_lm");
 
-	Texture* p_texture = new Texture(*g_engine->getRenderDevice());
+	Texture* p_texture = new Texture(*g_engine->GetRenderDevice());
 
 	// open reader
 	IReader* reader = g_file_system->openRead(buffer);
 	ASSERT(reader);
 
-	p_texture->load(reader, repeat);
+	p_texture->Load(reader, repeat);
 
 	// close reader
 	g_file_system->deleteReader(reader);
