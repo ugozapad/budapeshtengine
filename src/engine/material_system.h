@@ -13,6 +13,8 @@ public:
 
 	void Render();
 
+	void SetTexture(int slot, Texture* texture);
+
 	Texture* LoadTexture(const char* filename, bool absolutePath = false);
 
 	Texture* GetNoTexture();

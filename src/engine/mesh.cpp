@@ -93,8 +93,8 @@ void StaticLevelMesh::draw(const glm::mat4& model_matrix, const renderContext_t&
 	render_device->setVSConstant(CONSTANT_MVP_MATRIX, &mvp[0], MATRIX4_SIZE);
 
 	render_device->beginBinding();
-	render_device->setTexture(0, m_diffuse_texture->getTextureIndex());
-	render_device->setTexture(1, m_lightmap_texture->getTextureIndex());
+	g_material_system.SetTexture(0, m_diffuse_texture);
+	g_material_system.SetTexture(1, m_lightmap_texture);
 	render_device->setVertexBuffer(m_vertex_buffer);
 	render_device->setIndexBuffer(m_index_buffer);
 	render_device->endBinding();
@@ -251,8 +251,8 @@ void DynamicMesh::draw(const glm::mat4& model_matrix, const renderContext_t& ren
 	pRenderDevice->setVSConstant(CONSTANT_MVP_MATRIX, &mvp[0], MATRIX4_SIZE);
 
 	pRenderDevice->beginBinding();
-	pRenderDevice->setTexture(0, m_tex->getTextureIndex());
-	pRenderDevice->setTexture(1, m_tex->getTextureIndex());
+	g_material_system.SetTexture(0, m_tex);
+	g_material_system.SetTexture(1, m_tex);
 	pRenderDevice->setVertexBuffer(m_vertexBuffer);
 	pRenderDevice->setIndexBuffer(m_index_buffer);
 	pRenderDevice->endBinding();

@@ -89,6 +89,11 @@ void MaterialSystem::Render()
 	g_debugRender->renderFrame();
 }
 
+void MaterialSystem::SetTexture(int slot, Texture* texture)
+{
+	g_engine->getRenderDevice()->setTexture(slot, texture->getTextureIndex());
+}
+
 Texture* MaterialSystem::LoadTexture(const char* filename, bool absolutePath /*= false*/)
 {
 	char buffer[260];
