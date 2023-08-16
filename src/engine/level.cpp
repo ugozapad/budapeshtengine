@@ -15,12 +15,14 @@ Level::Level()
 	: m_bBusy(false), m_physicsWorld(nullptr)
 {
 	m_physicsWorld = new PhysicsWorld();
+	m_physicsWorld->create();
 }
 
 Level::~Level()
 {
 	if (m_physicsWorld)
 	{
+		m_physicsWorld->destroy();
 		delete m_physicsWorld;
 		m_physicsWorld = nullptr;
 	}

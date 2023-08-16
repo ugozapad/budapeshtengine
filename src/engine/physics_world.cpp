@@ -14,6 +14,14 @@ static void  bulletAlignedFreeFunc(void* memblock)
 	g_allocator->deallocate(memblock);
 }
 
+static void* bulletAllocFunc(size_t size)
+{
+}
+
+static void  bulletFreeFunc(void* memblock)
+{
+}
+
 void PhysicsWorld::staticInit()
 {
 	g_VarManager.RegisterVar(&g_phFixedUpdate);
