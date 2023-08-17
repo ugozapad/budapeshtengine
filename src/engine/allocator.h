@@ -63,17 +63,4 @@ inline void* mem_realloc(void* ptr, size_t size, size_t align = DEFAULT_ALIGMENT
 	PTR = nullptr; \
 	} while (0)
 
-
-// TODO: global define (BUILD_AS_DLL) or disable manualy in each module
-#if 1
-#define IMPLEMENT_ALLOCATOR \
-	void*	operator	new		(size_t size)	{ return (mem_alloc(size)); } \
-	void	operator	delete	(void* ptr)		{ mem_free(ptr); } \
-	void*	operator	new[]	(size_t size)	{ return (mem_alloc(size)); } \
-	void	operator	delete[](void* ptr)		{ mem_free(ptr); }
-
-#else
-#define IMPLEMENT_ALLOCATOR
-#endif
-
 #endif // !ALLOCATOR_H

@@ -25,6 +25,3 @@ void* DefaultAllocator::Reallocate(void* ptr, size_t size, size_t align) {
 void DefaultAllocator::Deallocate(void* ptr) {
 	_aligned_free(ptr);
 }
-
-IMPLEMENT_ALLOCATOR;
-

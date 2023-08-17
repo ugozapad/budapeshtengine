@@ -345,5 +345,3 @@ extern "C" __declspec(dllexport) IEditorSystem* createEditorSystem()
 {
 	return new EditorSystem();
 }
-
-IMPLEMENT_ALLOCATOR;

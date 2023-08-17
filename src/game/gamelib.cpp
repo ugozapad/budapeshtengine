@@ -25,5 +25,3 @@ void gameLibInit()
 void gameLibShutdown()
 {
 }
-
-IMPLEMENT_ALLOCATOR;
