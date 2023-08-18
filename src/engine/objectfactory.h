@@ -9,7 +9,7 @@ typedef TypedObject* (*pfnCreateObject_t)();
 
 template <typename T>
 T* CreateObjectTemplated() {
-	return new T();
+	return mem_new<T>();
 }
 
 struct objectCreationInfo_t {
