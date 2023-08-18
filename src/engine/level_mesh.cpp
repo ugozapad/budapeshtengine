@@ -113,7 +113,7 @@ void LevelMesh::Load(IReader* reader) {
 	mem_free(diffuse_texture_path);
 }
 
-static glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
+static const glm::mat4 s_mat4_idenitity = glm::mat4(1.0f);
 
 void LevelMesh::Render(const renderContext_t& render_context) {
 	m_mesh->Draw(GetTranslationMatrix(), render_context);
