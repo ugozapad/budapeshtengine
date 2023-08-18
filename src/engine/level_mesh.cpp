@@ -77,8 +77,7 @@ void LevelMesh::Load(IReader* reader) {
 	uint32_t vertices_count = 0;
 	reader->read(&vertices_count, sizeof(vertices_count));
 
-	Array<LevelMeshVertex_LM> vertices;
-	vertices.resize(vertices_count);
+	Array<LevelMeshVertex_LM> vertices(vertices_count);
 
 	reader->read(vertices.data(), sizeof(LevelMeshVertex_LM) * vertices_count);
 
@@ -97,17 +96,18 @@ void LevelMesh::Load(IReader* reader) {
 	uint32_t indices_count = 0;
 	reader->read(&indices_count, sizeof(indices_count));
 
-	Array<uint16_t> indices;
-	indices.resize(indices_count);
+	Array<uint16_t> indices(indices_count);
 
 	reader->read(indices.data(), indices_count * sizeof(uint16_t));
 
 	// Create mesh object
-	m_mesh = mem_new<StaticLevelMesh>(vertices,
-		indices,
+	m_mesh = mem_new<StaticLevelMesh>(
+		vertices.data(), vertices.size(),
+		indices.data(), indices.size(),
 		"lightmapped_generic",
 		buffer1,
-		buffer2);
+		buffer2
+	);
 
 	mem_free(lightmap_texture_path);
 	mem_free(diffuse_texture_path);

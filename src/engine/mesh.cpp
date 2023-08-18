@@ -6,8 +6,9 @@
 #include "engine/material_system.h"
 #include "engine/filesystem.h"
 
-StaticLevelMesh::StaticLevelMesh(Array<LevelMeshVertex_LM>& vertices, 
-	Array<uint16_t>& indices, 
+StaticLevelMesh::StaticLevelMesh(
+	LevelMeshVertex_LM const* vertices, size_t vertices_count, 
+	uint16_t const* indices, size_t indices_count, 
 	const char* material_name,
 	const char* texture_name, 
 	const char* lm_name) :
@@ -17,14 +18,13 @@ StaticLevelMesh::StaticLevelMesh(Array<LevelMeshVertex_LM>& vertices,
 	m_diffuse_texture(nullptr),
 	m_lightmap_texture(nullptr)
 {
-	ASSERT(!vertices.empty());
-	ASSERT(!indices.empty());
+	ASSERT(vertices_count > 0 && indices_count > 0);
 
-	m_vertices_count = uint32_t(vertices.size());
-	m_indices_count = uint32_t(indices.size());
+	m_vertices_count = uint32_t(vertices_count);
+	m_indices_count = uint32_t(indices_count);
 
-	CreateGpu_Vertex(vertices);
-	CreateGpu_Indices(indices);
+	CreateGpu_Vertex(vertices, vertices_count);
+	CreateGpu_Indices(indices, indices_count);
 	CreateGpu_Material(material_name, texture_name, lm_name);
 }
 
@@ -33,23 +33,23 @@ StaticLevelMesh::~StaticLevelMesh()
 	DestroyGpu();
 }
 
-void StaticLevelMesh::CreateGpu_Vertex(Array<LevelMeshVertex_LM>& vertices)
+void StaticLevelMesh::CreateGpu_Vertex(LevelMeshVertex_LM const* vertices, size_t vertices_count)
 {
 	bufferDesc_t vertex_buffer_desc = {};
 	vertex_buffer_desc.type = BUFFERTYPE_VERTEX;
 	vertex_buffer_desc.access = BUFFERACCESS_STATIC;
-	vertex_buffer_desc.data = &vertices[0];
-	vertex_buffer_desc.size = vertices.size() * sizeof(LevelMeshVertex_LM);
+	vertex_buffer_desc.data = vertices;
+	vertex_buffer_desc.size = vertices_count * sizeof(LevelMeshVertex_LM);
 	m_vertex_buffer = g_engine->GetRenderDevice()->createBuffer(vertex_buffer_desc);
 }
 
-void StaticLevelMesh::CreateGpu_Indices(Array<uint16_t>& indices)
+void StaticLevelMesh::CreateGpu_Indices(uint16_t const* indices, size_t indices_count)
 {
 	bufferDesc_t index_buffer_desc = {};
 	index_buffer_desc.type = BUFFERTYPE_INDEX;
 	index_buffer_desc.access = BUFFERACCESS_STATIC;
-	index_buffer_desc.data = &indices[0];
-	index_buffer_desc.size = indices.size() * sizeof(uint16_t);
+	index_buffer_desc.data = indices;
+	index_buffer_desc.size = indices_count * sizeof(uint16_t);
 	m_index_buffer = g_engine->GetRenderDevice()->createBuffer(index_buffer_desc);
 }
 
@@ -159,12 +159,11 @@ DynamicMesh* DynamicMesh::CreateFromStream(IReader* reader)
 	uint32_t vertices_count = 0;
 	reader->read(&vertices_count, sizeof(vertices_count));
 
-	Array<LevelMeshVertex_LM> tempovertices;
-	tempovertices.resize(vertices_count);
+	Array<LevelMeshVertex_LM> vertices(vertices_count);
 
-	reader->read(tempovertices.data(), sizeof(LevelMeshVertex_LM) * vertices_count);
+	reader->read(vertices.data(), sizeof(LevelMeshVertex_LM) * vertices_count);
 
-	for (Array<LevelMeshVertex_LM>::iterator it = tempovertices.begin(); it != tempovertices.end(); ++it)
+	for (Array<LevelMeshVertex_LM>::iterator it = vertices.begin(); it != vertices.end(); ++it)
 	{
 		LevelMeshVertex_LM& vertex = (*it);
 		if (isnan(vertex.position.x) || isnan(vertex.position.y) || isnan(vertex.position.z))
@@ -179,15 +178,16 @@ DynamicMesh* DynamicMesh::CreateFromStream(IReader* reader)
 	uint32_t indices_count = 0;
 	reader->read(&indices_count, sizeof(indices_count));
 
-	Array<uint16_t> indices;
-	indices.resize(indices_count);
+	Array<uint16_t> indices(indices_count);
 
 	reader->read(indices.data(), indices_count * sizeof(uint16_t));
 
 	// Create mesh object
-	DynamicMesh* mesh = mem_new<DynamicMesh>(tempovertices,
-		indices,
-		buffer1);
+	DynamicMesh* mesh = mem_new<DynamicMesh>(
+		vertices.data(), vertices.size(),
+		indices.data(), indices.size(),
+		buffer1
+	);
 
 	mem_free(lightmap_texture_path);
 	mem_free(diffuse_texture_path);
@@ -195,17 +195,20 @@ DynamicMesh* DynamicMesh::CreateFromStream(IReader* reader)
 	return mesh;
 }
 
-DynamicMesh::DynamicMesh(Array<LevelMeshVertex_LM>& vertices,
-	Array<uint16_t>& indices,
+DynamicMesh::DynamicMesh(
+	LevelMeshVertex_LM const* vertices, size_t vertices_count,
+	uint16_t const* indices, size_t indices_count,
 	const char* texture_name)
 {
-	m_verticesCount = uint32_t(vertices.size());
-	m_indices_count = uint32_t(indices.size());
+	ASSERT(vertices_count > 0 && indices_count > 0);
+
+	m_verticesCount = uint32_t(vertices_count);
+	m_indices_count = uint32_t(indices_count);
 
 	bufferDesc_t bufferDesc = {};
 	bufferDesc.type = BUFFERTYPE_VERTEX;
 	bufferDesc.access = BUFFERACCESS_STATIC;
-	bufferDesc.data = vertices.data();
+	bufferDesc.data = vertices;
 	bufferDesc.size = m_verticesCount * sizeof(LevelMeshVertex_LM);
 
 	m_vertexBuffer = g_engine->GetRenderDevice()->createBuffer(bufferDesc);
@@ -214,8 +217,8 @@ DynamicMesh::DynamicMesh(Array<LevelMeshVertex_LM>& vertices,
 	bufferDesc_t index_buffer_desc = {};
 	index_buffer_desc.type = BUFFERTYPE_INDEX;
 	index_buffer_desc.access = BUFFERACCESS_STATIC;
-	index_buffer_desc.data = &indices[0];
-	index_buffer_desc.size = indices.size() * sizeof(uint16_t);
+	index_buffer_desc.data = indices;
+	index_buffer_desc.size = m_indices_count * sizeof(uint16_t);
 	m_index_buffer = g_engine->GetRenderDevice()->createBuffer(index_buffer_desc);
 	ASSERT(m_index_buffer != INVALID_BUFFER_INDEX);
 

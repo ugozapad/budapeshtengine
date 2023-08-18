@@ -89,8 +89,9 @@ struct renderContext_t
 class StaticLevelMesh
 {
 public:
-	StaticLevelMesh(Array<LevelMeshVertex_LM>& vertices, 
-		Array<uint16_t>& indices, 
+	StaticLevelMesh(
+		LevelMeshVertex_LM const* vertices, size_t vertices_count,
+		uint16_t const* indices, size_t indices_count,
 		const char* material_name, 
 		const char* texture_name, 
 		const char* lm_name);
@@ -100,8 +101,8 @@ public:
 	void Draw(const glm::mat4& model_matrix, const renderContext_t& render_context);
 
 private:
-	void CreateGpu_Vertex(Array<LevelMeshVertex_LM>& vertices);
-	void CreateGpu_Indices(Array<uint16_t>& indices);
+	void CreateGpu_Vertex(LevelMeshVertex_LM const* vertices, size_t vertices_count);
+	void CreateGpu_Indices(uint16_t const* indices, size_t indices_count);
 	void CreateGpu_Material(const char* material_name,
 		const char* texture_name,
 		const char* lm_name);
@@ -127,8 +128,9 @@ public:
 	static DynamicMesh* CreateFromStream(IReader* reader);
 
 public:
-	DynamicMesh(Array<LevelMeshVertex_LM>& vertices,
-		Array<uint16_t>& indices,
+	DynamicMesh(
+		LevelMeshVertex_LM const* vertices, size_t vertices_count,
+		uint16_t const* indices, size_t indices_count,
 		const char* texture_name);
 	~DynamicMesh();
 
