@@ -16,7 +16,7 @@ void CalculateBuildNumber()
 	static int start_year = 2021;
 
 	// Calculating build
-	int build = 0, mnum = 0, dnum, ynum, mcnt;
+	int build = 0, mnum = 0, dnum, ynum;
 	char mon[4];
 	char buf[128];
 	strcpy(buf, __DATE__);

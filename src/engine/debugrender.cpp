@@ -101,7 +101,7 @@ void DebugRender::drawLinesInternal()
 	if (m_lines.empty())
 		return;
 
-	static int last_capacity = 0;
+	static size_t last_capacity = 0;
 
 	IRenderDevice* pRenderDevice = g_engine->GetRenderDevice();
 
@@ -159,7 +159,7 @@ void DebugRender::drawLinesInternal()
 	//glLineWidth(2.0f);
 
 	// draw stuff
-	pRenderDevice->draw(0, m_lines.size() * 2, 1);
+	pRenderDevice->draw(0, int(m_lines.size()) * 2, 1);
 
 	last_capacity = m_lines.size();
 }
