@@ -122,7 +122,7 @@ enum textureFormat_t {
 struct bufferDesc_t {
 	bufferType_t type;
 	bufferAccess_t access;
-	void* data;
+	void const* data;
 	size_t size;
 };
 
