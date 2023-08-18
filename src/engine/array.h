@@ -23,6 +23,28 @@ public:
 		, m_capacity(0)
 	{
 	}
+	explicit inline Array(size_t sz) :
+		m_memory(nullptr)
+		, m_size(0)
+		, m_capacity(0)
+	{
+		resize(sz);
+	}
+	inline Array(Array const& other) :
+		m_memory(nullptr)
+		, m_size(0)
+		, m_capacity(0)
+	{
+		resize(other.m_size);
+		for (size_type i = 0; i < m_size; ++i)
+			m_memory[i] = other.m_memory[i];
+	}
+	inline Array(Array const&& other) :
+		m_memory(other.m_memory)
+		, m_size(other.m_size)
+		, m_capacity(other.m_capacity)
+	{
+	}
 	inline ~Array()
 	{
 		if (m_memory) {
