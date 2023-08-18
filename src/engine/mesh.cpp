@@ -164,19 +164,16 @@ DynamicMesh* DynamicMesh::CreateFromStream(IReader* reader)
 
 	reader->read(tempovertices.data(), sizeof(LevelMeshVertex_LM) * vertices_count);
 
-	int counter = 0;
 	for (Array<LevelMeshVertex_LM>::iterator it = tempovertices.begin(); it != tempovertices.end(); ++it)
 	{
 		LevelMeshVertex_LM& vertex = (*it);
 		if (isnan(vertex.position.x) || isnan(vertex.position.y) || isnan(vertex.position.z))
 		{
-			Msg("triangle %i reset to zero size", counter);
+			Msg("triangle %i reset to zero size", vertices.size() - size_t(vertices.end() - it));
 			vertex.position.x = 0.0f;
 			vertex.position.y = 0.0f;
 			vertex.position.z = 0.0f;
 		}
-
-		counter++;
 	}
 
 	uint32_t indices_count = 0;
