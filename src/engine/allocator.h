@@ -59,10 +59,10 @@ inline void* mem_realloc(void* ptr, size_t size, size_t align = DEFAULT_ALIGMENT
 }
 
 template <typename T, typename... Args>
-inline T* mem_new(Args... args)
+inline T* mem_new(Args&&... args)
 {
 	T* mem = (T*)g_allocator->Allocate(sizeof(T), alignof(T));
-	return new(mem) T(args...);
+	return new(mem) T(std::forward<Args>(args)...);
 }
 
 template <typename T>
