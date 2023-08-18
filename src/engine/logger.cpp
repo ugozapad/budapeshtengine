@@ -75,8 +75,7 @@ void LogClose()
 		// flush log
 		//g_logWriter->flush();
 
-		delete g_log_writer;
-		g_log_writer = nullptr;
+		g_file_system->deleteWriter(g_log_writer);
 	}
 }
 
