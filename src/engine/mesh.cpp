@@ -143,7 +143,7 @@ DynamicMesh* DynamicMesh::CreateFromStream(IReader* reader)
 			lightmap_texture_path[i] = '/';
 	}
 
-	char buffer2[260];
+	char buffer2[_MAX_PATH];
 	snprintf(buffer2, sizeof(buffer2), "data/levels/%s/%s", "test_baking", lightmap_texture_path);
 
 	// Load LevelMesh
