@@ -5,9 +5,14 @@
 #include "engine/allocator.h"
 
 #include <initializer_list>
+#include <limits>
+
+#pragma push_macro("max")
+#undef max
 
 template <typename T>
 class Array {
+	typedef Array<T>			self_type;
 public:
 	typedef size_t				size_type;
 	typedef T					value_type;
@@ -23,21 +28,34 @@ public:
 		, m_capacity(0)
 	{
 	}
-	explicit inline Array(size_t sz) :
+	explicit inline Array(size_type count, T const& value = T()) :
 		m_memory(nullptr)
 		, m_size(0)
 		, m_capacity(0)
 	{
-		resize(sz);
+		assign(count, value);
+	}
+	template<typename TIt>
+	inline Array(TIt first, TIt last) :
+		m_memory(nullptr)
+		, m_size(0)
+		, m_capacity(0)
+	{
+		assign(first, last);
+	}
+	inline Array(std::initializer_list<value_type> il) :
+		m_memory(nullptr)
+		, m_size(0)
+		, m_capacity(0)
+	{
+		assign(il);
 	}
 	inline Array(Array const& other) :
 		m_memory(nullptr)
 		, m_size(0)
 		, m_capacity(0)
 	{
-		resize(other.m_size);
-		for (size_type i = 0; i < m_size; ++i)
-			m_memory[i] = other.m_memory[i];
+		assign(other.begin(), other.end());
 	}
 	inline Array(Array const&& other) :
 		m_memory(other.m_memory)
@@ -50,6 +68,28 @@ public:
 		if (m_memory) {
 			mem_free(m_memory);
 		}
+	}
+
+	void assign(size_type count, value_type const& v)
+	{
+		if (m_size < count) resize(count);
+		for (size_type i = 0; i < m_size; ++i)
+			m_memory[i] = v;
+	}
+	
+	template<typename TIt>
+	void assign(TIt first, TIt last)
+	{
+		if (m_size < size_type(last - first))
+			resize(size_type(last - first));
+		for (TIt it = first; it != last; ++it)
+			m_memory[size_type(last - it)] = *it;
+	}
+
+	void assign(std::initializer_list<value_type> il)
+	{
+		if (m_size < il.size()) resize(il.size());
+		assign(il.begin(), il.end());
 	}
 
 	iterator insert(const_iterator pos, const_reference value)
@@ -73,6 +113,7 @@ public:
 	inline size_type size		() const { return m_size; }
 	inline bool empty			() const { return !m_size; }
 	inline size_type capacity	() const { return m_capacity; }
+	inline size_type max_size	() const { return (std::numeric_limits<size_type>::max() / sizeof(value_type)); }
 
 	inline void reserve(size_type capacity)
 	{
@@ -144,6 +185,26 @@ public:
 	inline reference		operator[](size_type i)		{ return m_memory[i]; }
 	inline const_reference	operator[](size_type i) const	{ return m_memory[i]; }
 
+	inline self_type&		operator=(self_type const& other)
+	{
+		assign(other.begin(), other.end());
+		return (*this);
+	}
+
+	inline self_type&		operator=(self_type const&& other)
+	{
+		m_memory = other.m_memory;
+		m_size = other.m_size;
+		m_capacity = other.m_capacity;
+		return (*this);
+	}
+
+	inline self_type&		operator=(std::initializer_list<value_type> il)
+	{
+		assign(il);
+		return (*this);
+	}
+
 private:
 	void realloc_buffer(size_type size) {
 		if (m_memory) {
@@ -163,5 +224,7 @@ private:
 	size_type m_size;
 	size_type m_capacity;
 };
+
+#pragma pop_macro("max")
 
 #endif // !ARRAY_H
