@@ -2,6 +2,7 @@
 #include "engine/debug.h"
 #include "engine/allocator.h"
 #include "engine/filesystem.h"
+#include "engine/engine.h"
 #include "engine/texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -10,9 +11,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-Texture::Texture(IRenderDevice& render_device) :
-	m_render_device(&render_device)
-,	m_textureIndex(INVALID_TEXTURE_INDEX)
+Texture::Texture() :
+	m_textureIndex(INVALID_TEXTURE_INDEX)
 {
 }
 
@@ -22,7 +22,7 @@ Texture::~Texture() {
 
 void Texture::Destroy() {
 	if (m_textureIndex != INVALID_TEXTURE_INDEX) {
-		m_render_device->deleteTexture(m_textureIndex);
+		g_engine->GetRenderDevice()->deleteTexture(m_textureIndex);
 		m_textureIndex = INVALID_TEXTURE_INDEX;
 	}
 }
@@ -54,7 +54,7 @@ void Texture::Load(IReader* reader, bool repeat) {
 	texture_desc.size = size_t(width) * size_t(height) * 4;
 	texture_desc.mipmaps_count = 0;
 	texture_desc.repeat = repeat;
-	m_textureIndex = m_render_device->createTexture(texture_desc);
+	m_textureIndex = g_engine->GetRenderDevice()->createTexture(texture_desc);
 
 	// validate texture index
 	if (m_textureIndex == INVALID_TEXTURE_INDEX) {

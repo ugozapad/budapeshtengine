@@ -79,7 +79,7 @@ void Engine::Create(int width, int height, bool fullscreen)
 	IOsDriver::getInstance()->Init();
 
 	// create filesystem
-	g_file_system = IFileSystem::create();
+	g_file_system = IFileSystem::Create();
 
 	// Create logger
 	LogOpen("engine");
@@ -110,7 +110,7 @@ void Engine::Create(int width, int height, bool fullscreen)
 	g_input_system->Init();
 
 	// initialize object factory
-	g_object_factory = new ObjectFactory();
+	g_object_factory = mem_new<ObjectFactory>();
 
 	// register engine objects
 	registerEngineStuff();
@@ -138,7 +138,7 @@ void Engine::Create(int width, int height, bool fullscreen)
 	PhysicsWorld::StaticInit();
 
 	// create level
-	m_level = new Level();
+	m_level = mem_new<Level>();
 
 	// load game library
 	CreateGameLib("game");
@@ -349,7 +349,7 @@ void Engine::Shutdown()
 
 	LogClose();
 
-	IFileSystem::destroy(g_file_system);
+	IFileSystem::Destroy(g_file_system);
 
 	SDL_Quit();
 }

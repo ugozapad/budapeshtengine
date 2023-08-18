@@ -106,7 +106,7 @@ void LevelMesh::Load(IReader* reader) {
 	reader->read(indices.data(), indices_count * sizeof(uint16_t));
 
 	// Create mesh object
-	m_mesh = new StaticLevelMesh(vertices,
+	m_mesh = mem_new<StaticLevelMesh>(vertices,
 		indices,
 		"lightmapped_generic",
 		buffer1,
@@ -131,7 +131,7 @@ DynamicMeshEntity::DynamicMeshEntity()
 DynamicMeshEntity::~DynamicMeshEntity()
 {
 	for (auto it : m_meshes) {
-		delete(it);
+		mem_delete(it);
 	}
 }
 

@@ -14,7 +14,7 @@
 Level::Level()
 	: m_bBusy(false), m_physicsWorld(nullptr)
 {
-	//m_physicsWorld = new PhysicsWorld();
+	//m_physicsWorld = mem_new<PhysicsWorld>();
 	//m_physicsWorld->Create();
 }
 
@@ -23,7 +23,7 @@ Level::~Level()
 	//if (m_physicsWorld)
 	//{
 	//	m_physicsWorld->Destroy();
-	//	delete m_physicsWorld;
+	//	mem_delete(m_physicsWorld);
 	//	m_physicsWorld = nullptr;
 	//}
 }
@@ -58,7 +58,7 @@ void Level::LoadLMF(IReader* reader)
 
 	for (uint16_t i = 0; i < header.mesh_count; i++)
 	{
-		LevelMesh* level_mesh = new LevelMesh();
+		LevelMesh* level_mesh = mem_new<LevelMesh>();
 		level_mesh->Load(reader);
 
 		Entity* level_mesh_entity = level_mesh;
@@ -76,7 +76,7 @@ Entity* Level::CreateEntity()
 		return (NULL);
 	}
 
-	Entity* entity = new Entity();
+	Entity* entity = mem_new<Entity>();
 	m_entities.push_back(entity);
 	return entity;
 }
@@ -123,7 +123,7 @@ void Level::DestroyEntity(Entity* entity)
 		}
 		else
 		{
-			delete *it;
+			mem_delete(*it);
 			m_entities.erase(it);
 		}
 	}
@@ -139,7 +139,7 @@ void Level::Update(float fDeltaTime)
 			{
 				if (pE->CanBeDestroyed())
 				{
-					delete pE;
+					mem_delete(pE);
 					return (true);
 				}
 				return (false);

@@ -28,9 +28,9 @@ public:
 
 class IFileSystem {
 public:
-	static IFileSystem* create();
+	static IFileSystem* Create();
 	static IFileSystem* createPhysFS();
-	static void destroy(IFileSystem*& fs_ptr);
+	static void Destroy(IFileSystem*& fs_ptr);
 
 public:
 	virtual ~IFileSystem() {}

@@ -10,7 +10,7 @@ class IRenderDevice;
 
 class Texture {
 public:
-	Texture(IRenderDevice& render);
+	Texture();
 	~Texture();
 
 	void Destroy();
@@ -22,7 +22,6 @@ public:
 	textureIndex_t GetTextureIndex() { return m_textureIndex; }
 
 private:
-	IRenderDevice* m_render_device;
 	textureIndex_t m_textureIndex;
 };
 

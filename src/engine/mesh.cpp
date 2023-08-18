@@ -66,6 +66,9 @@ void StaticLevelMesh::CreateGpu_Material(const char* material_name, const char* 
 
 void StaticLevelMesh::DestroyGpu()
 {
+	//SAFE_DELETE(m_lightmap_texture);
+	//SAFE_DELETE(m_diffuse_texture);
+
 	if (m_index_buffer != INVALID_BUFFER_INDEX) {
 		g_engine->GetRenderDevice()->deleteBuffer(m_index_buffer);
 		m_index_buffer = INVALID_BUFFER_INDEX;
@@ -185,7 +188,7 @@ DynamicMesh* DynamicMesh::CreateFromStream(IReader* reader)
 	reader->read(indices.data(), indices_count * sizeof(uint16_t));
 
 	// Create mesh object
-	DynamicMesh* mesh = new DynamicMesh(tempovertices,
+	DynamicMesh* mesh = mem_new<DynamicMesh>(tempovertices,
 		indices,
 		buffer1);
 

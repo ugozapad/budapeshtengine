@@ -43,7 +43,7 @@ void MaterialSystem::Init()
 	g_VarManager.RegisterVar(&g_anisotropicValue);
 
 	// Initialize shader engine
-	g_pShaderEngine = new ShaderEngine("gl33");
+	g_pShaderEngine = mem_new<ShaderEngine>("gl33");
 
 	char buffer[260];
 	bool texfound = false;
@@ -61,7 +61,7 @@ void MaterialSystem::Init()
 		exit(-1);
 	}
 
-	m_notex = new Texture(*g_engine->GetRenderDevice());
+	m_notex = mem_new<Texture>();
 
 	// open reader
 	IReader* reader = g_file_system->openRead(buffer);
@@ -77,7 +77,7 @@ void MaterialSystem::Shutdown()
 {
 	if (m_notex)
 	{
-		delete m_notex;
+		mem_delete(m_notex);
 		m_notex = nullptr;
 	}
 
@@ -120,7 +120,7 @@ Texture* MaterialSystem::LoadTexture(const char* filename, bool absolutePath /*=
 	// Kirill: TODO shit rewrite
 	bool repeat = !strstr(filename, "_lm");
 
-	Texture* p_texture = new Texture(*g_engine->GetRenderDevice());
+	Texture* p_texture = mem_new<Texture>();
 
 	// open reader
 	IReader* reader = g_file_system->openRead(buffer);

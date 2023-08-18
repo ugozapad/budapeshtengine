@@ -48,7 +48,7 @@ private:
 
 IInputSystem* IInputSystem::Create()
 {
-	return new SDLInputSystem();
+	return mem_new<SDLInputSystem>();
 }
 
 SDLInputSystem::SDLInputSystem() :

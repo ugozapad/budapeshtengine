@@ -98,14 +98,14 @@ public:
 	void deleteWriter(IWriter*& writer) override;
 };
 
-IFileSystem* IFileSystem::create()
+IFileSystem* IFileSystem::Create()
 {
-	return new FileSystem();
+	return mem_new<FileSystem>();
 }
 
-void IFileSystem::destroy(IFileSystem*& fs_ptr)
+void IFileSystem::Destroy(IFileSystem*& fs_ptr)
 {
-	delete fs_ptr;
+	mem_delete(fs_ptr);
 	fs_ptr = nullptr;
 }
 
@@ -130,22 +130,22 @@ bool FileSystem::fileExist(const char* filename)
 
 IReader* FileSystem::openRead(const char* filename)
 {
-	return new FileReader(filename);
+	return mem_new<FileReader>(filename);
 }
 
 IWriter* FileSystem::openWrite(const char* filename)
 {
-	return new FileWriter(filename);
+	return mem_new<FileWriter>(filename);
 }
 
 void FileSystem::deleteReader(IReader*& reader)
 {
-	delete reader;
+	mem_delete(reader);
 	reader = nullptr;
 }
 
 void FileSystem::deleteWriter(IWriter*& writer)
 {
-	delete writer;
+	mem_delete(writer);
 	writer = nullptr;
 }

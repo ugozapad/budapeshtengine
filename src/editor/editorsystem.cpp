@@ -343,5 +343,5 @@ IEditorSystem* getEditorSystem()
 // Dll export
 extern "C" __declspec(dllexport) IEditorSystem* createEditorSystem()
 {
-	return new EditorSystem();
+	return mem_new<EditorSystem>();
 }

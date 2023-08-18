@@ -12,7 +12,7 @@ Sound::Sound(const char* sFileName)
 	m_state(SoundState_Stopped), m_nextState(SoundState_Stopped),
 	m_flags(SoundFlags_OwnsFile)
 {
-	m_pSoundFile = new OggSoundFileReader(sFileName);
+	m_pSoundFile = mem_new<OggSoundFileReader>(sFileName);
 
 	initSoundBuffers(SOUND_BUFFERS_COUNT);
 }

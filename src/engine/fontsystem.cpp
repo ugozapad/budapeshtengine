@@ -112,7 +112,7 @@ void FontSystem::shutdown()
 	FONTS_LIST::iterator	I = m_loadedFonts.begin(),
 							E = m_loadedFonts.end();
 	for (; I != E; ++I)
-		delete I->second;
+		mem_delete(I->second);
 	
 	m_loadedFonts.clear();
 }
@@ -125,7 +125,7 @@ Font* FontSystem::loadFont(const char* name)
 	if (it != m_loadedFonts.end())
 		pFont = it->second;
 	else
-		m_loadedFonts[short_name] = pFont = new Font(name);
+		m_loadedFonts[short_name] = pFont = mem_new<Font>(name);
 	return pFont;
 }
 

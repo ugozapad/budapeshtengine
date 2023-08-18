@@ -54,7 +54,7 @@ int Main::Init(int argc, char* argv[]) {
 		}
 	}
 
-	m_engine = new Engine();
+	m_engine = mem_new<Engine>();
 	m_engine->Create(1024, 768, fullscreen);
 
 	return 0;

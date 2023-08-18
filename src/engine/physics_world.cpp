@@ -44,11 +44,11 @@ PhysicsWorld::~PhysicsWorld()
 
 void PhysicsWorld::Create()
 {
-	m_collisionConfiguration = new btDefaultCollisionConfiguration();
-	m_dispatcher = new btCollisionDispatcher(m_collisionConfiguration);
-	m_overlappingPairCache = new btDbvtBroadphase();
-	m_solver = new btSequentialImpulseConstraintSolver;
-	m_dynamicsWorld = new btDiscreteDynamicsWorld(
+	m_collisionConfiguration = mem_new<btDefaultCollisionConfiguration>();
+	m_dispatcher = mem_new<btCollisionDispatcher>(m_collisionConfiguration);
+	m_overlappingPairCache = mem_new<btDbvtBroadphase>();
+	m_solver = mem_new<btSequentialImpulseConstraintSolver>();
+	m_dynamicsWorld = mem_new<btDiscreteDynamicsWorld>(
 		m_dispatcher,
 		m_overlappingPairCache,
 		m_solver,
@@ -61,27 +61,27 @@ void PhysicsWorld::Create()
 void PhysicsWorld::Destroy()
 {
 	if (m_dynamicsWorld) {
-		delete m_dynamicsWorld;
+		mem_delete(m_dynamicsWorld);
 		m_dynamicsWorld = nullptr;
 	}
 
 	if (m_solver) {
-		delete m_solver;
+		mem_delete(m_solver);
 		m_solver = nullptr;
 	}
 
 	if (m_overlappingPairCache) {
-		delete m_overlappingPairCache;
+		mem_delete(m_overlappingPairCache);
 		m_overlappingPairCache = nullptr;
 	}
 
 	if (m_dispatcher) {
-		delete m_dispatcher;
+		mem_delete(m_dispatcher);
 		m_dispatcher = nullptr;
 	}
 
 	if (m_collisionConfiguration) {
-		delete m_collisionConfiguration;
+		mem_delete(m_collisionConfiguration);
 		m_collisionConfiguration = nullptr;
 	}
 }

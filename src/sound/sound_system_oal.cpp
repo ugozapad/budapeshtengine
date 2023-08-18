@@ -7,7 +7,7 @@ extern "C"
 {
 	__declspec(dllexport) ISoundSystem* __stdcall createSoundSystem()
 	{
-		return new SoundSystem_OpenAL();
+		return mem_new<SoundSystem_OpenAL>();
 	}
 };
 
@@ -181,7 +181,7 @@ SoundDeviceID SoundSystem_OpenAL::selectedDevice() const
 
 ISound* SoundSystem_OpenAL::createSound(const char* sSoundFile)
 {
-	ISound* pSound = new Sound(sSoundFile);
+	ISound* pSound = mem_new<Sound>(sSoundFile);
 	m_sounds.push_back(pSound);
 	return (pSound);
 }
@@ -198,7 +198,7 @@ void SoundSystem_OpenAL::destroySound(ISound*& pSound)
 		SOUNDS::iterator it = std::find(m_sounds.begin(), m_sounds.end(), pSound);
 		if (it != m_sounds.end())
 			m_sounds.erase(it);
-		delete pSound;
+		mem_delete(pSound);
 		pSound = NULL;
 	}
 	pSound = NULL;
@@ -229,7 +229,7 @@ void SoundSystem_OpenAL::releaseAllSounds()
 {
 	size_t const E = m_sounds.size();
 	for (size_t I = 0; I < E; ++I)
-		delete m_sounds[I];
+		mem_delete(m_sounds[I]);
 	m_sounds.clear();
 }
 

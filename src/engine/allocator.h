@@ -5,6 +5,8 @@
 #	define DEFAULT_ALIGMENT 16
 #endif
 
+#include <new>
+
 class IAllocator {
 public:
 	virtual ~IAllocator() {}
@@ -56,10 +58,25 @@ inline void* mem_realloc(void* ptr, size_t size, size_t align = DEFAULT_ALIGMENT
 	return (g_allocator->Reallocate(ptr, size, align));
 }
 
-//#define MEM_NEW(T, ...) new(sizeof(T), alignof(T)) T(__VA_ARGS__)
+template <typename T, typename... Args>
+inline T* mem_new(Args... args)
+{
+	T* mem = (T*)g_allocator->Allocate(sizeof(T), alignof(T));
+	return new(mem) T(args...);
+}
+
+template <typename T>
+inline void mem_delete(T*& ptr)
+{
+	if (ptr)
+	{
+		ptr->~T();
+		g_allocator->Deallocate(ptr);
+	}
+}
 
 #define SAFE_DELETE(PTR) do { \
-	delete PTR; \
+	mem_free(PTR); \
 	PTR = nullptr; \
 	} while (0)
 

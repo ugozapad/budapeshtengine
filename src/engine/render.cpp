@@ -14,7 +14,7 @@ void Render::Init()
 	g_material_system.Init();
 
 	// create debug renderer
-	g_debugRender = new DebugRender();
+	g_debugRender = mem_new<DebugRender>();
 	g_debugRender->initialize();
 }
 

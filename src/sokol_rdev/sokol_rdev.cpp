@@ -157,7 +157,7 @@ private:
 
 __declspec(dllexport) IRenderDevice* createRenderDevice()
 {
-	return new SokolRenderDevice();
+	return mem_new<SokolRenderDevice>();
 }
 
 void SokolRenderDevice::init(SDL_Window* render_window) {
