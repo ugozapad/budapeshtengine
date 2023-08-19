@@ -34,14 +34,23 @@ static Var developer("developer", "0", "", VARFLAG_NOSAVE | VARFLAG_SERVER_PROTE
 static Var vid_mode("vid_mode", "1024x768", "", VARFLAG_NONE);
 static Var creator("creator", "Kirill", "", VARFLAG_NONE);
 
-void registerEngineVars()
+static const char* g_EngineStateStrings[ENGINE_STATE_MAX] =
+{
+	"ENGINE_STATE_NEW_GAME",
+	"ENGINE_STATE_LOAD_GAME",
+	"ENGINE_STATE_CHANGE_LEVEL",
+	"ENGINE_STATE_RUNNING",
+	"ENGINE_STATE_QUIT"
+};
+
+void RegisterEngineVars()
 {
 	g_VarManager.RegisterVar(&developer);
 	g_VarManager.RegisterVar(&vid_mode);
 	g_VarManager.RegisterVar(&creator);
 }
 
-void registerEngineStuff()
+void RegisterEngineObjects()
 {
 	g_object_factory->RegisterObject<Entity>("entity");
 	g_object_factory->RegisterObject<LevelMesh>("level_mesh");
@@ -54,7 +63,10 @@ Engine::Engine() :
 	m_level(nullptr),
 	m_render_device(nullptr),
 	m_editor_system(nullptr),
-	m_viewport{0}
+	m_map_name(nullptr),
+	m_current_state(ENGINE_STATE_RUNNING), // Kirill: Engine will run's without level (main menu/nothings/console)
+	m_next_state(ENGINE_STATE_RUNNING),
+	m_viewport{ 0 }
 {
 	g_engine = this;
 }
@@ -70,7 +82,7 @@ void Engine::Create(int width, int height, bool fullscreen)
 		Msg("Failed to initialize SDL2. Error core: %s\n", SDL_GetError());
 	}
 
-	registerEngineVars();
+	RegisterEngineVars();
 
 	// Create timer
 	GetSystemTimer()->Init();
@@ -113,7 +125,7 @@ void Engine::Create(int width, int height, bool fullscreen)
 	g_object_factory = mem_new<ObjectFactory>();
 
 	// register engine objects
-	registerEngineStuff();
+	RegisterEngineObjects();
 
 	// create renderer
 	Msg("Creating render device");
@@ -137,9 +149,6 @@ void Engine::Create(int width, int height, bool fullscreen)
 	// Initialize physics world
 	PhysicsWorld::StaticInit();
 
-	// create level
-	m_level = mem_new<Level>();
-
 	// load game library
 	CreateGameLib("game");
 
@@ -153,8 +162,6 @@ void Engine::Create(int width, int height, bool fullscreen)
 
 	if (!is_editor_mode)
 		g_VarManager.Save("data/default.cfg");
-
-	GetLevel()->Load("test_baking");
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -172,7 +179,7 @@ HMODULE g_hEditorLib = NULL;
 void Engine::CreateRenderDevice(const char* devicename)
 {
 	IRenderDevice* pRenderDevice = nullptr;
-	
+
 	char buff[_MAX_PATH];
 	snprintf(buff, sizeof(buff), "%s.dll", devicename);
 
@@ -219,16 +226,16 @@ void Engine::CreateGameLib(const char* custompath)
 {
 	char buff[_MAX_PATH];
 	snprintf(buff, sizeof(buff), "%s.dll", custompath);
-	
+
 	Msg("Loading DLL %s", buff);
 
 	g_hGameLib = LoadLibraryA(buff);
 	if (g_hGameLib != NULL)
 	{
-		gameLibInit_t gameLibInitPfn = 
+		gameLibInit_t gameLibInitPfn =
 			(gameLibInit_t)GetProcAddress(g_hGameLib, "gameLibInit");
-		
-		gameLibShutdown_t gameLibShutdownPfn = 
+
+		gameLibShutdown_t gameLibShutdownPfn =
 			(gameLibShutdown_t)GetProcAddress(g_hGameLib, "gameLibShutdown");
 
 		if (gameLibInitPfn != NULL && gameLibShutdownPfn != NULL)
@@ -265,35 +272,120 @@ void Engine::CreateEditor()
 	m_editor_system->Init();
 }
 
-void Engine::Update()
+void Engine::SetState(EngineState state)
+{
+	m_next_state = state;
+}
+
+void Engine::SetMapName(const char* mapname)
+{
+	m_map_name = strdup(mapname);
+}
+
+void Engine_NewGame(const char* map_name)
+{
+	g_engine->SetMapName(map_name);
+	g_engine->SetState(ENGINE_STATE_NEW_GAME);
+}
+
+void Engine::NewGame()
+{
+	if (!m_map_name) {
+		Msg("Engine::NewGame: Called SetState(ENGINE_STATE_NEW_GAME) without settings map name!");
+		return;
+	}
+
+	if (strlen(m_map_name) <= 0) {
+		Msg("Engine::NewGame: Map name is empty!");
+		return;
+	}
+
+	// delete previous level
+	if (m_level) {
+		SAFE_DELETE(m_level);
+	}
+
+	// create & load level
+	m_level = mem_new<Level>();
+	m_level->Load(m_map_name);
+
+	// Set engine to running
+	SetState(ENGINE_STATE_RUNNING);
+}
+
+void Engine_UpdateState()
+{
+	EngineState state = g_engine->GetState();
+
+	switch (state)
+	{
+	case ENGINE_STATE_NEW_GAME:
+		g_engine->NewGame();
+		break;
+
+	case ENGINE_STATE_LOAD_GAME:
+		FATAL("ENGINE_STATE_LOAD_GAME: Is unimplemented.");
+		break;
+
+	case ENGINE_STATE_CHANGE_LEVEL:
+		FATAL("ENGINE_STATE_CHANGE_LEVEL: Is unimplemented.");
+		break;
+
+	case ENGINE_STATE_RUNNING:
+		break;
+
+	case ENGINE_STATE_QUIT:
+		g_engine->RequestExit();
+		break;
+
+	default:
+		break;
+	}
+}
+
+void Engine_PreUpdate()
 {
 	GetSystemTimer()->Update();
+}
 
-	float fDeltaTime = GetSystemTimer()->GetDelta();
+void Engine::Update()
+{
+	// Update timer every frame
+	Engine_PreUpdate();
 
-	if (m_editor_system)
-		m_editor_system->Update(fDeltaTime);
-	
-	g_pSoundSystem->Update(fDeltaTime);
+	m_current_state = m_next_state;
+	Engine_UpdateState();
 
-	m_level->Update(fDeltaTime);
+	if (m_current_state == ENGINE_STATE_RUNNING)
+	{
+		float fDeltaTime = GetSystemTimer()->GetDelta();
 
-	//////////////////////////////////////////////////////////////////////////
-	// Render Scene
+		if (m_editor_system)
+			m_editor_system->Update(fDeltaTime);
 
-	m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
+		if (g_pSoundSystem)
+			g_pSoundSystem->Update(fDeltaTime);
 
-	g_render.RenderScene();
+		if (m_level)
+			m_level->Update(fDeltaTime);
 
-	g_material_system.Render();
+		//////////////////////////////////////////////////////////////////////////
+		// Render Scene
 
-	m_render_device->endPass();
-	m_render_device->commit();
+		m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
 
-	if (m_editor_system)
-		m_editor_system->Render();
+		g_render.RenderScene();
 
-	m_render_device->present(false);
+		g_material_system.Render();
+
+		m_render_device->endPass();
+		m_render_device->commit();
+
+		if (m_editor_system)
+			m_editor_system->Render();
+
+		m_render_device->present(false);
+	}
 }
 
 void Engine::Shutdown()
@@ -315,13 +407,17 @@ void Engine::Shutdown()
 	FreeLibrary(g_hGameLib);
 
 	g_render.Shutdown();
-	
+
 	if (m_render_device) {
 		m_render_device->shutdown();
 		SAFE_DELETE(m_render_device);
 	}
 
 	FreeLibrary(g_hRenderDeviceLib);
+
+	if (m_map_name) {
+		free((void*)m_map_name);
+	}
 
 	if (m_level) {
 		SAFE_DELETE(m_level);
@@ -382,8 +478,18 @@ viewport_t Engine::GetViewport()
 	return m_viewport;
 }
 
+EngineState Engine::GetState()
+{
+	return m_current_state;
+}
+
+EngineState Engine::GetNextState()
+{
+	return m_next_state;
+}
+
 void Engine::OnWindowSizeChanged(uint32_t w, uint32_t h)
 {
-	m_viewport.width	= w;
-	m_viewport.height	= h;
+	m_viewport.width = w;
+	m_viewport.height = h;
 }

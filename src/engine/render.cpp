@@ -30,6 +30,9 @@ void Render::Shutdown()
 
 void Render::RenderScene()
 {
+	if (!g_engine->GetLevel())
+		return;
+
 	// calculate aspect ratio
 	viewport_t viewport = g_engine->GetViewport();
 	float aspectRatio = (float)viewport.width / (float)viewport.height;

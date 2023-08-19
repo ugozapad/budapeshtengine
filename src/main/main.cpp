@@ -36,12 +36,22 @@ int Main::Init(int argc, char* argv[]) {
 
 	bool createLockerMutex = true;
 	bool fullscreen = false;
+	bool map_load = false;
+	const char* map_name = nullptr;
 
 	for (int i = 0; i < argc; i++) {
 		if (strcmp("-multinstance", argv[i]) == 0)
 			createLockerMutex = false;
-		if (strcmp("-fullscreen", argv[0]) == 0)
+		if (strcmp("-fullscreen", argv[i]) == 0)
 			fullscreen = true;
+		if (strcmp("-map", argv[i]) == 0) {
+			if (i == argc) {
+				MessageBoxA(NULL, "Missing map name with -map parameter!", "Invalid command line parameter", MB_OK);
+			} else {
+				map_load = true;
+				map_name = argv[i + 1];
+			}
+		}
 	}
 
 	if (createLockerMutex) {
@@ -56,6 +66,9 @@ int Main::Init(int argc, char* argv[]) {
 
 	m_engine = mem_new<Engine>();
 	m_engine->Create(1024, 768, fullscreen);
+
+	if (map_load)
+		Engine_NewGame(map_name);
 
 	return 0;
 }
