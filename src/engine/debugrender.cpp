@@ -28,7 +28,7 @@ DebugRender::~DebugRender()
 
 void DebugRender::initialize()
 {
-	g_VarManager.RegisterVar(&g_varDebugDraw);
+	g_var_manager.RegisterVar(&g_varDebugDraw);
 
 	float points[12];
 	memset(points, 0, sizeof(points));

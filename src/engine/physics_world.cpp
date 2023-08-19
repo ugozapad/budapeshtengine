@@ -24,7 +24,7 @@ static void  bulletFreeFunc(void* memblock)
 
 void PhysicsWorld::StaticInit()
 {
-	g_VarManager.RegisterVar(&g_phFixedUpdate);
+	g_var_manager.RegisterVar(&g_phFixedUpdate);
 
 	btAlignedAllocSetCustomAligned(&bulletAlignedAllocFunc, &bulletAlignedFreeFunc);
 }

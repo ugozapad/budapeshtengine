@@ -30,6 +30,7 @@
     <ClInclude Include="timer.h" />
     <ClInclude Include="physics_world.h" />
     <ClInclude Include="physics_render.h" />
+    <ClInclude Include="cmdmanager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
@@ -59,5 +60,6 @@
     <ClCompile Include="timer.cpp" />
     <ClCompile Include="physics_world.cpp" />
     <ClCompile Include="physics_render.cpp" />
+    <ClCompile Include="cmdmanager.cpp" />
   </ItemGroup>
 </Project>

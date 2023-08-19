@@ -40,7 +40,7 @@ void MaterialSystem::Init()
 	Msg("Material System initialization ...");
 
 	// Register vars
-	g_VarManager.RegisterVar(&g_anisotropicValue);
+	g_var_manager.RegisterVar(&g_anisotropicValue);
 
 	// Initialize shader engine
 	g_pShaderEngine = mem_new<ShaderEngine>("gl33");

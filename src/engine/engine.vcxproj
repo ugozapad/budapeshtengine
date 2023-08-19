@@ -182,6 +182,7 @@
     <ClInclude Include="allocator.h" />
     <ClInclude Include="array.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="cmdmanager.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="debugrender.h" />
     <ClInclude Include="engine.h" />
@@ -212,6 +213,7 @@
   <ItemGroup>
     <ClCompile Include="allocator.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="cmdmanager.cpp" />
     <ClCompile Include="debug.cpp" />
     <ClCompile Include="debugrender.cpp" />
     <ClCompile Include="engine.cpp" />

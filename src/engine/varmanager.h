@@ -43,11 +43,15 @@ private:
 class ENGINE_API VarManager
 {
 public:
-	void RegisterVar(Var* pVar);
+	void Init();
+	void Shutdown();
 
+	void RegisterVar(Var* pVar);
 	Var* GetVar(const char* name);
 
 	void Save(const char* filename);
+
+	void PrintVars();
 
 private:
 	void SortVars();
@@ -56,6 +60,6 @@ private:
 	Array<Var*> m_vars;
 };
 
-extern VarManager g_VarManager;
+extern VarManager g_var_manager;
 
 #endif // !VARMANAGER_H

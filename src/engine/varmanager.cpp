@@ -1,10 +1,39 @@
 #include "pch.h"
 #include "varmanager.h"
 #include "filesystem.h"
+#include "cmdmanager.h"
 
 #include <algorithm>
 
-VarManager g_VarManager;
+VarManager g_var_manager;
+
+std::string ComputeStringFromCmdArgs(const CmdArgs& args, bool skipCommandName = true)
+{
+	std::string buffer;
+	int startOf = skipCommandName ? 2 : 2;
+
+	for (int i = startOf; i < args.GetArgc(); i++) {
+		buffer.append(args.GetArgv(i));
+		buffer.append(" ");
+	}
+
+	return buffer;
+}
+
+
+static void set_var(const CmdArgs& args)
+{
+	const char* var_name = args.GetArgv(1);
+	Var* var = g_var_manager.GetVar(var_name);
+	if (var) {
+		var->SetStringValue(ComputeStringFromCmdArgs(args).c_str());
+	}
+}
+
+static void varslist(const CmdArgs& args)
+{
+	g_var_manager.PrintVars();
+}
 
 Var::Var(const char* name, const char* value, const char* description, int flags) :
 	m_name(name), m_description(description), m_flags(flags)
@@ -67,6 +96,15 @@ void Var::SetIntValue(int value)
 	SetStringValue(buffer);
 }
 
+void VarManager::Init()
+{
+	g_cmd_manager.Register("varslist", varslist);
+}
+
+void VarManager::Shutdown()
+{
+}
+
 void VarManager::RegisterVar(Var* pVar)
 {
 	ASSERT(pVar);
@@ -102,6 +140,13 @@ void VarManager::Save(const char* filename)
 	}
 
 	g_file_system->deleteWriter(writer);
+}
+
+void VarManager::PrintVars()
+{
+	for (auto it : m_vars) {
+		Msg(" %-25s     %s", it->GetName(), it->GetStringValue());
+	}
 }
 
 void VarManager::SortVars()

@@ -90,7 +90,7 @@ FontSystem::~FontSystem()
 
 void FontSystem::initialize()
 {
-	g_VarManager.RegisterVar(&g_fontDrawDbgAlpha);
+	g_var_manager.RegisterVar(&g_fontDrawDbgAlpha);
 
 	// Create dynamic vertex buffer
 	

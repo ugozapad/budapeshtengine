@@ -45,9 +45,9 @@ static const char* g_EngineStateStrings[ENGINE_STATE_MAX] =
 
 void RegisterEngineVars()
 {
-	g_VarManager.RegisterVar(&developer);
-	g_VarManager.RegisterVar(&vid_mode);
-	g_VarManager.RegisterVar(&creator);
+	g_var_manager.RegisterVar(&developer);
+	g_var_manager.RegisterVar(&vid_mode);
+	g_var_manager.RegisterVar(&creator);
 }
 
 void RegisterEngineObjects()
@@ -164,7 +164,7 @@ void Engine::Create(int width, int height, bool fullscreen)
 		CreateEditor();
 
 	if (!is_editor_mode)
-		g_VarManager.Save("data/default.cfg");
+		g_var_manager.Save("data/default.cfg");
 }
 
 //////////////////////////////////////////////////////////////////////
