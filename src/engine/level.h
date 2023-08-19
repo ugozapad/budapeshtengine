@@ -25,13 +25,15 @@ public:
 	void Render();
 
 	Array<Entity*>& GetEntities() { return m_entities; }
-	PhysicsWorld* GetPhysicsWorld();
+	PhysicsWorld*	GetPhysicsWorld();
+	const char*		GetLevelName();
 
 private:
 	bool			m_bBusy;
 	bool			m_bNeedToDestroyEnt;
 	Array<Entity*>	m_entities;
 	PhysicsWorld*	m_physicsWorld;
+	const char*		m_level_name;
 };
 
 #endif // !LEVEL_H

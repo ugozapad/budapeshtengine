@@ -8,6 +8,7 @@
 #include "engine/texture.h"
 #include "engine/material_system.h"
 #include "engine/logger.h"
+#include "engine/level.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -61,8 +62,10 @@ void LevelMesh::Load(IReader* reader) {
 			lightmap_texture_path[i] = '/';
 	}
 
+	ASSERT(g_engine->GetLevel()->GetLevelName());
+
 	char buffer2[_MAX_PATH];
-	snprintf(buffer2, sizeof(buffer2), "data/levels/%s/%s", "test_baking", lightmap_texture_path);
+	snprintf(buffer2, sizeof(buffer2), "data/levels/%s/%s", g_engine->GetLevel()->GetLevelName(), lightmap_texture_path);
 
 	// Load LevelMesh
 	uint32_t mesh_name_len = 0;

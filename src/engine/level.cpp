@@ -12,25 +12,33 @@
 #include "engine/debugrender.h"
 
 Level::Level()
-	: m_bBusy(false), m_physicsWorld(nullptr)
+	: m_bBusy(false), m_physicsWorld(nullptr), m_level_name(nullptr)
 {
-	//m_physicsWorld = mem_new<PhysicsWorld>();
-	//m_physicsWorld->Create();
+	m_physicsWorld = mem_new<PhysicsWorld>();
+	m_physicsWorld->Create();
 }
 
 Level::~Level()
 {
-	//if (m_physicsWorld)
-	//{
-	//	m_physicsWorld->Destroy();
-	//	mem_delete(m_physicsWorld);
-	//	m_physicsWorld = nullptr;
-	//}
+	if (m_physicsWorld)
+	{
+		m_physicsWorld->Destroy();
+		mem_delete(m_physicsWorld);
+		m_physicsWorld = nullptr;
+	}
+
+	if (m_level_name)
+	{
+		free((void*)m_level_name);
+		m_level_name = nullptr;
+	}
 }
 
 void Level::Load(const char* levelname)
 {
 	Msg("loading level %s", levelname);
+
+	m_level_name = strdup(levelname);
 
 	IReader* reader;
 	char levelpath[512];
@@ -46,8 +54,6 @@ void Level::Load(const char* levelname)
 	// reader = g_file_system->openRead(levelpath);
 	// loadSomeFile(reader);
 	// etc.
-
-	g_pGamePersistent->OnGameStart();
 }
 
 void Level::LoadLMF(IReader* reader)
@@ -191,4 +197,9 @@ void Level::Render()
 PhysicsWorld* Level::GetPhysicsWorld()
 {
 	return m_physicsWorld;
+}
+
+const char* Level::GetLevelName()
+{
+	return m_level_name;
 }

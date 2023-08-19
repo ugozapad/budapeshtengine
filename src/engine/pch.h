@@ -1,8 +1,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#undef GetClassName // TypedObject::GetClassName
-
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

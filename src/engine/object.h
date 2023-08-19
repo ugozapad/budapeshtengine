@@ -3,6 +3,11 @@
 
 // Simple run time type information, inspired by TurboBadger and Oryol
 
+// Disable GetClassName macro from Win32 API
+#ifdef WIN32
+#undef GetClassName
+#endif
+
 typedef void* typeId_t;
 
 //! Base class for run-time type info.

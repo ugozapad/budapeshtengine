@@ -33,6 +33,7 @@ ENGINE_API Engine* g_engine = nullptr;
 static Var developer("developer", "0", "", VARFLAG_DEVELOPER_MODE);
 static Var vid_mode("vid_mode", "1024x768", "", VARFLAG_NONE);
 static Var creator("creator", "Kirill", "", VARFLAG_NONE);
+static Var swap_interval("swap_interval", "0", "", VARFLAG_NONE);
 
 static const char* g_EngineStateStrings[ENGINE_STATE_MAX] =
 {
@@ -48,6 +49,7 @@ void RegisterEngineVars()
 	g_var_manager.RegisterVar(&developer);
 	g_var_manager.RegisterVar(&vid_mode);
 	g_var_manager.RegisterVar(&creator);
+	g_var_manager.RegisterVar(&swap_interval);
 }
 
 void RegisterEngineObjects()
@@ -167,12 +169,10 @@ void Engine::Create(int width, int height, bool fullscreen)
 		g_var_manager.Save("data/default.cfg");
 }
 
-//////////////////////////////////////////////////////////////////////
-// Kirill:	TODO: Make hRenderDeviceLib, hSoundSystemLib, hGameLib
-//			as global variables or rewrite to SDL dyn libs loading
-//
-//			TODO FUTURE: Linking full engine as static library to main
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+// Kirill:	TODO:	Linking full engine as static library to 
+//					main and rewrite to SDL dyn libs loading
+////////////////////////////////////////////////////////////
 
 HMODULE g_hRenderDeviceLib = NULL;
 HMODULE g_hSoundSystemLib = NULL;
@@ -314,6 +314,9 @@ void Engine::NewGame()
 
 	// Set engine to running
 	SetState(ENGINE_STATE_RUNNING);
+
+	// Notify game about start
+	g_pGamePersistent->OnGameStart();
 }
 
 void Engine_UpdateState()
@@ -351,44 +354,50 @@ void Engine_PreUpdate()
 	GetSystemTimer()->Update();
 }
 
+void Engine_PostFrame()
+{
+	bool vsync = swap_interval.GetIntValue();
+	g_engine->GetRenderDevice()->present(vsync);
+}
+
 void Engine::Update()
 {
 	// Update timer every frame
 	Engine_PreUpdate();
 
+	float fDeltaTime = GetSystemTimer()->GetDelta();
+
 	m_current_state = m_next_state;
 	Engine_UpdateState();
 
+	if (m_editor_system)
+		m_editor_system->Update(fDeltaTime);
+
+	if (g_pSoundSystem)
+		g_pSoundSystem->Update(fDeltaTime);
+
 	if (m_current_state == ENGINE_STATE_RUNNING)
 	{
-		float fDeltaTime = GetSystemTimer()->GetDelta();
-
-		if (m_editor_system)
-			m_editor_system->Update(fDeltaTime);
-
-		if (g_pSoundSystem)
-			g_pSoundSystem->Update(fDeltaTime);
-
 		if (m_level)
 			m_level->Update(fDeltaTime);
-
-		//////////////////////////////////////////////////////////////////////////
-		// Render Scene
-
-		m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
-
-		g_render.RenderScene();
-
-		g_material_system.Render();
-
-		m_render_device->endPass();
-		m_render_device->commit();
-
-		if (m_editor_system)
-			m_editor_system->Render();
-
-		m_render_device->present(false);
 	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// Render Scene
+
+	m_render_device->beginPass(m_viewport, PASSCLEAR_COLOR | PASSCLEAR_DEPTH);
+
+	g_render.RenderScene();
+
+	g_material_system.Render();
+
+	m_render_device->endPass();
+	m_render_device->commit();
+
+	if (m_editor_system)
+		m_editor_system->Render();
+
+	Engine_PostFrame();
 }
 
 void Engine::Shutdown()
