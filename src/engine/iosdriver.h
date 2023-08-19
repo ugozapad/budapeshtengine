@@ -4,9 +4,6 @@
 class IOsDriver
 {
 public:
-	static IOsDriver* getInstance();
-
-public:
 	virtual ~IOsDriver() {}
 
 	virtual void Init() = 0;
@@ -16,5 +13,7 @@ public:
 
 	virtual bool IsDirectoryExist(const char* path) = 0;
 };
+
+extern IOsDriver* g_os_driver;
 
 #endif // !IOSDRIVER_H

@@ -21,12 +21,7 @@ private:
 };
 
 static OsDriverWin32 g_win32_os_driver;
-IOsDriver* g_osdriver = (IOsDriver*)&g_win32_os_driver;
-
-IOsDriver* IOsDriver::getInstance()
-{
-	return g_osdriver;
-}
+IOsDriver* g_os_driver = (IOsDriver*)&g_win32_os_driver;
 
 OsDriverWin32::OsDriverWin32()
 {

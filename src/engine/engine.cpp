@@ -30,7 +30,7 @@
 
 ENGINE_API Engine* g_engine = nullptr;
 
-static Var developer("developer", "0", "", VARFLAG_NOSAVE | VARFLAG_SERVER_PROTECT);
+static Var developer("developer", "0", "", VARFLAG_DEVELOPER_MODE);
 static Var vid_mode("vid_mode", "1024x768", "", VARFLAG_NONE);
 static Var creator("creator", "Kirill", "", VARFLAG_NONE);
 
@@ -84,11 +84,14 @@ void Engine::Create(int width, int height, bool fullscreen)
 
 	RegisterEngineVars();
 
+	if (strstr(GetCommandLineA(), "-developer"))
+		developer.SetIntValue(true);
+
 	// Create timer
 	GetSystemTimer()->Init();
 
 	// Initialize OS Driver
-	IOsDriver::getInstance()->Init();
+	g_os_driver->Init();
 
 	// create filesystem
 	g_file_system = IFileSystem::Create();
@@ -446,6 +449,10 @@ void Engine::Shutdown()
 	LogClose();
 
 	IFileSystem::Destroy(g_file_system);
+
+	g_os_driver->Shutdown();
+
+	GetSystemTimer()->Shutdown();
 
 	SDL_Quit();
 }
